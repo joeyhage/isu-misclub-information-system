@@ -1,0 +1,23 @@
+{
+	"env": {
+		"es6": true
+	},
+	"extends": "react-app",
+	"ignore": ["*/mysqlDB.js"],
+	"parser": "babel-eslint",
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"sourceType": "module"
+	},
+	"rules": {
+		"jsx-quotes": ["error", "prefer-single"],
+		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+		"prefer-spread": "error",
+		"quotes": ["error", "single"],
+		"semi": ["error", "always"],
+		"strict": "off"
+	}
+}

@@ -1,0 +1,87 @@
+.container {
+    padding: 5px 50px 30px 50px;
+}
+
+#header {
+    box-shadow: 2px 2px 1px #888888;
+    background-color: #C6202C;
+}
+
+#instructions>h5 {
+    margin: 0 auto;
+}
+
+#mysql {
+    background-color: rgba(198, 32, 44, 0.13);
+}
+
+#header>h1, #header>p {
+    text-align: center;
+}
+
+#header>h1 {
+    color: #FDBE16;
+    margin-top: 0;
+}
+
+#header>p {
+    color: white;
+}
+
+h2 {
+    color: #C6202C;
+}
+
+.major-list {
+    font-weight: bold;
+    margin: 10px auto;
+}
+
+.major-list>[class^="icon-"], .major-list>[class*=" icon-"] {
+    color: #C6202C;
+    position: absolute;
+    text-align: right;
+    margin-left: 5px;
+    width: 2%;
+}
+.major list>[class^="icon-"]:before, .major-list>[class*=" icon-"]:before {
+    font-weight: bold;
+    font-size: 125%;
+}
+.major-list>[class^="icon-"]:hover, .major-list>[class*=" icon-"]:hover {
+    cursor: pointer;
+}
+.major-list:hover, #mysql h4:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.major-list>ol {
+    font-weight: normal;
+    display: none;
+    overflow: hidden;
+    background-color: #f8f6f8;
+}
+
+.major-list li {
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+ul {
+    list-style-type: square;
+}
+
+#mysql h4 {
+    width: 50%;
+}
+
+[href^="http"], a#view-logfile, a#logfile-directory {
+    color: #C6202C;
+    text-decoration: none;
+}
+
+[href^="http"]:hover, a#view-logfile:hover, a#logfile-directory:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

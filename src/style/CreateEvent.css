@@ -1,0 +1,13 @@
+span.icon-cancel-squared {
+    color: red;
+    font-size: 150%;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 1px;
+}
+
+/* delete button styling */
+table span {
+    text-align: center;
+}

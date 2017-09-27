@@ -1,0 +1,43 @@
+.container {
+    width: 50%;
+}
+
+.container>h3 {
+    font-size: 1.75vw;
+}
+
+#event-id {
+    margin: 20px 0 0 0;
+    text-align: right;
+}
+
+#event-date {
+    margin-top: 0;
+    text-align: right;
+}
+
+div.pane:nth-child(2) hr {
+    margin-top: 74px;
+}
+
+#create-member {
+    display: none;
+}
+
+#payment-required {
+    color: #C6202C;
+    font-weight: bold;
+    display: none;
+}
+
+h5>span {
+    color: #C6202C;
+}
+
+div.container.pull-left {
+    width: 75%;
+}
+
+div.container.pull-right {
+    width: 25%;
+}

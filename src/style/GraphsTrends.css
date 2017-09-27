@@ -1,0 +1,18 @@
+.container {
+    width: 50%;
+}
+
+.highcharts-credits {
+    display: none;
+}
+
+#highchart-container {
+    min-width: 310px;
+    height: 500px;
+    margin: 10px auto;
+    padding: auto 20px;
+}
+
+#new-graph, .checkbox {
+    display: none;
+}

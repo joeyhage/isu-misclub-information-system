@@ -1,0 +1,39 @@
+{
+  "name": "isu-misclub-checkin",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "./",
+  "main": "src/electron-starter.js",
+  "dependencies": {
+    "activedirectory": "^0.7.2",
+    "fast-csv": "^2.4.0",
+    "hazardous": "^0.3.0",
+    "moment": "^2.18.1",
+    "mysql": "^2.14.1",
+    "mysqldump": "^1.4.2",
+    "radium": "^0.19.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "react-router": "^4.1.2",
+    "react-scripts": "1.0.10",
+    "redux": "^3.7.2",
+    "request": "^2.81.0",
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.7.2"
+  },
+  "scripts": {
+    "start": "nf start -p 3000",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-start": "node src/electron-wait-react",
+    "react-start": "react-scripts start"
+  },
+  "devDependencies": {
+    "electron": "^1.6.11",
+    "electron-devtools-installer": "^2.2.0",
+    "foreman": "^2.0.0"
+  }
+}

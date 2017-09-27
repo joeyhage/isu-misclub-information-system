@@ -1,0 +1,20 @@
+h4 {
+    width: 50%;
+}
+
+h4:hover {
+    text-decoration: underline;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    color: #C6202C;
+    position: absolute;
+    text-align: right;
+    margin-left: 5px;
+    width: 2%;
+}
+
+[class^="icon-"]:before, [class*=" icon-"]:before {
+    font-weight: bold;
+    font-size: 125%;
+}

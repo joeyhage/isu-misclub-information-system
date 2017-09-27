@@ -1,0 +1,34 @@
+.window h3 {
+    padding: 0 4%;
+}
+#login-form {
+    padding: 0 5%;
+}
+hr {
+    border-bottom: 3px groove #FFF;
+    margin-bottom: 0;
+}
+#app-info {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100px;
+}
+#app-info>h5 {
+    padding: 15px 2vw 0 2vw;
+}
+#app-info>.float-left {
+    float: left;
+    width: 70%;
+    text-align: left;
+}
+#app-info>.float-right {
+    float: right;
+    width: 30%;
+    text-align: right;
+}
+
+.pane-group>div#app-info:nth-of-type(2)>h5:nth-last-of-type(n+2) {
+    border: 0;
+}

@@ -1,0 +1,16 @@
+.pane-group>div:nth-of-type(2)>h5 {
+    padding: 5% 1%;
+    margin: 0;
+}
+
+.pane-group>div:nth-of-type(2)>h5:nth-last-of-type(n+2) {
+    border-bottom: 1px solid rgba(109, 108, 109, 0.41);
+}
+
+button.red {
+    float: right;
+}
+
+table {
+    padding: 20px auto;
+}
