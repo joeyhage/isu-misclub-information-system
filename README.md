@@ -90,7 +90,7 @@
 ### MySQL Database
 
 - [SQL Reference](http://www.w3schools.com/sql/)
-- [MIS Club Database Portal](https://phpmyadmin-its.sws.iastate.edu/vwh-stu-db01d.its.iastate.edu/db_structure.php)
+- [MIS Club Web Admin](http://www.mis.stuorg.iastate.edu/webadmin)
 - [MySQL Reference Manual](https://dev.mysql.com/doc/)
 
 ## Tools
