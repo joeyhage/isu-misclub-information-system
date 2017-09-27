@@ -15,25 +15,33 @@
     greater than `8.x.x` for development. To install the most recent Node.js version, click [here](https://nodejs.org/en/download/current/).
     This will also download the most recent version of npm, the official Node.js package manager.
 
-2. ### npm & installing dependencies
+2. ### Getting Started with Git
+
+    **[Download Git](https://git.linux.iastate.edu/help/gitlab-basics/start-using-git.md)**
+    
+    **[Basic Commands from the Command Line](https://git.linux.iastate.edu/help/gitlab-basics/command-line-commands.md)**
+    
+    **[Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)**
+
+3. ### npm & installing dependencies
     
     [Npm](https://www.npmjs.com/) is currently the largest software registry in the world and offers a simple way to add
     open-source libraries into a project. It is also used to define scripts that can be used with a project to start, 
     test, debug, etc.
     
-    Npm utilizes the package.json file in a project to determine which dependencies are needed. When this project is 
-    first cloned from git, you will need to execute `npm install` from the root directory, or `npm i` for short.
+    Npm utilizes the package.json file in a project to determine which dependencies are needed. Once you have cloned this project 
+    from git, you will need to execute `npm install` from the root directory, or `npm i` for short.
     
     To install new packages, execute `npm i <package-name>`. This will automatically update the package.json file with 
     the appropriate package name and version so that when the changes are committed, other developers will simply have to
     run `npm i`. This also holds true when working with other developers simultaneously. 
         
-3. ### Running Electron locally
+4. ### Running Electron locally
     
     To run the application locally, execute `npm start` from the root directory. This will execute a series of scripts
     as seen in the package.json file which are needed to start Electron and React simultaneously.
 
-4. ### IDE Setup
+5. ### IDE Setup
 
     *This step assumes you have downloaded WebStorm for development. See [here](#ide) for more information.*
     
@@ -118,4 +126,4 @@ This is a list of possible issues that may arise and how to resolve them.
 2. Error: listen EADDRINUSE
     
     The local port is already in use. Either another application is using that port or Electron failed to stop successfully
-    the last time it was run. The simplest way to resolve this is to kill the running node process. 
+    the last time it was run. The simplest way to resolve this is to kill the running node process.
