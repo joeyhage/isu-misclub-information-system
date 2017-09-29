@@ -1,0 +1,1 @@
+export const primaryRed = '#c6202c';

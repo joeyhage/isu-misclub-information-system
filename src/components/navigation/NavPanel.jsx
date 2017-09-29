@@ -1,12 +1,14 @@
 import React from 'react';
+import Radium, { Style } from 'radium';
 import NavLink from './NavLink';
-import '../../style/Nav.css';
+import { NavCss } from '../../style/Nav.css.js';
 
-export default class NavPanel extends React.Component {
+class NavPanel extends React.Component {
 
 	render() {
 		return (
-			<div className='pane pane-sm sidebar' style={{minWidth:'220px'}}>
+			<div className='pane pane-sm sidebar' style={{minWidth:'220px', color:'white', backgroundColor:'#6d6c6d'}}>
+				<Style rules={NavCss}/>
 				<nav className='nav-group'>
 					<h5 className='nav-group-title'>Menu</h5>
 					<NavLink id='create-event' icon='icon-calendar'>Create Event</NavLink>
@@ -20,3 +22,5 @@ export default class NavPanel extends React.Component {
 		);
 	}
 }
+
+export default Radium(NavPanel);

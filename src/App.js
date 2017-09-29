@@ -4,15 +4,13 @@ import Radium, { Style } from 'radium';
 import MISClubPage from './components/MISClubPage';
 import Login from './components/pages/Login';
 import { ipcGeneral } from './actions/ipcActions';
-import AppCss from './style/App.css.js';
+import { AppCss } from './style/App.css.js';
 import './style/photon.min.css';
-// import './style/App.css';
 
 const { ipcRenderer } = window.require('electron');
 
 class App extends React.Component {
 	render() {
-		console.dir(AppCss);
 		return (
 			<div className='window'>
 				<Style rules={AppCss}/>

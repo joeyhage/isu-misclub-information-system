@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Radium, { Style } from 'radium';
 import moment from 'moment';
 import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
-import '../../style/CreateEvent.css';
+import { CreateEventCss } from '../../style/CreateEvent.css.js';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -26,21 +27,22 @@ class CreateEvent extends React.Component {
 	render() {
 		return (
 			<div id='page-view'>
-				<div className='pane padded-more' style={{width: '50%', float: 'left'}}>
+				<Style rules={CreateEventCss}/>
+				<div className='pane padded-more'>
 					<h3>Create Event</h3>
 					<hr/>
 					<form onSubmit={this._handleSubmit}>
 						<div className='form-group'>
 							<label htmlFor='event-name'>Event Name</label>
 							<input type='text' value={this.state.eventName} onChange={this._handleChange}
-								   className={`form-control required ${this._setValidationState()}`}
+								   className={`form-control required ${this._getValidationState()}`}
 								   id='event-name' placeholder='e.g. MIS Club Career Night' autoFocus/>
 						</div>
 						<div className='form-actions'>
 							<button type='reset' className='btn btn-form btn-default' onClick={this._handleChange}>
 								Clear
 							</button>
-							<button type='submit' className='btn btn-form btn-primary' id='create-event'>
+							<button type='submit' className='btn btn-form btn-primary'>
 								Create
 							</button>
 						</div>
@@ -137,7 +139,7 @@ class CreateEvent extends React.Component {
 		}
 	}
 
-	_setValidationState() {
+	_getValidationState() {
 		return !isValidInput(this.state.eventName) && this.state.showFormErrors ? 'invalid' : '';
 	}
 }
@@ -152,4 +154,4 @@ const mapDispatchToProps = dispatch => ({
 	resetActiveEvent: () => dispatch(resetActiveEvent())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateEvent);
+export default connect(mapStateToProps, mapDispatchToProps)(Radium(CreateEvent));

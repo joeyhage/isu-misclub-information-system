@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import '../../style/EventCheckIn.css';
+import { primaryRed } from '../../style/CssConstants';
 
 class EventCheckIn extends React.Component {
 
@@ -13,20 +13,22 @@ class EventCheckIn extends React.Component {
 	}
 
 	render() {
-		return !this.props.eventId ? ( <h3 id='event-name'>No Event Selected</h3>) : (
+		return !this.props.eventId ? ( <h3>No Event Selected</h3>) : (
 			<div id='page-view'>
-				<div className='pane padded-more' style={{width: '50%', float: 'left'}}>
-					<div className='container pull-left'>
-						<h3 id='event-name'>{this.props.eventName}</h3>
+				<div className='pane padded-more'>
+					<div className='container pull-left' style={{width:'75%'}}>
+						<h3 style={{fontSize:'1.75vw'}}>{this.props.eventName}</h3>
 					</div>
-					<div className='container pull-right'>
-						<p id='event-id'>Event ID: {this.props.eventId}</p>
-						<p id='event-date'>Date: {this.props.eventDate}</p>
+					<div className='container pull-right' style={{width:'25%'}}>
+						<p style={{margin:'20px 0 0 0', textAlign:'right'}}>
+							Event ID: {this.props.eventId}
+						</p>
+						<p style={{marginTop: 0, textAlign:'right'}}>
+							Date: {this.props.eventDate}
+						</p>
 					</div>
-					<hr/>
-					<form id='get-member' action='' onReset={() => {
-						this.setState({netid: ''});
-					}}>
+					<hr style={{marginTop:'74px'}}/>
+					<form action='' onReset={() => {this.setState({netid: ''});}}>
 						<div className='form-group'>
 							<label htmlFor='netid' aria-hidden='true'/>
 							<input type='text' value={this.state.netid} onChange={this._handleChange}
@@ -40,9 +42,9 @@ class EventCheckIn extends React.Component {
 							</button>
 						</div>
 					</form>
-					<h5 id='no-results'/>
-					<button type='button' className='btn btn-form btn-primary red' id='create-member'>Create
-						Member?
+					<h5>No Results</h5>
+					<button type='button' className='btn btn-form btn-primary red' style={{display:'none'}}>
+						Create Member?
 					</button>
 				</div>
 				<div className='pane padded-more'>
@@ -65,8 +67,8 @@ class EventCheckIn extends React.Component {
 							<label htmlFor='class'>Classification</label>
 							<input className='form-control' id='class' disabled/>
 						</div>
-						<h5>Semesters Remaining: <span id='semesters-remaining'/></h5>
-						<h5>Used Free Meeting? <span id='free-meeting-status'/></h5>
+						<h5>Semesters Remaining: <span style={{color: primaryRed}}/></h5>
+						<h5>Used Free Meeting? <span style={{color: primaryRed}}/></h5>
 						<hr/>
 						<h5>Record Payment</h5>
 						<div className='radio'>
@@ -88,7 +90,9 @@ class EventCheckIn extends React.Component {
 							</label>
 						</div>
 						<hr/>
-						<p id='payment-required'>Member has already used free meeting and needs to pay dues</p>
+						<p style={{color:primaryRed, fontWeight:'bold', display: 'none'}}>
+							Member has already used free meeting and needs to pay dues
+						</p>
 						<button type='button' className='btn btn-form btn-primary red' id='check-in'
 								title='Click or Press Enter' disabled>Check-In & Submit Data
 						</button>
