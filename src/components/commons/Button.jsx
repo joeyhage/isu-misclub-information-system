@@ -6,7 +6,7 @@ export class Button extends React.Component {
 		super(props);
 
 		this.state = {
-			className: `btn btn-form ${props.primary ? 'btn-primary' : 'btn-default'} ${props.red && 'btn-primary red'}`,
+			className: `btn btn-form ${(props.primary && 'btn-primary') || (props.red && 'btn-red') || 'btn-default'}`,
 			type: props.type || 'button',
 			id: props.id,
 			children: props.children
