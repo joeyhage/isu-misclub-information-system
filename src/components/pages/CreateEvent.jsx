@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import moment from 'moment';
+import { FormGroup } from '../common';
 import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
@@ -19,6 +20,7 @@ class CreateEvent extends React.Component {
 			showFormErrors: false,
 			today: moment().format('YYYY-MM-DD')
 		};
+		this._getValidationState = this._getValidationState.bind(this);
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
 		this._handleRowClick = this._handleRowClick.bind(this);
@@ -32,12 +34,9 @@ class CreateEvent extends React.Component {
 					<h3>Create Event</h3>
 					<hr/>
 					<form onSubmit={this._handleSubmit}>
-						<div className='form-group'>
-							<label htmlFor='event-name'>Event Name</label>
-							<input type='text' value={this.state.eventName} onChange={this._handleChange}
-								   className={`form-control required ${this._getValidationState()}`}
-								   id='event-name' placeholder='e.g. MIS Club Career Night' autoFocus/>
-						</div>
+						<FormGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
+								   showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
+								   required autoFocus/>
 						<div className='form-actions'>
 							<button type='reset' className='btn btn-form btn-default' onClick={this._handleChange}>
 								Clear
@@ -140,7 +139,7 @@ class CreateEvent extends React.Component {
 	}
 
 	_getValidationState() {
-		return !isValidInput(this.state.eventName) && this.state.showFormErrors ? 'invalid' : '';
+		return !isValidInput(this.state.eventName) && this.state.showFormErrors;
 	}
 }
 

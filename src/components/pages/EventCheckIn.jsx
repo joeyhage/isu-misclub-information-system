@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { MemberInfo, FormGroup, Button } from '../common';
 import { primaryRed } from '../../style/CssConstants';
 
 class EventCheckIn extends React.Component {
@@ -29,76 +30,40 @@ class EventCheckIn extends React.Component {
 					</div>
 					<hr style={{marginTop:'74px'}}/>
 					<form action='' onReset={() => {this.setState({netid: ''});}}>
-						<div className='form-group'>
-							<label htmlFor='netid' aria-hidden='true'/>
-							<input type='text' value={this.state.netid} onChange={this._handleChange}
-								   className='form-control required' id='netid' placeholder='Please enter Net-ID'
-								   autoFocus/>
-						</div>
+						<FormGroup id='netid' value={this.state.netid} onChange={this._handleChange}
+								   placeholder={'Please enter Net-ID'} required autoFocus/>
 						<div className='form-actions'>
-							<button type='reset' className='btn btn-form btn-default'>Clear</button>
-							<button type='submit' className='btn btn-form btn-primary' id='get-data'
-									title='Click or Press Enter'>Get Data
-							</button>
+							<Button type='reset'>
+								Clear
+							</Button>
+							<Button type='submit' primary>
+								Get Data
+							</Button>
 						</div>
 					</form>
 					<h5>No Results</h5>
-					<button type='button' className='btn btn-form btn-primary red' style={{display:'none'}}>
+					<Button red>
 						Create Member?
-					</button>
+					</Button>
 				</div>
 				<div className='pane padded-more'>
 					<h3>Member Data</h3>
 					<hr/>
-					<form id='member-data'>
-						<div className='form-group'>
-							<label htmlFor='first-name'>First Name</label>
-							<input type='text' className='form-control' id='first-name' disabled/>
-						</div>
-						<div className='form-group'>
-							<label htmlFor='last-name'>Last Name</label>
-							<input type='text' className='form-control' id='last-name' disabled/>
-						</div>
-						<div className='form-group'>
-							<label htmlFor='major'>Major</label>
-							<input type='text' className='form-control' id='major' disabled/>
-						</div>
-						<div className='form-group'>
-							<label htmlFor='class'>Classification</label>
-							<input className='form-control' id='class' disabled/>
-						</div>
-						<h5>Semesters Remaining: <span style={{color: primaryRed}}/></h5>
-						<h5>Used Free Meeting? <span style={{color: primaryRed}}/></h5>
+					<form>
+						<MemberInfo member={{}}/>
 						<hr/>
 						<h5>Record Payment</h5>
-						<div className='radio'>
-							<label>
-								<input type='radio' name='payment' value='2'/>
-								2 Semesters
-							</label>
-						</div>
-						<div className='radio'>
-							<label>
-								<input type='radio' name='payment' value='1'/>
-								1 Semester
-							</label>
-						</div>
-						<div className='radio'>
-							<label>
-								<input type='radio' name='payment' value='0'/>
-								<span id='no-payment'>No Change</span>
-							</label>
-						</div>
+						<PaymentRadios/>
 						<hr/>
 						<p style={{color:primaryRed, fontWeight:'bold', display: 'none'}}>
 							Member has already used free meeting and needs to pay dues
 						</p>
-						<button type='button' className='btn btn-form btn-primary red' id='check-in'
-								title='Click or Press Enter' disabled>Check-In & Submit Data
-						</button>
-						<button type='button' className='btn btn-form btn-primary' id='member-history'
-								title='Click to view member history' disabled>View Member History
-						</button>
+						<Button id='check-in' disabled={Boolean(this.props.eventId)} red>
+							Check-In & Submit Data
+						</Button>
+						<Button id='member-history' disabled={Boolean(this.props.eventId)} primary>
+							View Member History
+						</Button>
 					</form>
 				</div>
 			</div>
@@ -111,6 +76,31 @@ class EventCheckIn extends React.Component {
 		}
 	}
 }
+
+const PaymentRadios = () => {
+	return (
+		<div>
+			<div className='radio'>
+				<label>
+					<input type='radio' name='payment' value='2'/>
+					2 Semesters
+				</label>
+			</div>
+			<div className='radio'>
+				<label>
+					<input type='radio' name='payment' value='1'/>
+					1 Semester
+				</label>
+			</div>
+			<div className='radio'>
+				<label>
+					<input type='radio' name='payment' value='0'/>
+					No Change
+				</label>
+			</div>
+		</div>
+	);
+};
 
 const mapStateToProps = state => ({
 	eventId: state.activeEvent.eventId,

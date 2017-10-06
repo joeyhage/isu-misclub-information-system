@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { FormGroup, Button } from '../common';
 import { isValidInput } from '../../utils/validation';
 import { setUserId, setAccessLevel } from '../../actions';
 import { ipcMysql } from '../../actions/ipcActions';
@@ -16,6 +17,7 @@ class Login extends React.Component {
 			password: '',
 			showFormErrors: false
 		};
+		this._getValidationState = this._getValidationState.bind(this);
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
 
@@ -32,19 +34,18 @@ class Login extends React.Component {
 				<div className='pane padded-more'>
 					<h3 style={{padding:'0 4%'}}>Login</h3>
 					<form onSubmit={this._handleSubmit} style={{padding:'0 5%'}}>
-						<div className='form-group'>
-							<label htmlFor='netid'>Net-ID</label>
-							<input type='text' value={this.state.netid} onChange={this._handleChange}
-								   className={`form-control required ${this._getValidationState(this.state.netid)}`}
-								   id='netid' autoFocus/>
-						</div>
-						<div className='form-group'>
-							<label htmlFor='password'>Password</label>
-							<input type='password' value={this.state.password} onChange={this._handleChange}
-								   className={`form-control required ${this._getValidationState(this.state.password)}`}/>
-						</div>
+						<FormGroup id='netid' value={this.state.netid} onChange={this._handleChange}
+								   showValidation={this._getValidationState} required autoFocus>
+							Net-ID
+						</FormGroup>
+						<FormGroup type='password' value={this.state.password} onChange={this._handleChange}
+								   showValidation={this._getValidationState} required>
+							Password
+						</FormGroup>
 						<div className='form-actions'>
-							<button type='submit' className='btn btn-form btn-primary red' id='login'>Login</button>
+							<Button type='submit' id='login' red>
+								Login
+							</Button>
 						</div>
 					</form>
 					{this.state.showFormErrors &&
@@ -53,10 +54,10 @@ class Login extends React.Component {
 				</div>
 				<div style={{position:'absolute', right:0, bottom:0, left:0, height:'100px'}}>
 					<hr style={{borderBottom:'3px groove white', marginBottom: 0}}/>
-					<h5 className='float-left' style={{float:'left', width:'70%', textAlign:'left', ...this.style.h5}}>
+					<h5 style={{float:'left', width:'70%', textAlign:'left', ...this.style.h5}}>
 						ISU MIS Club Check-In System
 					</h5>
-					<h5 className='float-right' style={{float:'right', width:'30%', textAlign:'right', ...this.style.h5}}>
+					<h5 style={{float:'right', width:'30%', textAlign:'right', ...this.style.h5}}>
 						&copy; {moment().format('YYYY')} ISU MIS Club
 					</h5>
 				</div>
@@ -89,7 +90,7 @@ class Login extends React.Component {
 	}
 
 	_getValidationState(value) {
-		return !isValidInput(value) && this.state.showFormErrors ? 'invalid' : '';
+		return !isValidInput(value) && this.state.showFormErrors;
 	}
 }
 

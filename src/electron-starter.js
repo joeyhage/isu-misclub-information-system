@@ -20,7 +20,7 @@ let mainWindow, mysqlConnection, logger, devToolsEnabled = true;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
-		show: false, width: 800, height: 800, minWidth: 800, minHeight: 600, resizable: true, title: 'ISU MIS Club Check-In'
+		show: false, width: 600, height: 600, minWidth: 600, minHeight: 600, resizable: true, title: 'ISU MIS Club Check-In'
 	});
 
 	const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -96,7 +96,7 @@ app.on('ready', () => {
 
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
 		if (action === ipcGeneral.LOGIN_WINDOW) {
-			mainWindow.setSize(800, 800);
+			mainWindow.setSize(600, 600);
 		} else if (action === ipcGeneral.MIS_CLUB_PAGE_WINDOW) {
 			mainWindow.setSize(1200, 800);
 		}
