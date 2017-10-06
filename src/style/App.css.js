@@ -43,15 +43,15 @@ export const AppCss = {
 		outline: 'none'
 	},
 
-	'.btn.red': {
+	'.btn-red': {
 		color: '#fff',
 		background: `rgba(198, 32, 44, 0.49) linear-gradient(to bottom, rgba(198, 32, 44, 0.49) 0%, ${primaryRed} 100%)`,
 		borderColor: primaryRed
 	},
-	'.btn.red:hover': {
+	'.btn-red:hover': {
 		background: `rgba(198, 32, 44, 0.83) linear-gradient(to bottom, rgba(198, 32, 44, 0.84) 0%, ${primaryRed} 100%)`
 	},
-	'.btn.red:active': {
+	'.btn-red:active': {
 		background: 'rgba(182, 29, 40, 0.83) linear-gradient(to bottom, rgba(175, 28, 39, 0.84) 0%, #b51d28 100%)'
 	},
 
