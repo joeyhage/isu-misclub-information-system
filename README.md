@@ -5,6 +5,7 @@
 - [Workspace Setup](#workspace-setup)
 - [Technology Stack](#technology-stack)
 - [Tools](#tools)
+- [API](#api)
 - [Help](#help)
 
 ## Workspace Setup
@@ -29,8 +30,8 @@
     open-source libraries into a project. It is also used to define scripts that can be used with a project to start, 
     test, debug, etc.
     
-    Npm utilizes the package.json file in a project to determine which dependencies are needed. Once you have cloned this project 
-    from git, you will need to execute `npm install` from the root directory, or `npm i` for short.
+    Npm utilizes the package.json file in a project to determine which dependencies are needed. Once you have cloned this 
+    project from git, you will need to execute `npm install` from the root directory, or `npm i` for short.
     
     To install new packages, execute `npm i <package-name>`. This will automatically update the package.json file with 
     the appropriate package name and version so that when the changes are committed, other developers will simply have to
@@ -67,7 +68,8 @@
 
     **JavaScript Configuration**
     
-    To ensure WebStorm is interpreting the code properly, go to *Preferences -> Languages & Frameworks -> JavaScript* and select *React JSX* from the dropdown. 
+    To ensure WebStorm is interpreting the code properly, go to *Preferences -> Languages & Frameworks -> JavaScript* and 
+    select *React JSX* from the dropdown. 
 
 ## Technology Stack
 
@@ -113,6 +115,44 @@ and click the *View* heading on the menu bar. Then click *Toggle Developer Tools
 For official documentation on how to use the Redux Developer Tools, click [here](http://extension.remotedev.io/).
 
 For official documentation on how to use the React Developer Tools, click [here](https://github.com/facebook/react-devtools#faq).
+
+## API
+
+To improve code readability and reusability, there are several common components that have been created specifically for this 
+project. These components can be found [here](/src/components/common). Please add API definitions for new common components when 
+created.
+
+- ### `<Button>`
+    
+  **Props:**
+
+  | Name     | Type                               | Default | Description                             |
+  |:--------:|:----------------------------------:|:-------:|:----------------------------------------|
+  | type     | One of 'button', 'submit', 'reset' | button  | Defines HTML button type attribute      |
+  | primary  | boolean                            | false   | Set button color to primary color: blue |
+  | red      | boolean                            | false   | Set button color to red                 |
+  | disabled | boolean                            | false   | Disable button click                    |
+    
+  *Button need only be primary, red, or neither. If neither primary nor red, button will be default color: gray.*
+
+  **Examples:**
+  
+  ```jsx
+  <Button type='submit' primary>Submit</Button> 
+  <Button red>Click Me</Button>
+  <Button disabled={true}>Disabled</Button>
+  ```
+
+  Notice how only the word primary or red is needed. React assumes the value is true when the prop does not have an 
+  explicit value. If not included, the value will be undefined and therefore false.
+
+- ### `<FormGroup>`
+
+  WIP
+
+- ### `<MemberInfo>`
+    
+  WIP  
 
 ## Help
 
