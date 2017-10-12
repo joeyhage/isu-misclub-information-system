@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MemberInfo, FormGroup, Button } from '../common';
+import { MemberInfo, InputGroup, Button } from '../common';
 import { primaryRed } from '../../style/CssConstants';
 
 class EventCheckIn extends React.Component {
@@ -30,8 +30,8 @@ class EventCheckIn extends React.Component {
 					</div>
 					<hr style={{marginTop:'74px'}}/>
 					<form action='' onReset={() => {this.setState({netid: ''});}}>
-						<FormGroup id='netid' value={this.state.netid} onChange={this._handleChange}
-								   placeholder={'Please enter Net-ID'} required autoFocus/>
+						<InputGroup id='netid' value={this.state.netid} onChange={this._handleChange}
+									placeholder={'Please enter Net-ID'} required autoFocus/>
 						<div className='form-actions'>
 							<Button type='reset'>
 								Clear

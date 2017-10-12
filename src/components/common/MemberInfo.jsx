@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup } from './index';
+import { InputGroup } from './index';
 import { primaryRed } from '../../style/CssConstants';
 
 export class MemberInfo extends React.Component {
@@ -16,22 +16,22 @@ export class MemberInfo extends React.Component {
 		const {member, disabled} = this.props;
 		return (
 			<div>
-				<FormGroup id='first-name' value={member.firstName} onChange={this.state.onChange}
-						   disabled={disabled}>
+				<InputGroup id='first-name' value={member.firstName} onChange={this.state.onChange}
+							disabled={disabled}>
 					First Name
-				</FormGroup>
-				<FormGroup id='last-name' value={member.lastName} onChange={this.state.onChange}
-						   disabled={disabled}>
+				</InputGroup>
+				<InputGroup id='last-name' value={member.lastName} onChange={this.state.onChange}
+							disabled={disabled}>
 					Last Name
-				</FormGroup>
-				<FormGroup id='major' value={member.major} onChange={this.state.onChange}
-						   disabled={disabled}>
+				</InputGroup>
+				<InputGroup id='major' value={member.major} onChange={this.state.onChange}
+							disabled={disabled}>
 					Major
-				</FormGroup>
-				<FormGroup id='class' value={member.class} onChange={this.state.onChange}
-						   disabled={disabled}>
+				</InputGroup>
+				<InputGroup id='class' value={member.class} onChange={this.state.onChange}
+							disabled={disabled}>
 					Classification
-				</FormGroup>
+				</InputGroup>
 				<h5>Semesters Remaining: <span style={{color: primaryRed}}/></h5>
 				<h5>Used Free Meeting? <span style={{color: primaryRed}}/></h5>
 			</div>

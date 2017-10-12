@@ -126,12 +126,13 @@ created.
     
   **Props:**
 
-  | Name     | Type                               | Default | Description                             |
-  |:--------:|:----------------------------------:|:-------:|:----------------------------------------|
-  | type     | One of 'button', 'submit', 'reset' | button  | Defines HTML button type attribute      |
-  | primary  | boolean                            | false   | Set button color to primary color: blue |
-  | red      | boolean                            | false   | Set button color to red                 |
-  | disabled | boolean                            | false   | Disable button click                    |
+  | Name     | Type                               | Default | Description                                  |
+  |:--------:|:----------------------------------:|:-------:|:---------------------------------------------|
+  | type     | One of 'button', 'submit', 'reset' | button  | Defines HTML button type attribute           |
+  | primary  | boolean                            | false   | Set button color to primary color: blue      |
+  | red      | boolean                            | false   | Set button color to red                      |
+  | disabled | boolean                            | false   | Disable button click                         |
+  | onClick  | function                           |         | Function to be called when button is clicked |
     
   *Button need only be primary, red, or neither. If neither primary nor red, button will be default color: gray.*
 
@@ -146,7 +147,7 @@ created.
   Notice how only the word primary or red is needed. React assumes the value is true when the prop does not have an 
   explicit value. If not included, the value will be undefined and therefore false.
 
-- ### `<FormGroup>`
+- ### `<InputGroup>`
 
   WIP
 

@@ -1,4 +1,4 @@
-import { SELECT_VIEW } from '../actions'
+import { SELECT_VIEW } from '../actions';
 
 const initialState = {
 	view: 'create-event'

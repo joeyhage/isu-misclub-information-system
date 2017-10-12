@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class FormGroup extends React.Component {
+export class InputGroup extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -21,6 +21,7 @@ export class FormGroup extends React.Component {
 		const {type, id, placeholder, onChange, autoFocus, required, showValidation, children} = this.state;
 		const {value, disabled} = this.props;
 		const className = `form-control ${required && 'required'} ${showValidation && showValidation(value) && 'invalid'}`;
+
 		return (
 			<div className='form-group'>
 				{children &&

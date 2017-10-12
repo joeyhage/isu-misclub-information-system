@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { FormGroup, Button } from '../common';
+import { InputGroup, Button } from '../common';
 import { isValidInput } from '../../utils/validation';
 import { setUserId, setAccessLevel } from '../../actions';
 import { ipcMysql } from '../../actions/ipcActions';
@@ -34,14 +34,14 @@ class Login extends React.Component {
 				<div className='pane padded-more'>
 					<h3 style={{padding:'0 4%'}}>Login</h3>
 					<form onSubmit={this._handleSubmit} style={{padding:'0 5%'}}>
-						<FormGroup id='netid' value={this.state.netid} onChange={this._handleChange}
-								   showValidation={this._getValidationState} required autoFocus>
+						<InputGroup id='netid' value={this.state.netid} onChange={this._handleChange}
+									showValidation={this._getValidationState} required autoFocus>
 							Net-ID
-						</FormGroup>
-						<FormGroup type='password' value={this.state.password} onChange={this._handleChange}
-								   showValidation={this._getValidationState} required>
+						</InputGroup>
+						<InputGroup type='password' value={this.state.password} onChange={this._handleChange}
+									showValidation={this._getValidationState} required>
 							Password
-						</FormGroup>
+						</InputGroup>
 						<div className='form-actions'>
 							<Button type='submit' id='login' red>
 								Login

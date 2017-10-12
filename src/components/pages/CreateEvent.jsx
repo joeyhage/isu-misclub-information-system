@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import moment from 'moment';
-import { FormGroup } from '../common';
+import { InputGroup, Button } from '../common';
 import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
@@ -34,16 +34,16 @@ class CreateEvent extends React.Component {
 					<h3>Create Event</h3>
 					<hr/>
 					<form onSubmit={this._handleSubmit}>
-						<FormGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
-								   showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
-								   required autoFocus/>
+						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
+									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
+									required autoFocus/>
 						<div className='form-actions'>
-							<button type='reset' className='btn btn-form btn-default' onClick={this._handleChange}>
+							<Button type='reset' onClick={this._handleChange}>
 								Clear
-							</button>
-							<button type='submit' className='btn btn-form btn-primary'>
+							</Button>
+							<Button type='submit' primary>
 								Create
-							</button>
+							</Button>
 						</div>
 					</form>
 				</div>
@@ -123,15 +123,19 @@ class CreateEvent extends React.Component {
 		} else {
 			const event = {
 				eventId: '',
-				eventName: this.state.eventName,
+				eventName: '',
 				eventDate: this.state.today
 			};
 			if (target.nodeName === 'TR') {
-				event.eventId = target.firstChild.innerHTML;
+				const eventIdTD = target.firstChild;
+				event.eventId = eventIdTD.innerHTML;
+				event.eventName = eventIdTD.nextSibling.innerHTML;
 			} else if (target.className === 'event-id') {
 				event.eventId = target.innerHTML;
+				event.eventName = target.nextSibling.innerHTML;
 			} else if (target.className === 'event-name') {
 				event.eventId = target.previousSibling.innerHTML;
+				event.eventName = target.innerHTML;
 			}
 			this.props.setActiveEvent(event);
 			this.props.selectEventCheckInView();
