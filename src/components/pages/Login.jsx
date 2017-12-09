@@ -17,9 +17,9 @@ class Login extends React.Component {
 			password: '',
 			showFormErrors: false
 		};
-		this._getValidationState = this._getValidationState.bind(this);
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
+		this._getValidationState = this._getValidationState.bind(this);
 
 		this.style = {
 			h5: {
@@ -54,10 +54,10 @@ class Login extends React.Component {
 				</div>
 				<div style={{position:'absolute', right:0, bottom:0, left:0, height:'100px'}}>
 					<hr style={{borderBottom:'3px groove white', marginBottom: 0}}/>
-					<h5 style={{float:'left', width:'70%', textAlign:'left', ...this.style.h5}}>
+					<h5 className='pull-left' style={{width:'70%', textAlign:'left', ...this.style.h5}}>
 						ISU MIS Club Check-In System
 					</h5>
-					<h5 style={{float:'right', width:'30%', textAlign:'right', ...this.style.h5}}>
+					<h5 className='pull-right' style={{width:'30%', textAlign:'right', ...this.style.h5}}>
 						&copy; {moment().format('YYYY')} ISU MIS Club
 					</h5>
 				</div>

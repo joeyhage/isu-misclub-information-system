@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import AdminTools from './pages/AdminTools';
 import AttendanceReport from './pages/AttendanceReport';
 import CreateEvent from './pages/CreateEvent';
@@ -12,7 +12,7 @@ class MISClubPage extends React.Component {
 
 	render() {
 		return (
-			<div className='pane-group'>
+			<div>
 				<NavPanel/>
 				{this._renderActiveView()}
 			</div>

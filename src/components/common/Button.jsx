@@ -6,20 +6,22 @@ export class Button extends React.Component {
 		super(props);
 
 		this.state = {
-			className: `btn btn-form ${(props.primary && 'btn-primary') || (props.red && 'btn-red') || 'btn-default'}`,
 			type: props.type || 'button',
 			id: props.id,
-			children: props.children,
 			onClick: props.onClick
 		};
 	}
 
 	render() {
-		const {className, type, id, children, onClick} = this.state;
+		const {children, primary, action} = this.props;
+		const {type, id, onClick} = this.state;
+		const className = `button is-outlined ${(primary && 'is-info') || (action && 'is-primary') || 'is-black'}`;
 		return (
-			<button type={type} className={className} id={id} disabled={this.props.disabled} onClick={onClick}>
-				{children}
-			</button>
+			<div className='control'>
+				<button type={type} className={className} id={id} disabled={this.props.disabled} onClick={onClick}>
+					{children}
+				</button>
+			</div>
 		);
 	}
 }

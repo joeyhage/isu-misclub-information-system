@@ -20,25 +20,25 @@ class CreateEvent extends React.Component {
 			showFormErrors: false,
 			today: moment().format('YYYY-MM-DD')
 		};
-		this._getValidationState = this._getValidationState.bind(this);
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
 		this._handleRowClick = this._handleRowClick.bind(this);
+		this._getValidationState = this._getValidationState.bind(this);
 	}
 
 	render() {
 		return (
-			<div id='page-view'>
+			<div className='container is-fluid columns' id='page-view'>
 				<Style rules={CreateEventCss}/>
-				<div className='pane padded-more'>
-					<h3>Create Event</h3>
+				<div className='column is-6'>
+					<h1 className='title is-4'>Create Event</h1>
 					<hr/>
-					<form onSubmit={this._handleSubmit}>
+					<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
 						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
 									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
-									required autoFocus/>
-						<div className='form-actions'>
-							<Button type='reset' onClick={this._handleChange}>
+									required autoFocus>Event Name</InputGroup>
+						<div className='field is-grouped'>
+							<Button type='reset'>
 								Clear
 							</Button>
 							<Button type='submit' primary>
@@ -47,11 +47,11 @@ class CreateEvent extends React.Component {
 						</div>
 					</form>
 				</div>
-				<div className='pane padded-more'>
-					<h3>Events Today</h3>
+				<div className='column is-6'>
+					<h1 className='title is-4'>Events Today</h1>
 					<hr/>
 					<p>Click an event to start check-in</p>
-					<table className='table-striped' id='events-today'>
+					<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
 						<thead>
 							<tr>
 								<th>Event ID</th>
@@ -81,7 +81,7 @@ class CreateEvent extends React.Component {
 					<tr key={result.event_id}>
 						<td className='event-id'>{result.event_id}</td>
 						<td className='event-name'>{result.event_name}</td>
-						<td><span className='icon icon-cancel-squared'/></td>
+						<td><button className='delete'/></td>
 					</tr>
 				);
 			}
@@ -99,7 +99,6 @@ class CreateEvent extends React.Component {
 
 	_handleSubmit(event) {
 		event.preventDefault();
-		this.setState({showFormErrors: true});
 		if (isValidInput(this.state.eventName)) {
 			const {eventName, today} = this.state;
 			ipcRenderer.send(ipcMysql.RETRIEVE_SQL_DATA, ipcMysql.ADD_EVENT, {eventName});
@@ -107,6 +106,8 @@ class CreateEvent extends React.Component {
 				this.props.setActiveEvent({eventId, eventName, eventDate: today});
 				this.props.selectEventCheckInView();
 			});
+		} else {
+			this.setState({showFormErrors: true});
 		}
 	}
 

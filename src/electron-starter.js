@@ -66,7 +66,6 @@ app.on('ready', () => {
 			dailyRotateTransport
 		]
 	});
-	logger.info('test');
 	process.on('uncaughtException', (error) => {
 		logger.error(error);
 		app.quit();

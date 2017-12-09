@@ -1,17 +1,20 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { selectView } from '../../actions/index';
+import {connect} from 'react-redux';
+import {selectView} from '../../actions/index';
 
 class NavLink extends React.Component {
 
 	render() {
 		return (
-			<a onClick={this.props.selectView}
-			   className={`nav-group-item ${this.props.view === this.props.id && 'active'}`}
-			   id={this.props.id}>
-				<span className={`icon ${this.props.icon}`}/>
-				{this.props.children}
-			</a>
+			<li className={Boolean(this.props.view === this.props.id) && 'is-active'}>
+				<a onClick={this.props.selectView}
+				   id={this.props.id}>
+					<span className='icon is-small'>
+						<i className={this.props.icon}/>
+					</span>
+					{this.props.children}
+				</a>
+			</li>
 		);
 	}
 }

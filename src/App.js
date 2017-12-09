@@ -5,21 +5,20 @@ import MISClubPage from './components/MISClubPage';
 import Login from './components/pages/Login';
 import { ipcGeneral } from './actions/ipcActions';
 import { AppCss } from './style/App.css.js';
-import './style/photon.min.css';
+import './style/bulma.min.css';
+import './style/font-awesome.min.css';
 
 const { ipcRenderer } = window.require('electron');
 
 class App extends React.Component {
 	render() {
 		return (
-			<div className='window'>
+			<div>
 				<Style rules={AppCss}/>
-				<div className='window-content'>
-					{this.props.userId && this.props.accessLevel ?
-						<MISClubPage/> :
-						<Login/>
-					}
-				</div>
+				{this.props.userId && this.props.accessLevel ?
+					<MISClubPage/> :
+					<Login/>
+				}
 			</div>
 		);
 	}

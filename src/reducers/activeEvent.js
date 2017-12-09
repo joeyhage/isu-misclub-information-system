@@ -1,7 +1,7 @@
 import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT } from '../actions';
 
 const initialState = {
-	eventId: '10007',
+	eventId: '10006',
 	eventName: 'Kingland Systems',
 	eventDate: '2017-08-30'
 };
@@ -17,7 +17,6 @@ const activeEvent = (state = initialState, action) => {
 			};
 		case RESET_ACTIVE_EVENT:
 			return {
-				...state,
 				...initialState
 			};
 		default:

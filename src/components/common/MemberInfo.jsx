@@ -1,6 +1,5 @@
 import React from 'react';
 import { InputGroup } from './index';
-import { primaryRed } from '../../style/CssConstants';
 
 export class MemberInfo extends React.Component {
 
@@ -17,24 +16,48 @@ export class MemberInfo extends React.Component {
 		return (
 			<div>
 				<InputGroup id='first-name' value={member.firstName} onChange={this.state.onChange}
-							disabled={disabled}>
+							disabled={disabled} horizontal>
 					First Name
 				</InputGroup>
 				<InputGroup id='last-name' value={member.lastName} onChange={this.state.onChange}
-							disabled={disabled}>
+							disabled={disabled} horizontal>
 					Last Name
 				</InputGroup>
 				<InputGroup id='major' value={member.major} onChange={this.state.onChange}
-							disabled={disabled}>
-					Major
+							disabled={disabled} horizontal>
+					Major|Dept
 				</InputGroup>
 				<InputGroup id='class' value={member.class} onChange={this.state.onChange}
-							disabled={disabled}>
-					Classification
+							disabled={disabled} horizontal>
+					Class
 				</InputGroup>
-				<h5>Semesters Remaining: <span style={{color: primaryRed}}/></h5>
-				<h5>Used Free Meeting? <span style={{color: primaryRed}}/></h5>
+				<PaymentRadios disabled={disabled}/>
 			</div>
 		);
 	}
 }
+
+const PaymentRadios = props => {
+	return (
+		<div className='field is-horizontal' >
+			<div className='field-label'>
+				<label className='label'>Payment</label>
+			</div>
+			<div className='field-body'>
+				<div className='field'>
+					<div className='control'>
+						<label className='radio'>
+							<input type='radio' name='payment' value='2' disabled={props.disabled}/> 2 Semesters
+						</label>
+						<label className='radio'>
+							<input type='radio' name='payment' value='1' disabled={props.disabled}/> 1 Semester
+						</label>
+						<label className='radio'>
+							<input type='radio' name='payment' value='0' disabled={props.disabled}/> No Change
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};

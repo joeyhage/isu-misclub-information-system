@@ -1,14 +1,9 @@
-import { primaryRed } from './CssConstants';
-
 export const CreateEventCss = {
-	'span.icon-cancel-squared': {
-		color: primaryRed,
-		fontSize: '150%'
+	'#events-today>tbody>tr': {
+		cursor: 'pointer'
 	},
-	'table span': {
+	'td:nth-child(3)': {
+		width: '1px',
 		textAlign: 'center'
-	},
-	'th:nth-child(3), td:nth-child(3)': {
-		width: '1px'
 	}
 };
