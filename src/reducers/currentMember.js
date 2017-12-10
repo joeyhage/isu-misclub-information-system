@@ -1,23 +1,23 @@
-import { SET_MEMBER, RESET_MEMBER } from '../actions';
+import { SET_CURRENT_MEMBER, RESET_CURRENT_MEMBER } from '../actions';
 
 const initialState = {
 	netid: '',
-	firstName: '',
-	lastName: '',
+	first_name: '',
+	last_name: '',
 	major: '',
-	class: '',
-	semestersRemaining: '',
-	usedFreeMeeting: ''
+	classification: '',
+	semesters_remaining: '',
+	free_meeting_used: ''
 };
 
 const currentMember = (state = initialState, action) => {
 	switch (action.type) {
-		case SET_MEMBER:
+		case SET_CURRENT_MEMBER:
 			return {
 				...state,
 				...action.member
 			};
-		case RESET_MEMBER:
+		case RESET_CURRENT_MEMBER:
 			return {
 				...initialState
 			};

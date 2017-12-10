@@ -16,7 +16,7 @@ require('hazardous');
 require('winston-daily-rotate-file');
 
 const today = moment().format('YYYY-MM-DD');
-let mainWindow, mysqlConnection, logger, devToolsEnabled = true;
+let mainWindow, mysql, logger, devToolsEnabled = true;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
@@ -73,9 +73,9 @@ app.on('ready', () => {
 	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
 	Menu.setApplicationMenu(menu);
 
-	mysqlConnection = new mysqlManager(today);
+	mysql = new mysqlManager(today);
 
-	mysqlConnection.connect().then(() => {
+	mysql.connect().then(() => {
 		createWindow();
 		logger.debug('Connected to database successfully');
 	}).catch(error => {
@@ -86,11 +86,9 @@ app.on('ready', () => {
 		app.quit();
 	});
 
-	ipcMain.on(ipcMysql.RETRIEVE_SQL_DATA, async (event, action, ipcArgs) => {
+	ipcMain.on(ipcMysql.EXECUTE_SQL, async (event, action, ipcArgs) => {
 		const results = await retrieveSqlData(action, ipcArgs);
-		if (results) {
-			mainWindow.webContents.send(action, results);
-		}
+		mainWindow.webContents.send(action, results);
 	});
 
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
@@ -130,7 +128,7 @@ const retrieveSqlData = (action, ipcArgs) => {
 const ipcActions = {
 	[ipcMysql.RETRIEVE_EVENTS_TODAY]: async () => {
 		try {
-			return await mysqlConnection.retrieveEventsToday();
+			return await mysql.retrieveEventsToday();
 		} catch (error) {
 			logger.error(error);
 			dialog.showErrorBox('Error', 'Error while retrieving events for today');
@@ -138,7 +136,7 @@ const ipcActions = {
 	},
 	[ipcMysql.ADD_EVENT]: async ipcArgs => {
 		try {
-			const results = await mysqlConnection.addEvent(ipcArgs.eventName);
+			const results = await mysql.addEvent(ipcArgs.eventName);
 			return results.insertId;
 		} catch (error) {
 			logger.error(error);
@@ -148,7 +146,7 @@ const ipcActions = {
 	[ipcMysql.DELETE_EVENT]: async ipcArgs => {
 		const {eventId} = ipcArgs;
 		try {
-			await mysqlConnection.deleteEvent(eventId);
+			await mysql.deleteEvent(eventId);
 			dialog.showMessageBox({
 				type: 'info',
 				message: 'Event Deleted',
@@ -167,10 +165,12 @@ const ipcActions = {
 		const {eventId} = ipcArgs;
 		let results;
 		try {
-			results = await mysqlConnection.retrieveEventData(eventId);
+			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
 			logger.error(error);
-			dialog.showErrorBox('Error', `Error while retrieving event data for event ID: ${eventId}`);
+			const errorMessage = `Error while retrieving event data for event ID: ${eventId}`;
+			logger.error(new Error(errorMessage));
+			dialog.showErrorBox('Error', errorMessage);
 		}
 		if (results && results.length) {
 			const result = results[0];
@@ -192,17 +192,20 @@ const ipcActions = {
 		const {netid} = ipcArgs;
 		let results;
 		try {
-			results = await mysqlConnection.verifyCredentials(netid);
+			results = await mysql.verifyCredentials(netid);
 		} catch (error) {
 			logger.error(error);
-			dialog.showErrorBox('Error', 'Error verifying credentials for user: ' + ipcArgs.netid);
+			const errorMessage = `Error verifying credentials for user: ${netid}`;
+			logger.error(new Error(errorMessage));
+			dialog.showErrorBox('Error', errorMessage);
 		}
 		if (results && results.length) {
 			let auth;
 			try {
 				auth = await verifyExecPassword(netid, ipcArgs.password);
 			} catch (error) {
-				logger.error(new Error(`Error validating admin: ${JSON.stringify(error)}`));
+				logger.error(error);
+				logger.error(new Error('Error validating admin'));
 				dialog.showErrorBox('Error', `Error verifying credentials for user: ${netid}`);
 			}
 			if (auth) {
@@ -213,6 +216,18 @@ const ipcActions = {
 					accessLevel: admin ? 'exec-admin' : 'exec'
 				};
 			}
+		}
+	},
+	[ipcMysql.LOOKUP_NETID]: async ipcArgs => {
+		const {netid} = ipcArgs;
+		try {
+			const results = await mysql.retrieveMemberInfo(netid);
+			return results && results.length ? results[0] : null;
+		} catch (error) {
+			logger.error(error);
+			const errorMessage = `Error looking up member with netid: ${netid}`;
+			logger.error(new Error(errorMessage));
+			dialog.showErrorBox('Error', errorMessage);
 		}
 	},
 	'default': action => {

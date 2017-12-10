@@ -13,12 +13,12 @@ export class Button extends React.Component {
 	}
 
 	render() {
-		const {children, primary, action} = this.props;
+		const {children, primary, action, autoFocus, danger} = this.props;
 		const {type, id, onClick} = this.state;
-		const className = `button is-outlined ${(primary && 'is-info') || (action && 'is-primary') || 'is-black'}`;
+		const className = `button is-outlined ${(primary && 'is-info') || (action && 'is-primary') || (danger && 'is-danger') || 'is-black'}`;
 		return (
 			<div className='control'>
-				<button type={type} className={className} id={id} disabled={this.props.disabled} onClick={onClick}>
+				<button type={type} className={className} id={id} disabled={this.props.disabled} onClick={onClick} autoFocus={autoFocus}>
 					{children}
 				</button>
 			</div>

@@ -77,7 +77,7 @@ class Login extends React.Component {
 		event.preventDefault();
 		const {netid, password} = this.state;
 		if (isValidInput(netid) && isValidInput(password)) {
-			ipcRenderer.send(ipcMysql.RETRIEVE_SQL_DATA, ipcMysql.VERIFY_CREDENTIALS, {netid, password});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.VERIFY_CREDENTIALS, {netid, password});
 			ipcRenderer.once(ipcMysql.VERIFY_CREDENTIALS, (event, auth) => {
 				this.setState({showFormErrors: true});
 				if (auth && auth.userId && auth.accessLevel) {

@@ -20,14 +20,14 @@ exports.mysqlManager = class mysqlManager {
 
 	retrieveEventsToday() {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_events` WHERE `event_date`=? ORDER BY `is_events`.`event_id`',
+			'SELECT * FROM `is_events` WHERE `event_date`=? ORDER BY `event_id` DESC',
 			[this.today]
 		);
 	}
 
 	addEvent(eventName) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_events` (`event_name`, `event_date`) VALUES (?, ?)',
+			'INSERT INTO `is_events` VALUES (?,?)',
 			[eventName, this.today]
 		);
 	}
@@ -60,10 +60,10 @@ exports.mysqlManager = class mysqlManager {
 		);
 	}
 
-	addMember(memberData, eventId) {
+	addMember(memberData) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,`semesters_remaining`,`last_updated`) VALUES (?,?,?,?,?,?,?)',
-			[memberData.netId, eventId, memberData.first_name, memberData.last_name, memberData.major, memberData.classification]
+			'INSERT INTO `is_members` VALUES (?,?,?,?,?,?,?)',
+			[memberData.netId, memberData.firstName, memberData.lastName, memberData.major, memberData.class, memberData.semestersRemaining, 1]
 		);
 	}
 

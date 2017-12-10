@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import moment from 'moment';
 import { InputGroup, Button } from '../common';
-import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
+import { selectView, setActiveEvent, resetActiveEvent } from '../../actions';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
 import { CreateEventCss } from '../../style/CreateEvent.css.js';
@@ -32,7 +32,7 @@ class CreateEvent extends React.Component {
 				<Style rules={CreateEventCss}/>
 				<div className='column is-6'>
 					<h1 className='title is-4'>Create Event</h1>
-					<hr/>
+					<hr className='divider'/>
 					<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
 						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
 									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
@@ -49,7 +49,7 @@ class CreateEvent extends React.Component {
 				</div>
 				<div className='column is-6'>
 					<h1 className='title is-4'>Events Today</h1>
-					<hr/>
+					<hr className='divider'/>
 					<p>Click an event to start check-in</p>
 					<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
 						<thead>
@@ -73,7 +73,7 @@ class CreateEvent extends React.Component {
 	}
 
 	_updateEventsToday() {
-		ipcRenderer.send(ipcMysql.RETRIEVE_SQL_DATA, ipcMysql.RETRIEVE_EVENTS_TODAY);
+		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
 		ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
 			const eventsToday = [];
 			for (const result of results) {
@@ -101,7 +101,7 @@ class CreateEvent extends React.Component {
 		event.preventDefault();
 		if (isValidInput(this.state.eventName)) {
 			const {eventName, today} = this.state;
-			ipcRenderer.send(ipcMysql.RETRIEVE_SQL_DATA, ipcMysql.ADD_EVENT, {eventName});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.ADD_EVENT, {eventName});
 			ipcRenderer.once(ipcMysql.ADD_EVENT, (event, eventId) => {
 				this.props.setActiveEvent({eventId, eventName, eventDate: today});
 				this.props.selectEventCheckInView();
@@ -114,7 +114,7 @@ class CreateEvent extends React.Component {
 	_handleRowClick({target}) {
 		if (target.className === 'icon icon-cancel-squared') {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
-			ipcRenderer.send(ipcMysql.RETRIEVE_SQL_DATA, ipcMysql.DELETE_EVENT, {eventId});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, eventId) => {
 				this._updateEventsToday();
 				if (eventId && eventId.toString() === this.props.eventId.toString()) {

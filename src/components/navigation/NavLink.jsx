@@ -4,13 +4,18 @@ import {selectView} from '../../actions/index';
 
 class NavLink extends React.Component {
 
+	constructor(props) {
+		super(props);
+		this.selectView = props.selectView.bind(this, props.id);
+	}
+
 	render() {
 		return (
 			<li className={Boolean(this.props.view === this.props.id) && 'is-active'}>
-				<a onClick={this.props.selectView}
+				<a onClick={this.selectView}
 				   id={this.props.id}>
-					<span className='icon is-small'>
-						<i className={this.props.icon}/>
+					<span className='icon is-small' onClick={this.selectView}>
+						<i className={this.props.icon} onClick={this.selectView}/>
 					</span>
 					{this.props.children}
 				</a>
@@ -24,7 +29,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	selectView: event => dispatch(selectView(event.target.id))
+	selectView: targetId => dispatch(selectView(targetId))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavLink);

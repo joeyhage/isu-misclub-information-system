@@ -15,7 +15,7 @@ export const AppCss = {
 	'#page-view>div.column:nth-of-type(1)': {
 		borderRight: '1px solid #eee'
 	},
-	'#page-view>div.column>hr:nth-of-type(1)': {
+	'#page-view hr.divider': {
 		margin: '10px 0',
 		borderBottom: '3px groove rgba(109, 108, 109, 0.49)'
 	},

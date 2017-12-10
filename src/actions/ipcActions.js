@@ -5,14 +5,18 @@ const ipcGeneral = {
 };
 
 const ipcMysql = {
-	RETRIEVE_SQL_DATA: 'RETRIEVE_SQL_DATA',
+	EXECUTE_SQL: 'EXECUTE_SQL',
+	VERIFY_CREDENTIALS: 'VERIFY_CREDENTIALS',
 	RETRIEVE_EVENTS_TODAY: 'RETRIEVE_EVENTS_TODAY',
 	DELETE_EVENT: 'DELETE_EVENT',
 	ADD_EVENT: 'ADD_EVENT',
 	RETRIEVE_EVENT_BY_ID: 'RETRIEVE_EVENT_BY_ID',
-	VERIFY_CREDENTIALS: 'VERIFY_CREDENTIALS'
+	LOOKUP_NETID: 'LOOKUP_NETID'
 };
 
+// module.exports used because they are needed
+// by main file 'electron-starter.js' which
+// is not bundled with webpack
 module.exports = {
 	ipcGeneral,
 	ipcMysql

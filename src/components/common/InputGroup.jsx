@@ -22,10 +22,10 @@ export class InputGroup extends React.Component {
 		const {type, id, placeholder, onChange, autoFocus, required, showValidation, children, horizontal} = this.state;
 		const {value, disabled} = this.props;
 		const hasErrors = required && showValidation && showValidation(value);
-		const className = `input ${hasErrors && 'is-danger'}`;
+		const className = `input ${hasErrors ? 'is-danger' : ''}`;
 
 		return horizontal ? (
-			<div className='field is-horizontal'>
+			<div className='field is-horizontal' style={this.props.style}>
 				{children &&
 					<div className='field-label is-normal'>
 						<label className='label'>{children}</label>
@@ -41,7 +41,7 @@ export class InputGroup extends React.Component {
 					</div>
 				</div>
 			</div> ) : (
-			<div className='field'>
+			<div className='field' style={this.props.style}>
 				{children &&
 					<label className='label'>{children}</label>
 				}
