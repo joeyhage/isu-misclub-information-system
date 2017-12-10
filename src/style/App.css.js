@@ -12,6 +12,9 @@ export const AppCss = {
 	'#page-view': {
 		height: '100%'
 	},
+	'#page-view:not(.columns)': {
+		padding: '0 .75rem'
+	},
 	'#page-view>div.column:nth-of-type(1)': {
 		borderRight: '1px solid #eee'
 	},
@@ -25,4 +28,17 @@ export const AppCss = {
 	'input:disabled': {
 		backgroundColor: '#ddd'
 	}
+};
+
+export const determineColor = props => {
+	if (props.white) return 'is-white';
+	if (props.black) return 'is-black';
+	if (props.light) return 'is-light';
+	if (props.dark) return 'is-dark';
+	if (props.primary) return 'is-primary';
+	if (props.link) return 'is-link';
+	if (props.info) return 'is-info';
+	if (props.success) return 'is-success';
+	if (props.warning) return 'is-warning';
+	if (props.danger) return 'is-danger';
 };

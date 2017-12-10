@@ -4,11 +4,11 @@ const { app, BrowserWindow, Menu, dialog, shell, ipcMain } = require('electron')
 	moment = require('moment'),
 	mysqlDump = require('mysqldump'),
 	path = require('path'),
-	request = require('request'),
 	url = require('url'),
 	winston = require('winston'),
 	{ mysqlManager } = require('./utils/mysqlManager'),
 	{ verifyExecPassword } = require('./utils/activeDirectoryLookup'),
+	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
 	{ createMenuTemplate } = require('./static/MenuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
@@ -62,11 +62,9 @@ app.on('ready', () => {
 		prepend: true
 	});
 	logger = new (winston.Logger)({
-		transports: [
-			dailyRotateTransport
-		]
+		transports: [dailyRotateTransport]
 	});
-	process.on('uncaughtException', (error) => {
+	process.on('uncaughtException', error => {
 		logger.error(error);
 		app.quit();
 	});
@@ -79,16 +77,20 @@ app.on('ready', () => {
 		createWindow();
 		logger.debug('Connected to database successfully');
 	}).catch(error => {
-		const errorMessage = 'Error connecting to database. Please ensure you have an internet connection and are ' +
-			'connected to the ISU Network. VPN is needed if connecting from off-campus.\n';
-		logger.error(errorMessage + error);
-		dialog.showErrorBox('Connection Failed', errorMessage);
+		logErrorAndSendMessage(error, 'Error connecting to database. Please ensure you have an internet connection and are ' +
+			'connected to the ISU Network. VPN is needed if connecting from off-campus.');
 		app.quit();
 	});
 
 	ipcMain.on(ipcMysql.EXECUTE_SQL, async (event, action, ipcArgs) => {
-		const results = await retrieveSqlData(action, ipcArgs);
-		mainWindow.webContents.send(action, results);
+		let results;
+		try {
+			results = await retrieveSqlData(action, ipcArgs);
+		} catch (error) {
+			logErrorAndSendMessage(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`, true);
+		} finally {
+			mainWindow.webContents.send(action, results);
+		}
 	});
 
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
@@ -98,6 +100,21 @@ app.on('ready', () => {
 			mainWindow.setSize(1200, 800);
 		}
 		mainWindow.center();
+	});
+
+	ipcMain.on(ipcGeneral.REQUEST_DIRECTORY_INFO, async (event, action, ipcArgs) => {
+		const {netid} = ipcArgs;
+		let member;
+		try {
+			member = await requestDirectoryInfo(netid);
+		} catch (error) {
+			logErrorAndSendMessage(error, `Error getting directory info for Net-ID: ${netid}`);
+		} finally {
+			if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
+				logErrorAndSendMessage(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`, true);
+			}
+			mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
+		}
 	});
 });
 
@@ -121,6 +138,18 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+const logErrorAndSendMessage = (error, message, logOnly) => {
+	if (error) {
+		logger.error(error);
+	}
+	if (message) {
+		logger.error(new Error(message));
+		if (!logOnly) {
+			dialog.showErrorBox('Error', message);
+		}
+	}
+};
+
 const retrieveSqlData = (action, ipcArgs) => {
 	return ipcActions[action] ? ipcActions[action](ipcArgs) : ipcArgs['default'](action);
 };
@@ -130,8 +159,7 @@ const ipcActions = {
 		try {
 			return await mysql.retrieveEventsToday();
 		} catch (error) {
-			logger.error(error);
-			dialog.showErrorBox('Error', 'Error while retrieving events for today');
+			logErrorAndSendMessage(error, 'Error while retrieving events for today');
 		}
 	},
 	[ipcMysql.ADD_EVENT]: async ipcArgs => {
@@ -139,8 +167,7 @@ const ipcActions = {
 			const results = await mysql.addEvent(ipcArgs.eventName);
 			return results.insertId;
 		} catch (error) {
-			logger.error(error);
-			dialog.showErrorBox('Error', `Error while adding event: ${ipcArgs.eventName}`);
+			logErrorAndSendMessage(error, `Error while adding event: ${ipcArgs.eventName}`);
 		}
 	},
 	[ipcMysql.DELETE_EVENT]: async ipcArgs => {
@@ -157,8 +184,7 @@ const ipcActions = {
 			});
 			return eventId;
 		} catch (error) {
-			logger.error(error);
-			dialog.showErrorBox('Error', `Error while deleting event with ID: ${ipcArgs.eventId}`);
+			logErrorAndSendMessage(error, `Error while deleting event with ID: ${ipcArgs.eventId}`);
 		}
 	},
 	[ipcMysql.RETRIEVE_EVENT_BY_ID]: async ipcArgs => {
@@ -167,10 +193,7 @@ const ipcActions = {
 		try {
 			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
-			logger.error(error);
-			const errorMessage = `Error while retrieving event data for event ID: ${eventId}`;
-			logger.error(new Error(errorMessage));
-			dialog.showErrorBox('Error', errorMessage);
+			logErrorAndSendMessage(error, `Error while retrieving event data for event ID: ${eventId}`);
 		}
 		if (results && results.length) {
 			const result = results[0];
@@ -178,14 +201,10 @@ const ipcActions = {
 				result.event_date = moment(result.event_date).format('YYYY-MM-DD');
 				return result;
 			} else {
-				const errorMessage = `Result did not have event date for event ID: ${eventId}`;
-				logger.error(new Error(errorMessage));
-				dialog.showErrorBox('Error', errorMessage);
+				logErrorAndSendMessage(null, `Result did not have event date for event ID: ${eventId}`, true);
 			}
 		} else {
-			const errorMessage = `Unable to find event ID: ${eventId}`;
-			logger.error(new Error(errorMessage));
-			dialog.showErrorBox('Error', errorMessage);
+			logErrorAndSendMessage(null, `Unable to find event ID: ${eventId}`);
 		}
 	},
 	[ipcMysql.VERIFY_CREDENTIALS]: async ipcArgs => {
@@ -194,19 +213,14 @@ const ipcActions = {
 		try {
 			results = await mysql.verifyCredentials(netid);
 		} catch (error) {
-			logger.error(error);
-			const errorMessage = `Error verifying credentials for user: ${netid}`;
-			logger.error(new Error(errorMessage));
-			dialog.showErrorBox('Error', errorMessage);
+			logErrorAndSendMessage(error, `Error verifying credentials for user: ${netid}`);
 		}
 		if (results && results.length) {
 			let auth;
 			try {
 				auth = await verifyExecPassword(netid, ipcArgs.password);
 			} catch (error) {
-				logger.error(error);
-				logger.error(new Error('Error validating admin'));
-				dialog.showErrorBox('Error', `Error verifying credentials for user: ${netid}`);
+				logErrorAndSendMessage(error, `Error verifying password for user: ${netid}`);
 			}
 			if (auth) {
 				const {admin} = results[0];
@@ -224,15 +238,10 @@ const ipcActions = {
 			const results = await mysql.retrieveMemberInfo(netid);
 			return results && results.length ? results[0] : null;
 		} catch (error) {
-			logger.error(error);
-			const errorMessage = `Error looking up member with netid: ${netid}`;
-			logger.error(new Error(errorMessage));
-			dialog.showErrorBox('Error', errorMessage);
+			logErrorAndSendMessage(error, `Error looking up member with netid: ${netid}`);
 		}
 	},
 	'default': action => {
-		const errorMessage = `Invalid SQL action: ${action}`;
-		logger.error(new Error(errorMessage));
-		dialog.showErrorBox('Error', errorMessage);
+		logErrorAndSendMessage(null, `Invalid SQL action: ${action}`, true);
 	}
 };

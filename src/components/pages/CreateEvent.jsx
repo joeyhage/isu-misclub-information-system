@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import moment from 'moment';
-import { InputGroup, Button } from '../common';
-import { selectView, setActiveEvent, resetActiveEvent } from '../../actions';
+import { Column, InputGroup, Button } from '../common/index';
+import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
 import { CreateEventCss } from '../../style/CreateEvent.css.js';
@@ -30,40 +30,32 @@ class CreateEvent extends React.Component {
 		return (
 			<div className='container is-fluid columns' id='page-view'>
 				<Style rules={CreateEventCss}/>
-				<div className='column is-6'>
-					<h1 className='title is-4'>Create Event</h1>
-					<hr className='divider'/>
+				<Column title='Create Event'>
 					<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
 						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
 									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
 									required autoFocus>Event Name</InputGroup>
 						<div className='field is-grouped'>
-							<Button type='reset'>
-								Clear
-							</Button>
-							<Button type='submit' primary>
-								Create
-							</Button>
+							<Button type='submit' info>Create</Button>
+							<Button type='reset' black>Clear</Button>
 						</div>
 					</form>
-				</div>
-				<div className='column is-6'>
-					<h1 className='title is-4'>Events Today</h1>
-					<hr className='divider'/>
+				</Column>
+				<Column title='Events Today'>
 					<p>Click an event to start check-in</p>
 					<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
 						<thead>
-							<tr>
-								<th>Event ID</th>
-								<th>Event Name</th>
-								<th>Delete?</th>
-							</tr>
+						<tr>
+							<th>Event ID</th>
+							<th>Event Name</th>
+							<th>Delete?</th>
+						</tr>
 						</thead>
 						<tbody onClick={this._handleRowClick}>
 							{this.state.eventsToday}
 						</tbody>
 					</table>
-				</div>
+				</Column>
 			</div>
 		);
 	}
@@ -112,7 +104,7 @@ class CreateEvent extends React.Component {
 	}
 
 	_handleRowClick({target}) {
-		if (target.className === 'icon icon-cancel-squared') {
+		if (target.className === 'delete') {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, eventId) => {

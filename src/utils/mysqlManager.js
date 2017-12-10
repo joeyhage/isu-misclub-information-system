@@ -11,7 +11,7 @@ exports.mysqlManager = class mysqlManager {
 		return new Promise((resolve, reject) => {
 			this.connection.connect(error => {
 				if (error) {
-					return reject(new Error(error));
+					return reject(error);
 				}
 				resolve();
 			});
@@ -74,7 +74,7 @@ exports.mysqlManager = class mysqlManager {
 				sqlParams,
 				(error, results) => {
 					if (error) {
-						return reject(new Error(error));
+						return reject(error);
 					}
 					resolve(results);
 				}
@@ -83,21 +83,6 @@ exports.mysqlManager = class mysqlManager {
 	}
 };
 
-//
-// function retrieveMemberInfo(netId, callback) {
-// 	connection.query('SELECT * FROM `is_members` WHERE `netid`=?', [netId], (error, results) => {
-// 		if (error) {
-// 			winston.error(error);
-// 			dialog.showErrorBox('Error', 'Error while retrieving member with Net-ID: ' + netId);
-// 			return callback();
-// 		}
-// 		if (results && results.length) {
-// 			callback(results[0]);
-// 		} else {
-// 			callback();
-// 		}
-// 	})
-// }
 //
 // function checkIn(memberData, callback) {
 // 	const netId = memberData.netid;
@@ -122,22 +107,6 @@ exports.mysqlManager = class mysqlManager {
 // 				callback();
 // 			})
 // 	}
-// }
-//
-// function addMember(memberData, callback) {
-// 	connection.query('INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,' +
-// 		'`semesters_remaining`,`last_updated`) VALUES (?,?,?,?,?,?,?)', [memberData.netid, memberData.first_name,
-// 		memberData.last_name, memberData.major, memberData.classification, memberData.semesters_remaining, today], error => {
-// 		if (error) {
-// 			if (error.message.indexOf('ER_DUP_ENTRY') !== -1) {
-// 				dialog.showErrorBox('Error', 'Member with Net-ID: ' + netId + ' already exists in the database');
-// 			} else {
-// 				dialog.showErrorBox('Error', 'Error while trying to add member with Net-ID: ' + netId);
-// 				winston.error(error);
-// 			}
-// 		}
-// 		callback();
-// 	})
 // }
 //
 // function updateMember(memberData, callback) {

@@ -40,7 +40,7 @@ export class MemberInfo extends React.Component {
 					Class
 				</InputGroup>
 				{disabled && [
-					<div className='field is-horizontal' style={{width:'70%'}}>
+					<div className='field is-horizontal' style={{width:'70%'}} key={1}>
 						<div className='field-label'>
 							<label className='label'>Semesters Paid</label>
 						</div>
@@ -48,7 +48,7 @@ export class MemberInfo extends React.Component {
 							{member.semesters_remaining}
 						</div>
 					</div>,
-					<div className='field is-horizontal' style={{width:'70%'}}>
+					<div className='field is-horizontal' style={{width:'70%'}} key={2}>
 						<div className='field-label'>
 							<label className='label'>Used Free Meeting</label>
 						</div>
@@ -57,6 +57,7 @@ export class MemberInfo extends React.Component {
 						</div>
 					</div>
 				]}
+				{this.props.children}
 				{/*<PaymentRadios checked={this.props.payment}/>*/}
 			</div>
 		);

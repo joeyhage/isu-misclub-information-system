@@ -13,6 +13,8 @@
    information: https://stackoverflow.com/a/35443250/6732128
 */
 
-export {Button} from './Button';
-export {MemberInfo} from './MemberInfo';
-export {InputGroup} from './InputGroup';
+export { Button } from './Button';
+export { MemberInfo } from './MemberInfo';
+export { InputGroup } from './InputGroup';
+export { Column } from './Column';
+export { Message } from './Message';

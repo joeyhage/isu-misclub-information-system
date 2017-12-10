@@ -28,14 +28,3 @@ export const setUserId = userId => ({
 	type: SET_USER_ID,
 	userId
 });
-
-export const SET_CURRENT_MEMBER = 'SET_CURRENT_MEMBER';
-export const setCurrentMember = member => ({
-	type: SET_CURRENT_MEMBER,
-	member
-});
-
-export const RESET_CURRENT_MEMBER = 'RESET_MEMBER';
-export const resetCurrentMember = () => ({
-	type: RESET_CURRENT_MEMBER
-});

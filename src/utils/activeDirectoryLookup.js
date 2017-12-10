@@ -10,7 +10,7 @@ exports.verifyExecPassword = async (netid, password) => {
 
 	return new Promise((resolve, reject) => {
 		ad.authenticate(`${netid}@iastate.edu`, password, (error, auth) => {
-			if (error && error["lde_message"].indexOf('AcceptSecurityContext') === -1) {
+			if (error && error['lde_message'].indexOf('AcceptSecurityContext') === -1) {
 				return reject(new Error(error));
 			}
 			resolve(auth);
