@@ -2,33 +2,20 @@ const mysql = require('mysql'),
 	mysqlDB = require('../static/mysqlDB');
 
 exports.mysqlManager = class mysqlManager {
-	constructor(today) {
-		this.connection = mysql.createConnection(mysqlDB);
-		this.today = '2017-08-30';
-	}
-
-	connect() {
-		return new Promise((resolve, reject) => {
-			this.connection.connect(error => {
-				if (error) {
-					return reject(error);
-				}
-				resolve();
-			});
-		});
+	constructor() {
+		this.pool = mysql.createPool(mysqlDB);
 	}
 
 	retrieveEventsToday() {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_events` WHERE `event_date`=? ORDER BY `event_id` DESC',
-			[this.today]
+			'SELECT * FROM `is_events` WHERE `event_date`=CURRENT_DATE ORDER BY `event_id` DESC'
 		);
 	}
 
 	addEvent(eventName) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_events` VALUES (?,?)',
-			[eventName, this.today]
+			'INSERT INTO `is_events` (`event_name`,`event_date`) VALUES (?,CURRENT_DATE)',
+			[eventName]
 		);
 	}
 
@@ -41,7 +28,8 @@ exports.mysqlManager = class mysqlManager {
 
 	retrieveEventData(eventId) {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_events` WHERE `event_id`=?',
+			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
+			'FROM `is_events` WHERE `event_id`=?',
 			[eventId]
 		);
 	}
@@ -60,6 +48,23 @@ exports.mysqlManager = class mysqlManager {
 		);
 	}
 
+	retrieveMemberAttendance(netid) {
+		return this.sqlQueryHandler(
+			'SELECT `is_events`.`event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
+			'FROM `is_events`,`is_attendance` WHERE `is_events`.`event_id`=`is_attendance`.`event_id` AND `netid`=? ' +
+			'ORDER BY `event_id` DESC',
+			[netid]
+		);
+	}
+
+	retrieveMemberActivity(netid) {
+		return this.sqlQueryHandler(
+			'SELECT `activity_type`,DATE_FORMAT(`timestamp`,\'%l:%i%p %b %e, %Y\') as activity_time ' +
+			'FROM `is_activity_history` WHERE `netid`=? ORDER BY `timestamp` DESC',
+			[netid]
+		);
+	}
+
 	addMember(memberData) {
 		return this.sqlQueryHandler(
 			'INSERT INTO `is_members` VALUES (?,?,?,?,?,?,?)',
@@ -69,16 +74,26 @@ exports.mysqlManager = class mysqlManager {
 
 	sqlQueryHandler(sqlStatement, sqlParams) {
 		return new Promise((resolve, reject) => {
-			this.connection.query(
-				sqlStatement,
-				sqlParams,
-				(error, results) => {
-					if (error) {
-						return reject(error);
-					}
-					resolve(results);
+			this.pool.getConnection((error, connection) => {
+				if (error) {
+					return reject(error);
 				}
-			);
+				if (sqlStatement) {
+					connection.query(
+						sqlStatement,
+						sqlParams,
+						(error, results) => {
+							connection.release();
+							if (error) {
+								return reject(error);
+							}
+							resolve(results);
+						}
+					);
+				} else {
+					resolve();
+				}
+			});
 		});
 	}
 };

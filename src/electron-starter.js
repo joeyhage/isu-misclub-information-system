@@ -73,7 +73,7 @@ app.on('ready', () => {
 
 	mysql = new mysqlManager(today);
 
-	mysql.connect().then(() => {
+	mysql.sqlQueryHandler().then(() => {
 		createWindow();
 		logger.debug('Connected to database successfully');
 	}).catch(error => {
@@ -196,13 +196,7 @@ const ipcActions = {
 			logErrorAndSendMessage(error, `Error while retrieving event data for event ID: ${eventId}`);
 		}
 		if (results && results.length) {
-			const result = results[0];
-			if (result.event_date) {
-				result.event_date = moment(result.event_date).format('YYYY-MM-DD');
-				return result;
-			} else {
-				logErrorAndSendMessage(null, `Result did not have event date for event ID: ${eventId}`, true);
-			}
+			return results[0];
 		} else {
 			logErrorAndSendMessage(null, `Unable to find event ID: ${eventId}`);
 		}
@@ -235,8 +229,14 @@ const ipcActions = {
 	[ipcMysql.LOOKUP_NETID]: async ipcArgs => {
 		const {netid} = ipcArgs;
 		try {
-			const results = await mysql.retrieveMemberInfo(netid);
-			return results && results.length ? results[0] : null;
+			const results = await Promise.all(
+				[
+					mysql.retrieveMemberInfo(netid),
+					mysql.retrieveMemberAttendance(netid),
+					mysql.retrieveMemberActivity(netid)
+				]
+			);
+			return results && results.length ? results : null;
 		} catch (error) {
 			logErrorAndSendMessage(error, `Error looking up member with netid: ${netid}`);
 		}

@@ -3,7 +3,7 @@ import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT } from '../actions';
 const initialState = {
 	eventId: '10006',
 	eventName: 'Kingland Systems',
-	eventDate: '2017-08-30'
+	eventDate: 'Aug 30, 2017'
 };
 
 const activeEvent = (state = initialState, action) => {

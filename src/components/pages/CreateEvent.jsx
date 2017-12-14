@@ -16,9 +16,9 @@ class CreateEvent extends React.Component {
 		super(props);
 		this.state = {
 			eventName: '',
-			eventsToday: [],
+			eventsToday: this._getEventsToday(),
 			showFormErrors: false,
-			today: moment().format('YYYY-MM-DD')
+			today: moment().format('MMM DD, YYYY')
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -60,24 +60,16 @@ class CreateEvent extends React.Component {
 		);
 	}
 
-	componentWillMount() {
-		this._updateEventsToday();
-	}
-
-	_updateEventsToday() {
+	_getEventsToday() {
 		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
 		ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
-			const eventsToday = [];
-			for (const result of results) {
-				eventsToday.push(
-					<tr key={result.event_id}>
-						<td className='event-id'>{result.event_id}</td>
-						<td className='event-name'>{result.event_name}</td>
-						<td><button className='delete'/></td>
-					</tr>
-				);
-			}
-			this.setState({eventsToday});
+			return results.map(result => (
+				<tr key={result.event_id}>
+					<td className='event-id'>{result.event_id}</td>
+					<td className='event-name'>{result.event_name}</td>
+					<td><button className='delete'/></td>
+				</tr>
+			));
 		});
 	}
 
@@ -108,7 +100,7 @@ class CreateEvent extends React.Component {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, eventId) => {
-				this._updateEventsToday();
+				this.setState({eventsToday: this._getEventsToday()});
 				if (eventId && eventId.toString() === this.props.eventId.toString()) {
 					this.props.resetActiveEvent();
 				}

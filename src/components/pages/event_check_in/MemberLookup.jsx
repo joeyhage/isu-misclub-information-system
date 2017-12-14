@@ -46,13 +46,11 @@ export default class MemberLookup extends React.Component {
 
 	_handleChange({target}) {
 		if (target.id === 'netid') {
-			this.setState({netid: target.value});
-		} else if (target.id === 'member-lookup') {
-			this.setState({netid: ''});
+			this.setState({netid: target.value, notFound: false});
 		} else if (target.id === 'create-member') {
 			this.props.onCreateMember(this.state.netid);
-		} else if (target.className === 'delete') {
-			this.setState({notFound: false, netid: ''});
+		} else if (target.id === 'member-lookup' || target.className === 'delete') {
+			this.setState({netid: '', notFound: false, showMemberLookupFormErrors: false});
 		}
 	}
 
@@ -63,9 +61,13 @@ export default class MemberLookup extends React.Component {
 			this.setState({showMemberLookupFormErrors: false});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.LOOKUP_NETID, {netid});
 			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, member) => {
-				if (member) {
+				if (member && member[0] && member[0][0] && member[0][0].netid) {
 					this.setState({notFound: false});
-					this.props.setMember(member);
+					this.props.setMember({
+						...member[0][0],
+						attendance: member[1],
+						activity: member[2]
+					});
 				} else {
 					this.setState({notFound: netid});
 					this.props.setMember({});

@@ -17,7 +17,7 @@ class NavLink extends React.Component {
 					<span className='icon is-small' onClick={this.selectView}>
 						<i className={this.props.icon} onClick={this.selectView}/>
 					</span>
-					{this.props.children}
+					<span>{this.props.children}</span>
 				</a>
 			</li>
 		);

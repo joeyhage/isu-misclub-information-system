@@ -18,3 +18,4 @@ export { MemberInfo } from './MemberInfo';
 export { InputGroup } from './InputGroup';
 export { Column } from './Column';
 export { Message } from './Message';
+export { Card } from './Card';
