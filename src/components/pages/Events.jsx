@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import moment from 'moment';
-import { Column, InputGroup, Button } from '../common/index';
+import { Column, InputGroup, Button, ButtonGroup } from '../common/index';
 import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/index';
 import { isValidInput } from '../../utils/validation';
 import { ipcMysql } from '../../actions/ipcActions';
-import { CreateEventCss } from '../../style/CreateEvent.css.js';
+import { CreateEventCss } from '../../style/Events.css.js';
 
 const { ipcRenderer } = window.require('electron');
 
-class CreateEvent extends React.Component {
+class Events extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -18,7 +18,8 @@ class CreateEvent extends React.Component {
 			eventName: '',
 			eventsToday: this._getEventsToday(),
 			showFormErrors: false,
-			today: moment().format('MMM DD, YYYY')
+			today: moment().format('MMM DD, YYYY'),
+			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -35,26 +36,33 @@ class CreateEvent extends React.Component {
 						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
 									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
 									required autoFocus>Event Name</InputGroup>
-						<div className='field is-grouped'>
+						<ButtonGroup isLoading={this.state.isLoading}>
 							<Button type='submit' info>Create</Button>
 							<Button type='reset' black>Clear</Button>
-						</div>
+						</ButtonGroup>
 					</form>
 				</Column>
 				<Column title='Events Today'>
-					<p>Click an event to start check-in</p>
-					<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
-						<thead>
-						<tr>
-							<th>Event ID</th>
-							<th>Event Name</th>
-							<th>Delete?</th>
-						</tr>
-						</thead>
-						<tbody onClick={this._handleRowClick}>
-							{this.state.eventsToday}
-						</tbody>
-					</table>
+					<p>
+						{Boolean(this.state.eventsToday) ?
+							'Click an event to start check-in' :
+							'No events today. Please create an event.'
+						}
+					</p>
+					{Boolean(this.state.eventsToday) &&
+						<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
+							<thead>
+								<tr>
+									<th>Event ID</th>
+									<th>Event Name</th>
+									<th>Delete?</th>
+								</tr>
+							</thead>
+							<tbody onClick={this._handleRowClick}>
+								{this.state.eventsToday}
+							</tbody>
+						</table>
+					}
 				</Column>
 			</div>
 		);
@@ -63,13 +71,13 @@ class CreateEvent extends React.Component {
 	_getEventsToday() {
 		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
 		ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
-			return results.map(result => (
+			return results ? results.map(result => (
 				<tr key={result.event_id}>
 					<td className='event-id'>{result.event_id}</td>
 					<td className='event-name'>{result.event_name}</td>
 					<td><button className='delete'/></td>
 				</tr>
-			));
+			)) : null;
 		});
 	}
 
@@ -84,14 +92,16 @@ class CreateEvent extends React.Component {
 	_handleSubmit(event) {
 		event.preventDefault();
 		if (isValidInput(this.state.eventName)) {
+			this.setState({isLoading: true});
 			const {eventName, today} = this.state;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.ADD_EVENT, {eventName});
 			ipcRenderer.once(ipcMysql.ADD_EVENT, (event, eventId) => {
+				this.setState({isLoading: false});
 				this.props.setActiveEvent({eventId, eventName, eventDate: today});
 				this.props.selectEventCheckInView();
 			});
 		} else {
-			this.setState({showFormErrors: true});
+			this.setState({showFormErrors: true, isLoading: false});
 		}
 	}
 
@@ -142,4 +152,4 @@ const mapDispatchToProps = dispatch => ({
 	resetActiveEvent: () => dispatch(resetActiveEvent())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Radium(CreateEvent));
+export default connect(mapStateToProps, mapDispatchToProps)(Radium(Events));

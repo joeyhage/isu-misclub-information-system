@@ -15,11 +15,12 @@ export class Button extends React.Component {
 	}
 
 	render() {
-		const {children, autoFocus, style} = this.props;
-		const {type, id, onClick} = this.state;
+		const {children, autoFocus, style, isLoading} = this.props;
+		const {type, id, onClick, color} = this.state;
+		const className = `button is-outlined ${color} ${Boolean(isLoading) && 'is-loading'}`;
 		return (
 			<div className='control' style={style}>
-				<button type={type} className={`button is-outlined ${this.state.color}`} id={id}
+				<button type={type} className={className} id={id}
 						disabled={this.props.disabled} onClick={onClick} autoFocus={autoFocus}>
 					{children}
 				</button>

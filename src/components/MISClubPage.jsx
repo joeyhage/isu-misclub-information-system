@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import AdminTools from './pages/AdminTools';
 import AttendanceReport from './pages/AttendanceReport';
-import CreateEvent from './pages/CreateEvent';
+import Events from './pages/Events';
 import EventCheckIn from './pages/EventCheckIn';
 import GraphsTrends from './pages/GraphsTrends';
 import Help from './pages/Help';
@@ -21,7 +21,7 @@ class MISClubPage extends React.Component {
 
 	_renderActiveView() {
 		return {
-			'create-event': <CreateEvent/>,
+			'events': <Events/>,
 			'event-check-in': <EventCheckIn/>,
 			'attendance-report': <AttendanceReport/>,
 			'graphs-trends': <GraphsTrends/>,

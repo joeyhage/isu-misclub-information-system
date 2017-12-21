@@ -1,9 +1,34 @@
 const mysql = require('mysql'),
-	mysqlDB = require('../static/mysqlDB');
+	mysqlDB = require('./mysqlDB');
 
-exports.mysqlManager = class mysqlManager {
+class mysqlManager {
 	constructor() {
 		this.pool = mysql.createPool(mysqlDB);
+	}
+
+	sqlQueryHandler(sqlStatement, sqlParams) {
+		return new Promise((resolve, reject) => {
+			this.pool.getConnection((error, connection) => {
+				if (error) {
+					return reject(error);
+				}
+				if (sqlStatement) {
+					connection.query(
+						sqlStatement,
+						sqlParams,
+						(error, results) => {
+							connection.release();
+							if (error) {
+								return reject(error);
+							}
+							resolve(results);
+						}
+					);
+				} else {
+					resolve();
+				}
+			});
+		});
 	}
 
 	retrieveEventsToday() {
@@ -50,9 +75,9 @@ exports.mysqlManager = class mysqlManager {
 
 	retrieveMemberAttendance(netid) {
 		return this.sqlQueryHandler(
-			'SELECT `is_events`.`event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
-			'FROM `is_events`,`is_attendance` WHERE `is_events`.`event_id`=`is_attendance`.`event_id` AND `netid`=? ' +
-			'ORDER BY `event_id` DESC',
+			'SELECT e.`event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
+			'FROM `is_events` e,`is_attendance` a WHERE e.`event_id`=a.`event_id` AND `netid`=? ' +
+			'ORDER BY e.`event_id` DESC',
 			[netid]
 		);
 	}
@@ -72,31 +97,24 @@ exports.mysqlManager = class mysqlManager {
 		);
 	}
 
-	sqlQueryHandler(sqlStatement, sqlParams) {
-		return new Promise((resolve, reject) => {
-			this.pool.getConnection((error, connection) => {
-				if (error) {
-					return reject(error);
-				}
-				if (sqlStatement) {
-					connection.query(
-						sqlStatement,
-						sqlParams,
-						(error, results) => {
-							connection.release();
-							if (error) {
-								return reject(error);
-							}
-							resolve(results);
-						}
-					);
-				} else {
-					resolve();
-				}
-			});
-		});
+	retrieveAttendanceForEvent(eventId) {
+		return this.sqlQueryHandler(
+			'SELECT m.* FROM `is_members` m, `is_attendance` a WHERE m.`netid`=a.`netid` AND `event_id`=? ORDER BY `netid` ASC',
+			[eventId]
+		);
 	}
-};
+
+	findEvents(dateRangeStart, dateRangeEnd, eventName = '') {
+		return this.sqlQueryHandler(
+			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
+			'FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? AND `event_name` LIKE ?' +
+			'ORDER BY `event_id` DESC',
+			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
+		);
+	}
+}
+
+module.exports = mysqlManager;
 
 //
 // function checkIn(memberData, callback) {
@@ -166,37 +184,6 @@ exports.mysqlManager = class mysqlManager {
 //
 // }
 //
-// function retrieveMemberHistory(netId, callback) {
-// 	connection.query('SELECT `is_events`.`event_id`,`is_events`.`event_name`,`is_events`.`event_date` FROM `is_events` ' +
-// 		'INNER JOIN `is_attendance` ON `is_events`.`event_id`=`is_attendance`.`event_id` WHERE `is_attendance`.`netid`=?' +
-// 		' ORDER BY `is_events`.`event_id` DESC', [netId], (error, attendance) => {
-// 		if (error) {
-// 			winston.error(error);
-// 			dialog.showErrorBox('Error', 'Error while retrieving attendance history for member with ' +
-// 				'Net-ID: ' + netId);
-// 			return callback();
-// 		}
-// 		if (attendance) {
-// 			for (let i = 0; i < attendance.length; i++) {
-// 				attendance[i].event_date = moment(attendance[i].event_date).format("YYYY-MM-DD");
-// 			}
-// 		}
-// 		connection.query('SELECT `activity_type`,`timestamp` FROM `is_activity_history` WHERE `netid`=? ORDER BY ' +
-// 			'`timestamp` DESC', [netId], (error, activity) => {
-// 			if (error) {
-// 				winston.error(error);
-// 				dialog.showErrorBox('Error', 'Error while retrieving activity history for member with Net-ID: ' + netId);
-// 				return callback();
-// 			}
-// 			if (activity) {
-// 				for (let i = 0; i < activity.length; i++) {
-// 					activity[i].timestamp = moment(activity[i].timestamp).format("YYYY-MM-DD HH:mm");
-// 				}
-// 			}
-// 			callback(attendance, activity);
-// 		})
-// 	})
-// }
 //
 // function recordMemberActivity(netId, activityType) {
 // 	connection.query('INSERT INTO `is_activity_history` (`netid`,`activity_type`) VALUES (?,?)', [netId, activityType],
@@ -225,16 +212,3 @@ exports.mysqlManager = class mysqlManager {
 // 		callback(results);
 // 	})
 // }
-//
-// function queryEventAttendance(eventId, callback) {
-// 	connection.query('SELECT * FROM `is_attendance` WHERE `event_id`=? ORDER BY `netid` ASC', [eventId],
-// 		(error, results) => {
-// 			if (error) {
-// 				winston.error(error);
-// 				dialog.showErrorBox('Error', 'Error while getting event attendance info for event: ' + eventId);
-// 				return callback();
-// 			}
-// 			callback(results);
-// 		})
-// }
-//

@@ -14,7 +14,7 @@ export class Card extends React.Component {
 		const cardCss = {
 			'.fa.fa-angle-down': {
 				transition: 'all .5s',
-				transform: !this.state.showContent ? 'rotate(-180deg)' : ''
+				transform: Boolean(!this.state.showContent) && 'rotate(-180deg)'
 			}
 		};
 		return (
@@ -26,7 +26,7 @@ export class Card extends React.Component {
 					<a className='card-header-icon has-text-link' aria-label='more options' onClick={this._onClick}>
 						{this.state.showContent ? 'Hide' : 'Show'}
 						<span className='icon' onClick={this._onClick}>
-							<i className={`fa fa-angle-down ${!this.state.showContent ? 'up' : ''}`} aria-hidden='true'
+							<i className={`fa fa-angle-down ${Boolean(!this.state.showContent) && 'up'}`} aria-hidden='true'
 							   onClick={this._onClick} style={cardCss['.fa.fa-angle-down']}/>
 						</span>
 					</a>

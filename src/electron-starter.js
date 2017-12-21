@@ -1,22 +1,21 @@
 const { app, BrowserWindow, Menu, dialog, shell, ipcMain } = require('electron'),
 	{ default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer'),
 	csv = require('fast-csv'),
-	moment = require('moment'),
 	mysqlDump = require('mysqldump'),
 	path = require('path'),
 	url = require('url'),
-	winston = require('winston'),
-	{ mysqlManager } = require('./utils/mysqlManager'),
+	mysqlManager = require('./sql/mysqlManager'),
+	mysql = new mysqlManager(),
+	logUtil = require('./utils/logger'),
+	logger = new logUtil(),
 	{ verifyExecPassword } = require('./utils/activeDirectoryLookup'),
 	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
 	{ createMenuTemplate } = require('./static/MenuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
 require('hazardous');
-require('winston-daily-rotate-file');
 
-const today = moment().format('YYYY-MM-DD');
-let mainWindow, mysql, logger, devToolsEnabled = true;
+let mainWindow, devToolsEnabled = true;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
@@ -55,15 +54,6 @@ const createWindow = () => {
 };
 
 app.on('ready', () => {
-	const dailyRotateTransport = new (winston.transports.DailyRotateFile)({
-		filename: './log',
-		localTime: true,
-		maxFiles: 20,
-		prepend: true
-	});
-	logger = new (winston.Logger)({
-		transports: [dailyRotateTransport]
-	});
 	process.on('uncaughtException', error => {
 		logger.error(error);
 		app.quit();
@@ -71,14 +61,12 @@ app.on('ready', () => {
 	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
 	Menu.setApplicationMenu(menu);
 
-	mysql = new mysqlManager(today);
-
 	mysql.sqlQueryHandler().then(() => {
 		createWindow();
 		logger.debug('Connected to database successfully');
 	}).catch(error => {
-		logErrorAndSendMessage(error, 'Error connecting to database. Please ensure you have an internet connection and are ' +
-			'connected to the ISU Network. VPN is needed if connecting from off-campus.');
+		logger.error(error, 'Error connecting to database. Please ensure you have an internet connection and are ' +
+			'connected to the ISU Network. VPN is needed if connecting from off-campus.', true);
 		app.quit();
 	});
 
@@ -87,7 +75,7 @@ app.on('ready', () => {
 		try {
 			results = await retrieveSqlData(action, ipcArgs);
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`, true);
+			logger.error(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`);
 		} finally {
 			mainWindow.webContents.send(action, results);
 		}
@@ -108,10 +96,10 @@ app.on('ready', () => {
 		try {
 			member = await requestDirectoryInfo(netid);
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error getting directory info for Net-ID: ${netid}`);
+			logger.error(error, `Error getting directory info for Net-ID: ${netid}`, true);
 		} finally {
 			if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
-				logErrorAndSendMessage(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`, true);
+				logger.error(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`);
 			}
 			mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
 		}
@@ -138,28 +126,16 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-const logErrorAndSendMessage = (error, message, logOnly) => {
-	if (error) {
-		logger.error(error);
-	}
-	if (message) {
-		logger.error(new Error(message));
-		if (!logOnly) {
-			dialog.showErrorBox('Error', message);
-		}
-	}
-};
-
 const retrieveSqlData = (action, ipcArgs) => {
-	return ipcActions[action] ? ipcActions[action](ipcArgs) : ipcArgs['default'](action);
+	return sqlActions[action] ? sqlActions[action](ipcArgs) : ipcArgs['default'](action);
 };
 
-const ipcActions = {
+const sqlActions = {
 	[ipcMysql.RETRIEVE_EVENTS_TODAY]: async () => {
 		try {
 			return await mysql.retrieveEventsToday();
 		} catch (error) {
-			logErrorAndSendMessage(error, 'Error while retrieving events for today');
+			logger.error(error, 'Error while retrieving events for today', true);
 		}
 	},
 	[ipcMysql.ADD_EVENT]: async ipcArgs => {
@@ -167,7 +143,7 @@ const ipcActions = {
 			const results = await mysql.addEvent(ipcArgs.eventName);
 			return results.insertId;
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error while adding event: ${ipcArgs.eventName}`);
+			logger.error(error, `Error while adding event: ${ipcArgs.eventName}`, true);
 		}
 	},
 	[ipcMysql.DELETE_EVENT]: async ipcArgs => {
@@ -184,7 +160,7 @@ const ipcActions = {
 			});
 			return eventId;
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error while deleting event with ID: ${ipcArgs.eventId}`);
+			logger.error(error, `Error while deleting event with ID: ${ipcArgs.eventId}`, true);
 		}
 	},
 	[ipcMysql.RETRIEVE_EVENT_BY_ID]: async ipcArgs => {
@@ -193,12 +169,12 @@ const ipcActions = {
 		try {
 			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error while retrieving event data for event ID: ${eventId}`);
+			logger.error(error, `Error while retrieving event data for event ID: ${eventId}`, true);
 		}
 		if (results && results.length) {
 			return results[0];
 		} else {
-			logErrorAndSendMessage(null, `Unable to find event ID: ${eventId}`);
+			logger.error(null, `Unable to find event ID: ${eventId}`, true);
 		}
 	},
 	[ipcMysql.VERIFY_CREDENTIALS]: async ipcArgs => {
@@ -207,14 +183,14 @@ const ipcActions = {
 		try {
 			results = await mysql.verifyCredentials(netid);
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error verifying credentials for user: ${netid}`);
+			logger.error(error, `Error verifying credentials for user: ${netid}`, true);
 		}
 		if (results && results.length) {
 			let auth;
 			try {
 				auth = await verifyExecPassword(netid, ipcArgs.password);
 			} catch (error) {
-				logErrorAndSendMessage(error, `Error verifying password for user: ${netid}`);
+				logger.error(error, `Error verifying password for user: ${netid}`, true);
 			}
 			if (auth) {
 				const {admin} = results[0];
@@ -229,19 +205,34 @@ const ipcActions = {
 	[ipcMysql.LOOKUP_NETID]: async ipcArgs => {
 		const {netid} = ipcArgs;
 		try {
-			const results = await Promise.all(
+			return await Promise.all(
 				[
 					mysql.retrieveMemberInfo(netid),
 					mysql.retrieveMemberAttendance(netid),
 					mysql.retrieveMemberActivity(netid)
 				]
 			);
-			return results && results.length ? results : null;
 		} catch (error) {
-			logErrorAndSendMessage(error, `Error looking up member with netid: ${netid}`);
+			logger.error(error, `Error looking up member with netid: ${netid}`, true);
+		}
+	},
+	[ipcMysql.RETRIEVE_ATTENDANCE]: async ipcArgs => {
+		const {eventId} = ipcArgs;
+		try {
+			return await mysql.retrieveAttendanceForEvent(eventId);
+		} catch (error) {
+			logger.error(error, `Error while getting event attendance info for event: ${eventId}`, true);
+		}
+	},
+	[ipcMysql.FIND_EVENTS]: async ipcArgs => {
+		const {dateRangeStart, dateRangeEnd, eventName} = ipcArgs;
+		try {
+			return await mysql.findEvents(dateRangeStart, dateRangeEnd, eventName);
+		} catch (error) {
+			logger.error(error, `'Error while finding events between ${dateRangeStart} and ${dateRangeEnd} with event name ${eventName}`, true);
 		}
 	},
 	'default': action => {
-		logErrorAndSendMessage(null, `Invalid SQL action: ${action}`, true);
+		logger.error(null, `Invalid SQL action: ${action}`);
 	}
 };

@@ -1,5 +1,7 @@
 export const NavCss = {
-	'aside.menu ul.menu-list a.is-active, aside.menu ul.menu-list a:hover': {
-		backgroundColor: '#888'
+	'.tabs li.is-active a': {
+		borderBottomColor: '000',
+		color: '#fff',
+		backgroundColor: '#c6202c'
 	}
 };

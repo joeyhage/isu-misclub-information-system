@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button, MemberInfo, Message, Card } from '../../common';
+import { Button, ButtonGroup, Message } from '../../common';
 import { isValidInput } from '../../../utils/validation';
+import { MemberInfo, MemberAttendance, MemberActivity } from '../../member';
 
 export default class CheckInMember extends React.Component {
 
@@ -9,7 +10,7 @@ export default class CheckInMember extends React.Component {
 		this.state = {
 			member: props.member,
 			showCheckInFormErrors: false,
-			disableEdit: true,
+			editing: false,
 			attendance: props.member.attendance.map((row, index) => (
 				<tr key={index}>
 					<td className='event-id'>{row.event_id}</td>
@@ -22,74 +23,48 @@ export default class CheckInMember extends React.Component {
 					<td>{row.activity_type}</td>
 					<td>{row.activity_time}</td>
 				</tr>
-			))
+			)),
+			isLoading: false
 		};
-		this._getCheckInFormValidationState = this._getCheckInFormValidationState.bind(this);
 		this._handleChange = this._handleChange.bind(this);
+		this._handleSubmit = this._handleSubmit.bind(this);
+		this._getCheckInFormValidationState = this._getCheckInFormValidationState.bind(this);
 	}
 
 	render() {
 		return (
 			<div className='columns'>
 				<div className='column is-6'>
-					<form>
-						<MemberInfo member={this.state.member} disabled={this.state.disableEdit} onChange={this._handleChange}>
+					<form onSubmit={this._handleSubmit}>
+						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}>
 							{!this.state.member.semesters_remaining && this.state.member.free_meeting_used &&
 								<Message header='Payment Needed' danger>
-									Member has already used free meeting and needs to pay dues
+									Member has already used free meeting and needs to pay dues.
 								</Message>
 							}
-							<div className='field is-horizontal'>
-								<div className='field-label'>
-									{/* Left empty for spacing */}
-								</div>
-								<div className='field-body'>
-									<div className='field is-grouped'>
-										{this.state.disableEdit &&
-											<Button id='check-in' info autoFocus>
-												Check-In
-											</Button>
-										}
-										<Button id='edit-info' onClick={this._handleChange} primary>
-											{this.state.disableEdit ? 'Edit Info' : 'Save'}
-										</Button>
-										<Button id='cancel-member' onClick={this._handleChange} black>
-											{this.state.disableEdit ? 'Cancel' : 'Discard'}
-										</Button>
-									</div>
-								</div>
-							</div>
+							<ButtonGroup isLoading={this.state.isLoading} horizontal>
+								{!this.state.editing &&
+									<Button id='check-in' type='submit' info autoFocus>
+										Check-In
+									</Button>
+								}
+								<Button id='edit-info' onClick={this._handleChange} primary>
+									{!this.state.editing ? 'Edit Info' : 'Save'}
+								</Button>
+								<Button id='cancel-member' onClick={this._handleChange} black>
+									{!this.state.editing ? 'Cancel' : 'Discard'}
+								</Button>
+							</ButtonGroup>
 						</MemberInfo>
 					</form>
 				</div>
 				<div className='column is-6'>
-					<Card title='Attendance' up>
-						<table className='table is-striped is-hoverable is-fullwidth' id='attendance'>
-							<thead>
-								<tr>
-									<th>Event ID</th>
-									<th>Event Name</th>
-									<th>Event Date</th>
-								</tr>
-							</thead>
-							<tbody>
-								{this.state.attendance}
-							</tbody>
-						</table>
-					</Card>
-					<Card title='Activity' up>
-						<table className='table is-striped is-hoverable is-fullwidth' id='activity'>
-							<thead>
-								<tr>
-									<th>Type</th>
-									<th>Date</th>
-								</tr>
-							</thead>
-							<tbody>
-								{this.state.activity}
-							</tbody>
-						</table>
-					</Card>
+					<MemberAttendance up>
+						{this.state.attendance}
+					</MemberAttendance>
+					<MemberActivity up>
+						{this.state.activity}
+					</MemberActivity>
 				</div>
 			</div>
 		);
@@ -98,14 +73,14 @@ export default class CheckInMember extends React.Component {
 	_handleChange(event) {
 		const {target} = event;
 		if (target.id === 'cancel-member') {
-			if (this.state.disableEdit) {
-				this.props.onCancel(event);
+			if (this.state.editing) {
+				this.setState({member: this.props.member, editing: false});
 			} else {
-				this.setState({member: this.props.member, disableEdit: true});
+				this.props.onCancel(event);
 			}
 		} else if (target.id === 'edit-info') {
 			this.setState(prevState => ({
-				disableEdit: !prevState.disableEdit
+				editing: !prevState.editing
 			}));
 		} else if (['first_name', 'last_name', 'major', 'classification'].includes(target.id)) {
 			this.setState(prevState => ({
@@ -115,6 +90,10 @@ export default class CheckInMember extends React.Component {
 				}
 			}));
 		}
+	}
+
+	_handleSubmit(event) {
+		event.preventDefault();
 	}
 
 	_getCheckInFormValidationState(value) {

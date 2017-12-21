@@ -10,7 +10,7 @@ class NavPanel extends React.Component {
 			<div className='tabs'>
 				<Style rules={NavCss}/>
 				<ul>
-					<NavLink id='create-event' icon='fa fa-calendar-plus-o'>New Event</NavLink>
+					<NavLink id='events' icon='fa fa-calendar-plus-o'>Events</NavLink>
 					<NavLink id='event-check-in' icon='fa fa-user-o'>Check-In</NavLink>
 					<NavLink id='attendance-report' icon='fa fa-file-text-o'>Report</NavLink>
 					<NavLink id='graphs-trends' icon='fa fa-bar-chart'>Graphs</NavLink>

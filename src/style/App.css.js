@@ -10,7 +10,7 @@ export const AppCss = {
 		padding: 0
 	},
 	'#page-view': {
-		height: '100%'
+		height: '90%'
 	},
 	'#page-view:not(.columns)': {
 		padding: '0 .75rem'

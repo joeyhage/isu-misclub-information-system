@@ -20,7 +20,13 @@ class EventCheckIn extends React.Component {
 	}
 
 	render() {
-		return !this.props.eventId ? ( <h3>No Event Selected</h3>) : (
+		return !this.props.eventId ? (
+			<div className='container is-fluid' id='page-view'>
+				<h1 className='title is-4 is-spaced'>No Event Selected</h1>
+				<h2 className='subtitle is-6'>Please select an event from the Events page.</h2>
+				<hr className='divider'/>
+			</div>
+		) : (
 			<div className='container is-fluid' id='page-view'>
 				<Style rules={EventCheckInCss}/>
 				<h1 className='title is-4'>{this.props.eventName}</h1>

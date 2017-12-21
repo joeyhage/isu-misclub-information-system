@@ -1,4 +1,7 @@
 export const CreateEventCss = {
+	'#events-today': {
+		marginTop: '20px'
+	},
 	'#events-today>tbody>tr': {
 		cursor: 'pointer'
 	},

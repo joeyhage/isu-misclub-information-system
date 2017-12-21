@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, InputGroup, Message } from '../../common';
+import { Button, InputGroup, Message, ButtonGroup } from '../../common';
 import { isValidInput } from '../../../utils/validation';
 import { ipcMysql } from '../../../actions/ipcActions';
 
@@ -12,7 +12,8 @@ export default class MemberLookup extends React.Component {
 		this.state = {
 			netid: '',
 			notFound: false,
-			showMemberLookupFormErrors: false
+			showMemberLookupFormErrors: false,
+			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -35,10 +36,10 @@ export default class MemberLookup extends React.Component {
 							Create Member?
 						</Button>
 					</Message> :
-					<div className='field is-grouped'>
+					<ButtonGroup isLoading={this.state.isLoading}>
 						<Button type='submit' info>Lookup</Button>
 						<Button type='reset' black>Clear</Button>
-					</div>
+					</ButtonGroup>
 				}
 			</form>
 		);
@@ -58,15 +59,16 @@ export default class MemberLookup extends React.Component {
 		event.preventDefault();
 		const {netid} = this.state;
 		if (isValidInput(netid)) {
-			this.setState({showMemberLookupFormErrors: false});
+			this.setState({showMemberLookupFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.LOOKUP_NETID, {netid});
-			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, member) => {
-				if (member && member[0] && member[0][0] && member[0][0].netid) {
+			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, results) => {
+				this.setState({isLoading: false});
+				if (results && results[0] && results[0][0] && results[0][0].netid) {
 					this.setState({notFound: false});
 					this.props.setMember({
-						...member[0][0],
-						attendance: member[1],
-						activity: member[2]
+						...results[0][0],
+						attendance: results[1],
+						activity: results[2]
 					});
 				} else {
 					this.setState({notFound: netid});

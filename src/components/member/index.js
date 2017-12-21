@@ -13,10 +13,6 @@
    information: https://stackoverflow.com/a/35443250/6732128
 */
 
-export { Button } from './Button';
-export { InputGroup } from './InputGroup';
-export { Column } from './Column';
-export { Message } from './Message';
-export { Card } from './Card';
-export { ButtonGroup } from './ButtonGroup';
-export { Field } from './Field';
+export { MemberInfo } from './MemberInfo';
+export { MemberActivity } from './MemberActivity';
+export { MemberAttendance } from './MemberAttendance';

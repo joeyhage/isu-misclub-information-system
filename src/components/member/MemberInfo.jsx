@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputGroup } from './index';
+import { InputGroup } from '../common/index';
 
 export class MemberInfo extends React.Component {
 	

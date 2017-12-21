@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, MemberInfo, Message } from '../../common';
+import {Button, ButtonGroup, Message} from '../../common';
+import { MemberInfo } from '../../member';
 import { ipcGeneral } from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
@@ -10,15 +11,17 @@ export default class CreateMember extends React.Component {
 		super(props);
 		this.state = {
 			member: {
-				netid: this.props.netid,
+				netid: props.netid,
 				first_name: '',
 				last_name: '',
 				major: '',
 				classification: ''
 			},
-			noResults: false
+			noResults: false,
+			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
+		this._handleSubmit = this._handleSubmit.bind(this);
 	}
 
 	render() {
@@ -27,27 +30,22 @@ export default class CreateMember extends React.Component {
 				<div className='column is-6'>
 					{this.state.noResults &&
 						<Message heading='No Results' danger>
-							<p>No results were found for Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>{this.props.netid}</span>.</p>
+							<p>No results were found for Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>
+								{this.props.netid}</span>.
+							</p>
 							<p>Please complete the fields below manually.</p>
 						</Message>
 					}
-					<form>
+					<form onSubmit={this._handleSubmit}>
 						<MemberInfo member={this.state.member} onChange={this._handleChange}>
-							<div className='field is-horizontal' style={{width:'70%'}}>
-								<div className='field-label'>
-									{/* Left empty for spacing */}
-								</div>
-								<div className='field-body'>
-									<div className='field is-grouped'>
-										<Button id='check-in' info>
-											Check-In
-										</Button>
-										<Button id='cancel-member' onClick={this.props.onCancel} black>
-											Cancel
-										</Button>
-									</div>
-								</div>
-							</div>
+							<ButtonGroup isLoading={this.state.isLoading} horizontal>
+								<Button id='check-in' type='submit' info>
+									Check-In
+								</Button>
+								<Button id='cancel-member' onClick={this.props.onCancel} black>
+									Cancel
+								</Button>
+							</ButtonGroup>
 						</MemberInfo>
 					</form>
 				</div>
@@ -76,5 +74,9 @@ export default class CreateMember extends React.Component {
 				[target.id]: target.value
 			}
 		}));
+	}
+
+	_handleSubmit(event) {
+		event.preventDefault();
 	}
 }
