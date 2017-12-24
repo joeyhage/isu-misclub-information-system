@@ -100,11 +100,11 @@
 ### IDE
 
 The recommended IDE to use for this project is either [WebStorm](https://www.jetbrains.com/webstorm/) or 
-[IntelliJ](https://www.jetbrains.com/idea/) from JetBrains. As a student, you can receive a free license to all 
+[IntelliJ Ultimate](https://www.jetbrains.com/idea/) from JetBrains. As a student, you can receive a free license to all 
 JetBrains products for a term of one year, after which you will be required to re-validate your status as a student. 
 To register as a student, click [here](https://www.jetbrains.com/student/).
     
-WebStorm is lightweight and dedicated to web development whereas IntelliJ is primarily for Java development but 
+WebStorm is lightweight and dedicated to web development whereas IntelliJ Ultimate is primarily for Java development but 
 supports all the same functionality that WebStorm does.
 
 ### DevTools
@@ -122,39 +122,6 @@ To improve code readability and reusability, there are several common components
 project. These components can be found [here](/src/components/common). Please add API definitions for new common components when 
 created.
 
-- ### `<Button>`
-    
-  **Props:**
-
-  | Name     | Type                               | Default | Description                                  |
-  |:--------:|:----------------------------------:|:-------:|:---------------------------------------------|
-  | type     | One of 'button', 'submit', 'reset' | button  | Defines HTML button type attribute           |
-  | primary  | boolean                            | false   | Set button color to primary color: blue      |
-  | red      | boolean                            | false   | Set button color to red                      |
-  | disabled | boolean                            | false   | Disable button click                         |
-  | onClick  | function                           |         | Function to be called when button is clicked |
-    
-  *Button need only be primary, red, or neither. If neither primary nor red, button will be default color: gray.*
-
-  **Examples:**
-  
-  ```jsx
-  <Button type='submit' primary>Submit</Button> 
-  <Button red>Click Me</Button>
-  <Button disabled={true}>Disabled</Button>
-  ```
-
-  Notice how only the word primary or red is needed. React assumes the value is true when the prop does not have an 
-  explicit value. If not included, the value will be undefined and therefore false.
-
-- ### `<InputGroup>`
-
-  WIP
-
-- ### `<MemberInfo>`
-    
-  WIP  
-
 ## Help
 
 This is a list of possible issues that may arise and how to resolve them. 
@@ -167,4 +134,4 @@ This is a list of possible issues that may arise and how to resolve them.
 2. Error: listen EADDRINUSE
     
     The local port is already in use. Either another application is using that port or Electron failed to stop successfully
-    the last time it was run. The simplest way to resolve this is to kill the running node process.
+    the last time it was run. The simplest way to resolve this is to kill the running node process. 
