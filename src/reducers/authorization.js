@@ -1,8 +1,8 @@
 import { SET_ACCESS_LEVEL, SET_USER_ID } from '../actions';
 
 const initialState = {
-	accessLevel: 'test',
-	userId: 'test'
+	accessLevel: null,
+	userId: null
 };
 
 const authorization = (state = initialState, action) => {

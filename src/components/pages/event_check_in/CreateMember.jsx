@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Message} from '../../common';
+import { Button, ButtonGroup, Column, Message } from '../../common';
 import { MemberInfo } from '../../member';
 import { ipcGeneral } from '../../../actions/ipcActions';
 
@@ -22,12 +22,13 @@ export default class CreateMember extends React.Component {
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
+		this._getDirectoryInfo();
 	}
 
 	render() {
 		return (
 			<div className='columns'>
-				<div className='column is-6'>
+				<Column is={6}>
 					{this.state.noResults &&
 						<Message heading='No Results' danger>
 							<p>No results were found for Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>
@@ -48,12 +49,12 @@ export default class CreateMember extends React.Component {
 							</ButtonGroup>
 						</MemberInfo>
 					</form>
-				</div>
+				</Column>
 			</div>
 		);
 	}
 
-	componentWillMount() {
+	_getDirectoryInfo() {
 		if (this.props.netid) {
 			ipcRenderer.send(ipcGeneral.REQUEST_DIRECTORY_INFO, null, {netid: this.props.netid});
 			ipcRenderer.once(ipcGeneral.REQUEST_DIRECTORY_INFO, (event, member) => {

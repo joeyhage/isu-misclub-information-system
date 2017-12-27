@@ -17,12 +17,7 @@ export class ButtonGroup extends React.Component {
 			<Field grouped horizontal={this.props.horizontal}>
 				{!this.state.isLoading ?
 					this.props.children :
-					this.props.children.map((element, index) => {
-						return React.cloneElement(
-							element,
-							{key: index, type: 'button', isLoading: element.props.type === 'submit'}
-						);
-					})
+					this._createLoadingButton()
 				}
 			</Field>
 		);
@@ -41,5 +36,12 @@ export class ButtonGroup extends React.Component {
 				clearTimeout(this.timeout);
 			}
 		}
+	}
+
+	_createLoadingButton() {
+		return React.Children.map(this.props.children, (element, index) => React.cloneElement(
+			element,
+			{key: index, type: 'button', isLoading: element.props.type === 'submit'}
+		));
 	}
 }

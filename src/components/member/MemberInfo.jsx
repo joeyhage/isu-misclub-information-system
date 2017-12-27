@@ -17,18 +17,18 @@ export class MemberInfo extends React.Component {
 				</div>
 				<InputGroup id='first_name' value={Boolean(member) && member.first_name} onChange={this.props.onChange}
 							disabled={disabled} horizontal>
-					First Name
+					First
 				</InputGroup>
 				<InputGroup id='last_name' value={Boolean(member) && member.last_name} onChange={this.props.onChange}
 							disabled={disabled} horizontal>
-					Last Name
+					Last
 				</InputGroup>
 				<InputGroup id='major' value={Boolean(member) && member.major} onChange={this.props.onChange}
 							disabled={disabled} horizontal>
 					Major|Dept
 				</InputGroup>
 				<div className='field is-horizontal'>
-					<div className='field-label'>
+					<div className='field-label is-normal'>
 						<label className='label'>Class</label>
 					</div>
 					<div className='field-body'>
@@ -50,53 +50,33 @@ export class MemberInfo extends React.Component {
 						</div>
 					</div>
 				</div>
-				{disabled && [
-					<div className='field is-horizontal' key={1}>
-						<div className='field-label'>
-							<label className='label'>Semesters Paid</label>
-						</div>
-						<div className='field-body'>
-							{member.semesters_remaining}
-						</div>
-					</div>,
-					<div className='field is-horizontal' key={2}>
-						<div className='field-label'>
-							<label className='label'>Used Free Meeting</label>
-						</div>
-						<div className='field-body'>
-							{Boolean(member.free_meeting_used) ? 'Yes' : 'No'}
+				{this.props.status &&
+					<div>
+						<hr/>
+						<div className='field is-horizontal' style={{margin:'20px 0'}}>
+							<div className='field-label'>
+								<label className='label'>Status</label>
+							</div>
+							<div className='field-body'>
+								{this._determineMemberStatus()}
+							</div>
 						</div>
 					</div>
-				]}
+				}
 				{this.props.children}
-				{/*<PaymentRadios checked={this.props.payment}/>*/}
 			</div>
 		);
 	}
-}
 
-// const PaymentRadios = props => {
-// 	const {checked} = props;
-// 	return (
-// 		<div className='field is-horizontal' >
-// 			<div className='field-label'>
-// 				<label className='label'>Payment</label>
-// 			</div>
-// 			<div className='field-body'>
-// 				<div className='field'>
-// 					<div className='control'>
-// 						<label className='radio'>
-// 							<input type='radio' name='payment' value='2' checked={checked === 2}/> 2 Semesters
-// 						</label>
-// 						<label className='radio'>
-// 							<input type='radio' name='payment' value='1' checked={checked === 1}/> 1 Semester
-// 						</label>
-// 						<label className='radio'>
-// 							<input type='radio' name='payment' value='0' checked={checked === 0}/> No Change
-// 						</label>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</div>
-// 	);
-// };
+	_determineMemberStatus() {
+		const {semesters_remaining, free_meeting_used} = this.props.member;
+		switch (semesters_remaining) {
+			case 2:
+				return 'Current Member - 2 Semesters Remaining';
+			case 1:
+				return 'Current Member - 1 Semester Remaining';
+			default:
+				return `Not a Member - Free Meeting ${Boolean(free_meeting_used) ? 'Used' : 'Unused'}`;
+		}
+	}
+}

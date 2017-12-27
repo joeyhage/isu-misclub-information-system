@@ -11,7 +11,7 @@ class NavPanel extends React.Component {
 				<Style rules={NavCss}/>
 				<ul>
 					<NavLink id='events' icon='fa fa-calendar-plus-o'>Events</NavLink>
-					<NavLink id='event-check-in' icon='fa fa-user-o'>Check-In</NavLink>
+					<NavLink id='check-in' icon='fa fa-user-o'>Check-In</NavLink>
 					<NavLink id='attendance-report' icon='fa fa-file-text-o'>Report</NavLink>
 					<NavLink id='graphs-trends' icon='fa fa-bar-chart'>Graphs</NavLink>
 					<NavLink id='admin-tools' icon='fa fa-cog'>Admin</NavLink>

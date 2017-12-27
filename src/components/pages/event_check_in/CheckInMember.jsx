@@ -1,7 +1,10 @@
 import React from 'react';
-import { Button, ButtonGroup, Message } from '../../common';
+import { Button, ButtonGroup, Column, Message } from '../../common';
 import { isValidInput } from '../../../utils/validation';
-import { MemberInfo, MemberAttendance, MemberActivity } from '../../member';
+import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from '../../member';
+import { ipcMysql } from '../../../actions/ipcActions';
+
+const { ipcRenderer } = window.require('electron');
 
 export default class CheckInMember extends React.Component {
 
@@ -9,6 +12,7 @@ export default class CheckInMember extends React.Component {
 		super(props);
 		this.state = {
 			member: props.member,
+			member_payment: 0,
 			showCheckInFormErrors: false,
 			editing: false,
 			attendance: props.member.attendance.map((row, index) => (
@@ -34,14 +38,16 @@ export default class CheckInMember extends React.Component {
 	render() {
 		return (
 			<div className='columns'>
-				<div className='column is-6'>
+				<Column>
 					<form onSubmit={this._handleSubmit}>
-						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}>
+						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
+									status>
 							{!this.state.member.semesters_remaining && this.state.member.free_meeting_used &&
 								<Message header='Payment Needed' danger>
-									Member has already used free meeting and needs to pay dues.
+									Member has already used free meeting and has not yet paid dues.
 								</Message>
 							}
+							<PaymentRadio checked={this.state.member_payment} onChange={this._handleChange}/>
 							<ButtonGroup isLoading={this.state.isLoading} horizontal>
 								{!this.state.editing &&
 									<Button id='check-in' type='submit' info autoFocus>
@@ -57,15 +63,15 @@ export default class CheckInMember extends React.Component {
 							</ButtonGroup>
 						</MemberInfo>
 					</form>
-				</div>
-				<div className='column is-6'>
+				</Column>
+				<Column>
+					<MemberActivity>
+						{this.state.activity}
+					</MemberActivity>
 					<MemberAttendance up>
 						{this.state.attendance}
 					</MemberAttendance>
-					<MemberActivity up>
-						{this.state.activity}
-					</MemberActivity>
-				</div>
+				</Column>
 			</div>
 		);
 	}
@@ -89,11 +95,27 @@ export default class CheckInMember extends React.Component {
 					[target.id]: target.value
 				}
 			}));
+		} else if (target.name === 'payment') {
+			this.setState({member_payment: parseInt(target.value, 10)});
 		}
 	}
 
 	_handleSubmit(event) {
 		event.preventDefault();
+		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER,
+			{
+				member: {
+					...this.state.member,
+					payment: this.state.member_payment
+				},
+				eventId: this.props.eventId
+			}
+		);
+		ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
+			if (results) {
+				this.props.onCheckIn();
+			}
+		});
 	}
 
 	_getCheckInFormValidationState(value) {

@@ -18,7 +18,6 @@ class Events extends React.Component {
 			eventName: '',
 			eventsToday: this._getEventsToday(),
 			showFormErrors: false,
-			today: moment().format('MMM DD, YYYY'),
 			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
@@ -46,7 +45,7 @@ class Events extends React.Component {
 					<p>
 						{Boolean(this.state.eventsToday) ?
 							'Click an event to start check-in' :
-							'No events today. Please create an event.'
+							'No events today. To start check-in, create an event.'
 						}
 					</p>
 					{Boolean(this.state.eventsToday) &&
@@ -92,16 +91,15 @@ class Events extends React.Component {
 	_handleSubmit(event) {
 		event.preventDefault();
 		if (isValidInput(this.state.eventName)) {
-			this.setState({isLoading: true});
-			const {eventName, today} = this.state;
-			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.ADD_EVENT, {eventName});
-			ipcRenderer.once(ipcMysql.ADD_EVENT, (event, eventId) => {
-				this.setState({isLoading: false});
-				this.props.setActiveEvent({eventId, eventName, eventDate: today});
+			this.setState({showFormErrors: false, isLoading: true});
+			const {eventName} = this.state;
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CREATE_EVENT, {eventName});
+			ipcRenderer.once(ipcMysql.CREATE_EVENT, (event, eventId) => {
+				this.props.setActiveEvent({eventId, eventName});
 				this.props.selectEventCheckInView();
 			});
 		} else {
-			this.setState({showFormErrors: true, isLoading: false});
+			this.setState({showFormErrors: true});
 		}
 	}
 
@@ -118,8 +116,7 @@ class Events extends React.Component {
 		} else {
 			const event = {
 				eventId: '',
-				eventName: '',
-				eventDate: this.state.today
+				eventName: ''
 			};
 			if (target.nodeName === 'TR') {
 				const eventIdTD = target.firstChild;
@@ -147,7 +144,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	selectEventCheckInView: () => dispatch(selectView('event-check-in')),
+	selectEventCheckInView: () => dispatch(selectView('check-in')),
 	setActiveEvent: ({eventId, eventName, eventDate}) => dispatch(setActiveEvent(eventId, eventName, eventDate)),
 	resetActiveEvent: () => dispatch(resetActiveEvent())
 });

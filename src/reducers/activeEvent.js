@@ -1,9 +1,8 @@
 import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT } from '../actions';
 
 const initialState = {
-	eventId: '10006',
-	eventName: 'Kingland Systems',
-	eventDate: 'Aug 30, 2017'
+	eventId: '',
+	eventName: ''
 };
 
 const activeEvent = (state = initialState, action) => {
@@ -12,8 +11,7 @@ const activeEvent = (state = initialState, action) => {
 			return {
 				...state,
 				eventId: action.eventId,
-				eventName: action.eventName,
-				eventDate: action.eventDate
+				eventName: action.eventName
 			};
 		case RESET_ACTIVE_EVENT:
 			return {

@@ -13,10 +13,13 @@
    information: https://stackoverflow.com/a/35443250/6732128
 */
 
+import Card from './Card';
+
 export { Button } from './Button';
 export { InputGroup } from './InputGroup';
 export { Column } from './Column';
 export { Message } from './Message';
-export { Card } from './Card';
+export { Card };
 export { ButtonGroup } from './ButtonGroup';
 export { Field } from './Field';
+

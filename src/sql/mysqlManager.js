@@ -4,6 +4,7 @@ const mysql = require('mysql'),
 class mysqlManager {
 	constructor() {
 		this.pool = mysql.createPool(mysqlDB);
+		this.ER_DUP_ENTRY = 'ER_DUP_ENTRY';
 	}
 
 	sqlQueryHandler(sqlStatement, sqlParams) {
@@ -31,13 +32,13 @@ class mysqlManager {
 		});
 	}
 
-	retrieveEventsToday() {
+	findEventsToday() {
 		return this.sqlQueryHandler(
 			'SELECT * FROM `is_events` WHERE `event_date`=CURRENT_DATE ORDER BY `event_id` DESC'
 		);
 	}
 
-	addEvent(eventName) {
+	createEvent(eventName) {
 		return this.sqlQueryHandler(
 			'INSERT INTO `is_events` (`event_name`,`event_date`) VALUES (?,CURRENT_DATE)',
 			[eventName]
@@ -66,7 +67,7 @@ class mysqlManager {
 		);
 	}
 
-	retrieveMemberInfo(netid) {
+	lookupNetid(netid) {
 		return this.sqlQueryHandler(
 			'SELECT * FROM `is_members` WHERE `netid`=?',
 			[netid]
@@ -90,21 +91,38 @@ class mysqlManager {
 		);
 	}
 
-	addMember(memberData) {
+	checkInMember(member, eventId) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_members` VALUES (?,?,?,?,?,?,?)',
-			[memberData.netId, memberData.firstName, memberData.lastName, memberData.major, memberData.class, memberData.semestersRemaining, 1]
+			'INSERT INTO `is_attendance` (`netid`,`event_id`,`major`,`classification`) VALUES (?,?,?,?)',
+			[member.netid, eventId, member.major, member.classification]
 		);
 	}
 
-	retrieveAttendanceForEvent(eventId) {
+	addPersonInfo(member) {
+		return this.sqlQueryHandler(
+			'INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,`semesters_remaining`,`free_meeting_used`) ' +
+			'VALUES (?,?,?,?,?,?,?)',
+			[member.netid, member.firstName, member.lastName, member.major, member.classification, member.semestersRemaining, 1]
+		);
+	}
+
+	updateMemberInfo(member) {
+		return this.sqlQueryHandler(
+			'UPDATE `is_members` ' +
+			'SET `first_name`=?,`last_name`=?,`major`=?,`classification`=?,`semesters_remaining`=(`semesters_remaining`+?),`free_meeting_used`=? ' +
+			'WHERE `netid`=?',
+			[member.first_name, member.last_name, member.major, member.classification, member.payment, member.free_meeting_used]
+		);
+	}
+
+	getAttendanceForEvent(eventId) {
 		return this.sqlQueryHandler(
 			'SELECT m.* FROM `is_members` m, `is_attendance` a WHERE m.`netid`=a.`netid` AND `event_id`=? ORDER BY `netid` ASC',
 			[eventId]
 		);
 	}
 
-	findEvents(dateRangeStart, dateRangeEnd, eventName = '') {
+	queryEvents(dateRangeStart, dateRangeEnd, eventName = '') {
 		return this.sqlQueryHandler(
 			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
 			'FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? AND `event_name` LIKE ?' +

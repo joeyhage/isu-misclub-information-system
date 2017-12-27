@@ -1,4 +1,4 @@
-export const EventCheckInCss = {
+export const CheckInCss = {
 	'div.card-content>div.content': {
 		maxHeight: '50vh',
 		overflow: 'scroll'

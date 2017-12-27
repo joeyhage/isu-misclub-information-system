@@ -12,11 +12,8 @@ export const AppCss = {
 	'#page-view': {
 		height: '90%'
 	},
-	'#page-view:not(.columns)': {
-		padding: '0 .75rem'
-	},
-	'#page-view>div.column:nth-of-type(1)': {
-		borderRight: '1px solid #eee'
+	'#page-view>div.column:nth-of-type(n+2)': {
+		borderLeft: '1px solid #eee'
 	},
 	'#page-view hr.divider': {
 		margin: '10px 0',

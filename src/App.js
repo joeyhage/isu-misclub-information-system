@@ -23,8 +23,8 @@ class App extends React.Component {
 		);
 	}
 
-	componentWillMount() {
-		this._updateWindow(this.props);
+	componentDidMount() {
+		this._updateWindow();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -32,14 +32,29 @@ class App extends React.Component {
 	}
 
 	_updateWindow(props) {
-		if (this.props.userId !== props.userId || this.props.accessLevel !== props.accessLevel) {
-			ipcRenderer.send(
-				ipcGeneral.SET_WINDOW,
-				!(props.userId && props.accessLevel) ?
-					ipcGeneral.LOGIN_WINDOW :
-					ipcGeneral.MIS_CLUB_PAGE_WINDOW
-			);
+		if (!props) {
+			if (!(this.props && this.props.userId && this.props.accessLevel)) {
+				this._setLoginWindow();
+			} else {
+				this._setMISClubPageWindow();
+			}
+		} else {
+			if (props.userId !== this.props.userId || props.accessLevel !== this.props.accessLevel) {
+				if (!props.userId || !props.accessLevel) {
+					this._setLoginWindow();
+				} else {
+					this._setMISClubPageWindow();
+				}
+			}
 		}
+	}
+
+	_setLoginWindow() {
+		ipcRenderer.send(ipcGeneral.SET_WINDOW, ipcGeneral.LOGIN_WINDOW);
+	}
+
+	_setMISClubPageWindow() {
+		ipcRenderer.send(ipcGeneral.SET_WINDOW, ipcGeneral.MIS_CLUB_PAGE_WINDOW);
 	}
 }
 

@@ -7,7 +7,7 @@ class AttendanceReport extends React.Component {
 
 	render() {
 		return (
-			<div className='container is-fluid' id='page-view'>
+			<div className='container' id='page-view'>
 				{this.props.eventId ?
 					<Report/> :
 					<EventLookup/>

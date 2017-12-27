@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import AdminTools from './pages/AdminTools';
 import AttendanceReport from './pages/AttendanceReport';
 import Events from './pages/Events';
-import EventCheckIn from './pages/EventCheckIn';
+import CheckIn from './pages/CheckIn';
 import GraphsTrends from './pages/GraphsTrends';
 import Help from './pages/Help';
 import NavPanel from './navigation/NavPanel';
@@ -22,7 +22,7 @@ class MISClubPage extends React.Component {
 	_renderActiveView() {
 		return {
 			'events': <Events/>,
-			'event-check-in': <EventCheckIn/>,
+			'check-in': <CheckIn/>,
 			'attendance-report': <AttendanceReport/>,
 			'graphs-trends': <GraphsTrends/>,
 			'admin-tools': <AdminTools/>,

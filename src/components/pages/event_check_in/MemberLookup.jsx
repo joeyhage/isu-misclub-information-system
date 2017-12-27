@@ -62,16 +62,14 @@ export default class MemberLookup extends React.Component {
 			this.setState({showMemberLookupFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.LOOKUP_NETID, {netid});
 			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, results) => {
-				this.setState({isLoading: false});
 				if (results && results[0] && results[0][0] && results[0][0].netid) {
-					this.setState({notFound: false});
 					this.props.setMember({
 						...results[0][0],
 						attendance: results[1],
 						activity: results[2]
 					});
 				} else {
-					this.setState({notFound: netid});
+					this.setState({notFound: netid, isLoading: false});
 					this.props.setMember({});
 				}
 			});

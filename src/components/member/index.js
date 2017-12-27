@@ -16,3 +16,4 @@
 export { MemberInfo } from './MemberInfo';
 export { MemberActivity } from './MemberActivity';
 export { MemberAttendance } from './MemberAttendance';
+export { PaymentRadio } from './PaymentRadio';
