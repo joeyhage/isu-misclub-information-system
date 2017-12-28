@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Radium, { Style } from 'radium';
-import CheckInMember from './event_check_in/CheckInMember';
-import MemberLookup from './event_check_in/MemberLookup';
-import CreateMember from './event_check_in/CreateMember';
+import moment from 'moment';
+import { Column, Message, PageView } from '../common';
+import CheckInMember from './check_in/CheckInMember';
+import MemberLookup from './check_in/MemberLookup';
+import CreateMember from './check_in/CreateMember';
 import { CheckInCss } from '../../style/CheckIn.css';
-import { Column } from '../common';
-import moment from 'moment/moment';
 
 class CheckIn extends React.Component {
 
@@ -15,7 +14,7 @@ class CheckIn extends React.Component {
 		this.state = {
 			member: {},
 			createMember: false,
-			notification: '',
+			message: '',
 			eventDate: moment().format('MMM DD, YYYY')
 		};
 		this._resetState = this._resetState.bind(this);
@@ -25,17 +24,16 @@ class CheckIn extends React.Component {
 
 	render() {
 		return !this.props.eventId ? (
-			<div className='container is-fluid columns' id='page-view'>
+			<PageView>
 				<Column title={'No Event Selected'} subtitle={'Please select an event from the Events page.'} title-is-spaced/>
-			</div>
+			</PageView>
 		) : (
-			<div className='container is-fluid columns' id='page-view'>
-				<Style rules={CheckInCss}/>
+			<PageView rules={CheckInCss}>
 				<Column title={this.props.eventName} subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
-					{!this.state.member.netid && !this.state.createMember &&
+					{!Boolean(this.state.member.netid) && !this.state.createMember &&
 						<MemberLookup setMember={this._setMember} onCreateMember={this._createMemberForNetID}/>
 					}
-					{this.state.member && this.state.member.netid &&
+					{Boolean(this.state.member) && Boolean(this.state.member.netid) &&
 						<CheckInMember member={this.state.member} eventId={this.props.eventId}
 									   onCancel={this._resetState} onCheckIn={this._resetState}/>
 					}
@@ -43,8 +41,13 @@ class CheckIn extends React.Component {
 						<CreateMember netid={this.state.createMember} eventId={this.props.eventId}
 									  onCancel={this._resetState}/>
 					}
+					{Boolean(this.state.message) &&
+						<Message heading='Info' onDelete={() => this.setState({message: ''})} timeout={3000} info>
+							{this.state.message}
+						</Message>
+					}
 				</Column>
-			</div>
+			</PageView>
 		);
 	}
 
@@ -56,11 +59,11 @@ class CheckIn extends React.Component {
 		this.setState({createMember: netid});
 	}
 
-	_resetState(notification = '') {
+	_resetState(message = '') {
 		this.setState({
 			member: {},
 			createMember: false,
-			notification
+			message: typeof message === 'string' ? message : ''
 		});
 	}
 }
@@ -71,4 +74,4 @@ const mapStateToProps = state => ({
 	eventDate: state.activeEvent.eventDate
 });
 		
-export default connect(mapStateToProps)(Radium(CheckIn));
+export default connect(mapStateToProps)(CheckIn);

@@ -8,6 +8,11 @@ export class Message extends React.Component {
 		this.state = {
 			color: determineColor(props)
 		};
+		if (props.timeout && typeof props.timeout === 'number' && this.props.onDelete) {
+			setTimeout(() => {
+				this.props.onDelete();
+			}, props.timeout);
+		}
 	}
 
 	render() {

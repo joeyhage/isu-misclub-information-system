@@ -5,11 +5,10 @@ export const selectView = view => ({
 });
 
 export const SET_ACTIVE_EVENT = 'SET_ACTIVE_EVENT';
-export const setActiveEvent = (eventId, eventName, eventDate) => ({
+export const setActiveEvent = (eventId, eventName) => ({
 	type: SET_ACTIVE_EVENT,
 	eventId,
-	eventName,
-	eventDate
+	eventName
 });
 
 export const RESET_ACTIVE_EVENT = 'RESET_ACTIVE_EVENT';

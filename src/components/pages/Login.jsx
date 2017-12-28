@@ -1,11 +1,11 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import moment from 'moment';
-import { InputGroup, Button, Message, ButtonGroup, Column } from '../common';
+import { connect } from 'react-redux';
+import Radium, { Style } from 'radium';
+import { InputGroup, Button, Message, ButtonGroup, Column, PageView } from '../common';
 import { isValidInput } from '../../utils/validation';
 import { setUserId, setAccessLevel } from '../../actions';
 import { ipcMysql } from '../../actions/ipcActions';
-import Radium, { Style } from 'radium';
 import { LoginCss } from '../../style/Login.css';
 
 const { ipcRenderer } = window.require('electron');
@@ -29,7 +29,7 @@ class Login extends React.Component {
 		return (
 			<div>
 				<Style rules={LoginCss}/>
-				<div className='container is-fluid columns' id='page-view'>
+				<PageView>
 					<Column title='Login'>
 						<form onSubmit={this._handleSubmit}>
 							<InputGroup id='netid' value={this.state.netid} onChange={this._handleChange}
@@ -52,7 +52,7 @@ class Login extends React.Component {
 							</Message>
 						}
 					</Column>
-				</div>
+				</PageView>
 				<div className='footer columns is-mobile'>
 					<div className='column'>
 						ISU MIS Club Check-In System

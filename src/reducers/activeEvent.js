@@ -1,8 +1,8 @@
 import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT } from '../actions';
 
 const initialState = {
-	eventId: '',
-	eventName: ''
+	eventId: 'test',
+	eventName: 'test'
 };
 
 const activeEvent = (state = initialState, action) => {

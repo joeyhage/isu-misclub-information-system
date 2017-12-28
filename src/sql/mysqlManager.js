@@ -100,18 +100,18 @@ class mysqlManager {
 
 	addPersonInfo(member) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,`semesters_remaining`,`free_meeting_used`) ' +
-			'VALUES (?,?,?,?,?,?,?)',
+			'INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,`semesters_remaining`,' +
+			'`free_meeting_used`) VALUES (?,?,?,?,?,?,?)',
 			[member.netid, member.firstName, member.lastName, member.major, member.classification, member.semestersRemaining, 1]
 		);
 	}
 
 	updateMemberInfo(member) {
 		return this.sqlQueryHandler(
-			'UPDATE `is_members` ' +
-			'SET `first_name`=?,`last_name`=?,`major`=?,`classification`=?,`semesters_remaining`=(`semesters_remaining`+?),`free_meeting_used`=? ' +
+			'UPDATE `is_members` SET `first_name`=?,`last_name`=?,' +
+			'`major`=?,`classification`=?,`semesters_remaining`=(`semesters_remaining`+?),`free_meeting_used`=? ' +
 			'WHERE `netid`=?',
-			[member.first_name, member.last_name, member.major, member.classification, member.payment, member.free_meeting_used]
+			[member.first_name, member.last_name, member.major, member.classification, member.payment, member.free_meeting_used, member.netid]
 		);
 	}
 
@@ -125,7 +125,7 @@ class mysqlManager {
 	queryEvents(dateRangeStart, dateRangeEnd, eventName = '') {
 		return this.sqlQueryHandler(
 			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
-			'FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? AND `event_name` LIKE ?' +
+			'FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? AND `event_name` LIKE ? ' +
 			'ORDER BY `event_id` DESC',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);

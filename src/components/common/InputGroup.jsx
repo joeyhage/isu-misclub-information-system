@@ -29,7 +29,9 @@ export class InputGroup extends React.Component {
 					<input type={type} className={className} id={id} value={this.props.value} onChange={onChange}
 						   placeholder={placeholder} disabled={this.props.disabled} autoFocus={autoFocus}/>
 				</div>
-				{hasErrors && <p className='help is-danger'>This field is required</p>}
+				{hasErrors &&
+					<p className='help is-danger'>This field is required</p>
+				}
 			</Field>
 		);
 	}

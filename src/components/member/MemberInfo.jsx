@@ -4,7 +4,7 @@ import { InputGroup } from '../common/index';
 export class MemberInfo extends React.Component {
 	
 	render() {
-		const {member, disabled} = this.props;
+		const {member, disabled, showValidation} = this.props;
 		return (
 			<div>
 				<div className='field is-horizontal'>
@@ -16,16 +16,16 @@ export class MemberInfo extends React.Component {
 					</div>
 				</div>
 				<InputGroup id='first_name' value={Boolean(member) && member.first_name} onChange={this.props.onChange}
-							disabled={disabled} horizontal>
+							disabled={disabled} showValidation={showValidation} horizontal required>
 					First
 				</InputGroup>
 				<InputGroup id='last_name' value={Boolean(member) && member.last_name} onChange={this.props.onChange}
-							disabled={disabled} horizontal>
+							disabled={disabled} showValidation={showValidation} horizontal required>
 					Last
 				</InputGroup>
 				<InputGroup id='major' value={Boolean(member) && member.major} onChange={this.props.onChange}
 							disabled={disabled} horizontal>
-					Major|Dept
+					Major
 				</InputGroup>
 				<div className='field is-horizontal'>
 					<div className='field-label is-normal'>
@@ -72,11 +72,11 @@ export class MemberInfo extends React.Component {
 		const {semesters_remaining, free_meeting_used} = this.props.member;
 		switch (semesters_remaining) {
 			case 2:
-				return 'Current Member - 2 Semesters Remaining';
+				return 'Current Member | 2 Semesters Remaining';
 			case 1:
-				return 'Current Member - 1 Semester Remaining';
+				return 'Current Member | 1 Semester Remaining';
 			default:
-				return `Not a Member - Free Meeting ${Boolean(free_meeting_used) ? 'Used' : 'Unused'}`;
+				return `Not a Member | Free Meeting ${Boolean(free_meeting_used) ? 'Used' : 'Unused'}`;
 		}
 	}
 }

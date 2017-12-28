@@ -1,4 +1,5 @@
 const { dialog } = require('electron'),
+	moment = require('moment'),
 	winston = require('winston');
 
 require('winston-daily-rotate-file');
@@ -6,6 +7,7 @@ require('winston-daily-rotate-file');
 class logUtil {
 	constructor() {
 		const dailyRotateTransport = new (winston.transports.DailyRotateFile)({
+			timestamp: () => moment().format(),
 			filename: './log',
 			localTime: true,
 			maxFiles: 20,
@@ -27,6 +29,10 @@ class logUtil {
 			}
 		}
 	};
+
+	info(message) {
+		this.log.info(message);
+	}
 
 	debug(message) {
 		this.log.debug(message);

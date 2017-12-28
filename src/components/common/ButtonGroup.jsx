@@ -12,7 +12,6 @@ export class ButtonGroup extends React.Component {
 	}
 
 	render() {
-		this._manageLoadingState();
 		return (
 			<Field grouped horizontal={this.props.horizontal}>
 				{!this.state.isLoading ?
@@ -23,12 +22,27 @@ export class ButtonGroup extends React.Component {
 		);
 	}
 
-	_manageLoadingState() {
-		if (this.props.isLoading && !this.state.timeout) {
+	componentWillReceiveProps(nextProps) {
+		this._manageLoadingState(nextProps);
+	}
+
+	componentDidMount() {
+		this._manageLoadingState();
+	}
+
+	componentWillUnmount() {
+		if (this.timeout) {
+			clearTimeout(this.timeout);
+		}
+	}
+
+	_manageLoadingState(nextProps) {
+		const props = nextProps || this.props;
+		if (props.isLoading && !this.state.timeout) {
 			this.timeout = setTimeout(() => {
 				this.setState({isLoading: true});
 			}, 500);
-		} else if (!this.props.isLoading) {
+		} else if (!props.isLoading) {
 			if (this.state.isLoading) {
 				this.setState({isLoading: false});
 			}

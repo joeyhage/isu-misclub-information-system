@@ -15,6 +15,7 @@ export default class CheckInMember extends React.Component {
 			member_payment: 0,
 			showCheckInFormErrors: false,
 			editing: false,
+			isLoading: false,
 			attendance: props.member.attendance.map((row, index) => (
 				<tr key={index}>
 					<td className='event-id'>{row.event_id}</td>
@@ -27,8 +28,7 @@ export default class CheckInMember extends React.Component {
 					<td>{row.activity_type}</td>
 					<td>{row.activity_time}</td>
 				</tr>
-			)),
-			isLoading: false
+			))
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -41,13 +41,16 @@ export default class CheckInMember extends React.Component {
 				<Column>
 					<form onSubmit={this._handleSubmit}>
 						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
-									status>
-							{!this.state.member.semesters_remaining && this.state.member.free_meeting_used &&
-								<Message header='Payment Needed' danger>
-									Member has already used free meeting and has not yet paid dues.
-								</Message>
-							}
+									showValidation={this._getCheckInFormValidationState} status>
 							<PaymentRadio checked={this.state.member_payment} onChange={this._handleChange}/>
+							{!this.state.member.semesters_remaining && (this.state.member.free_meeting_used ?
+									<Message header='Payment Needed' danger>
+										Member has already used free meeting and has not yet paid dues.
+									</Message> :
+									<Message header='Free Meeting' warning>
+										If checked in with no payment, member's free meeting will be used.
+									</Message>
+							)}
 							<ButtonGroup isLoading={this.state.isLoading} horizontal>
 								{!this.state.editing &&
 									<Button id='check-in' type='submit' info autoFocus>
@@ -102,20 +105,23 @@ export default class CheckInMember extends React.Component {
 
 	_handleSubmit(event) {
 		event.preventDefault();
-		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER,
-			{
-				member: {
-					...this.state.member,
-					payment: this.state.member_payment
-				},
+		const {first_name, last_name, classification} = this.state.member;
+		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(classification)) {
+			this.setState({showCheckInFormErrors: false, isLoading: true});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
+				member: {...this.state.member, payment: this.state.member_payment},
 				eventId: this.props.eventId
-			}
-		);
-		ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
-			if (results) {
-				this.props.onCheckIn();
-			}
-		});
+			});
+			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
+				if (results) {
+					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
+				} else {
+					this.setState({isLoading: false});
+				}
+			});
+		} else {
+			this.setState({showCheckInFormErrors: true});
+		}
 	}
 
 	_getCheckInFormValidationState(value) {

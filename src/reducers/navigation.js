@@ -1,7 +1,7 @@
 import { SELECT_VIEW } from '../actions';
 
 const initialState = {
-	view: ''
+	view: 'events'
 };
 
 const navigation = (state = initialState, action) => {

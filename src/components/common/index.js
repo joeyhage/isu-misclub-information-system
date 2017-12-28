@@ -14,12 +14,13 @@
 */
 
 import Card from './Card';
+import PageView from './PageView';
 
+export { Card, PageView };
 export { Button } from './Button';
 export { InputGroup } from './InputGroup';
 export { Column } from './Column';
 export { Message } from './Message';
-export { Card };
 export { ButtonGroup } from './ButtonGroup';
 export { Field } from './Field';
 

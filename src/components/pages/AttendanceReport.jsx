@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { PageView } from '../common';
 import EventLookup from './attendance_report/EventLookup';
 import Report from './attendance_report/Report';
 
@@ -7,12 +8,12 @@ class AttendanceReport extends React.Component {
 
 	render() {
 		return (
-			<div className='container' id='page-view'>
+			<PageView>
 				{this.props.eventId ?
 					<Report/> :
 					<EventLookup/>
 				}
-			</div>
+			</PageView>
 		);
 	}
 }

@@ -1,4 +1,4 @@
-import {primaryGold} from './CssConstants';
+import { primaryGold } from './CssConstants';
 
 export const CardCss = {
 	'.card-header': {

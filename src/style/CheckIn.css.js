@@ -5,5 +5,8 @@ export const CheckInCss = {
 	},
 	'#attendance>thead>tr, #activity>thead>tr': {
 		backgroundColor: '#fff'
+	},
+	'.message': {
+		margin: '20px 0'
 	}
 };

@@ -6,7 +6,7 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron'),
 	url = require('url'),
 	mysql = new (require('./sql/mysqlManager'))(),
 	logger = new (require('./utils/logger'))(),
-	{ sqlActions } = require('./sql/sqlActions'),
+	sqlActions = require('./actions/sqlActions').sqlActions(mysql, logger),
 	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
 	{ createMenuTemplate } = require('./static/MenuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
@@ -41,6 +41,7 @@ const createWindow = () => {
 
 	mainWindow.once('ready-to-show', () => {
 		mainWindow.show();
+		mainWindow.center();
 		mainWindow.focus();
 	});
 
@@ -74,22 +75,34 @@ app.on('ready', () => {
 			results = await retrieveSqlData(action, ipcArgs);
 		} catch (error) {
 			logger.error(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`);
-		} finally {
-			if (action === ipcMysql.VERIFY_CREDENTIALS && results.hasOwnProperty('devToolsEnabled')) {
-				devToolsEnabled = results.devToolsEnabled;
-				delete results.devToolsEnabled;
-			}
-			mainWindow.webContents.send(action, results);
 		}
+		if (action === ipcMysql.VERIFY_CREDENTIALS && results.hasOwnProperty('devToolsEnabled')) {
+			devToolsEnabled = results.devToolsEnabled;
+			delete results.devToolsEnabled;
+		}
+		mainWindow.webContents.send(action, results);
 	});
 
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
+		const size = mainWindow.getSize();
 		if (action === ipcGeneral.LOGIN_WINDOW) {
+			if (size[0] === 600 && size[1] === 600) {
+				return;
+			}
+			mainWindow.hide();
 			mainWindow.setSize(600, 600);
 		} else if (action === ipcGeneral.MIS_CLUB_PAGE_WINDOW) {
+			if (size[0] === 1200 && size[1] === 800) {
+				return;
+			}
+			mainWindow.hide();
 			mainWindow.setSize(1200, 800);
 		}
-		mainWindow.center();
+		setTimeout(() => {
+			mainWindow.show();
+			mainWindow.center();
+			mainWindow.focus();
+		}, 1000);
 	});
 
 	ipcMain.on(ipcGeneral.REQUEST_DIRECTORY_INFO, async (event, action, ipcArgs) => {
@@ -99,12 +112,11 @@ app.on('ready', () => {
 			member = await requestDirectoryInfo(netid);
 		} catch (error) {
 			logger.error(error, `Error getting directory info for Net-ID: ${netid}`, true);
-		} finally {
-			if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
-				logger.error(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`);
-			}
-			mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
 		}
+		if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
+			logger.error(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`);
+		}
+		mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
 	});
 });
 
@@ -127,7 +139,6 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
 const retrieveSqlData = (action, ipcArgs) => {
-	return sqlActions[action] ? sqlActions[action](ipcArgs) : ipcArgs['default'](action);
+	return sqlActions[action] ? sqlActions[action](ipcArgs) : sqlActions['default'](action);
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import AdminTools from './pages/AdminTools';
 import AttendanceReport from './pages/AttendanceReport';
 import Events from './pages/Events';
