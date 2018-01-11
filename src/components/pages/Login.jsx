@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import dateFormat from 'dateformat';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import { InputGroup, Button, Message, ButtonGroup, Column, PageView } from '../common';
@@ -58,7 +58,7 @@ class Login extends React.Component {
 						ISU MIS Club Check-In System
 					</div>
 					<div className='column has-text-right'>
-						&copy; {moment().format('YYYY')} ISU MIS Club
+						&copy; {dateFormat('yyyy')} ISU MIS Club
 					</div>
 				</div>
 			</div>

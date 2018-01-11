@@ -1,7 +1,7 @@
 const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron'),
-	{ default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer'),
 	csv = require('fast-csv'),
 	mysqlDump = require('mysqldump'),
+	isDev = require('electron-is-dev'),
 	path = require('path'),
 	url = require('url'),
 	mysql = new (require('./sql/mysqlManager'))(),
@@ -13,27 +13,31 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron'),
 
 require('hazardous');
 
-let mainWindow, devToolsEnabled = true;
+let mainWindow, devToolsEnabled = isDev;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
 		show: false, width: 600, height: 600, minWidth: 600, minHeight: 600, resizable: true, title: 'ISU MIS Club Check-In'
 	});
 
-	const startUrl = process.env.ELECTRON_START_URL || url.format({
-		pathname: path.join(__dirname, '/../build/index.html'),
+	const startUrl = isDev ? 'http://localhost:3000' : url.format({
+		pathname: path.join(__dirname, '../build/index.html'),
 		protocol: 'file:',
 		slashes: true
 	});
 	mainWindow.loadURL(startUrl);
 
-	installExtension(REACT_DEVELOPER_TOOLS)
-		.then((name) => logger.debug(`Added Extension:  ${name}`))
-		.catch((err) => logger.error('An error occurred: ', err));
+	if (isDev) {
+		const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
 
-	installExtension(REDUX_DEVTOOLS)
-		.then((name) => logger.debug(`Added Extension:  ${name}`))
-		.catch((err) => logger.error('An error occurred: ', err));
+		installExtension(REACT_DEVELOPER_TOOLS)
+			.then((name) => logger.debug(`Added Extension: ${name}`))
+			.catch((err) => logger.error('An error occurred: ', err));
+
+		installExtension(REDUX_DEVTOOLS)
+			.then((name) => logger.debug(`Added Extension: ${name}`))
+			.catch((err) => logger.error('An error occurred: ', err));
+	}
 
 	mainWindow.on('closed', () => {
 		mainWindow = null;
@@ -76,7 +80,7 @@ app.on('ready', () => {
 		} catch (error) {
 			logger.error(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`);
 		}
-		if (action === ipcMysql.VERIFY_CREDENTIALS && results.hasOwnProperty('devToolsEnabled')) {
+		if (action === ipcMysql.VERIFY_CREDENTIALS && results && results.hasOwnProperty('devToolsEnabled')) {
 			devToolsEnabled = results.devToolsEnabled;
 			delete results.devToolsEnabled;
 		}

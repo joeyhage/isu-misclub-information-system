@@ -1,19 +1,17 @@
-const ActiveDirectory = require('activedirectory');
-
-const config = {
-	url: 'ldaps://windc1.iastate.edu:636',
-	baseDN: 'dc=iastate,dc=edu'
-};
+const ldap = require('ldapjs');
 
 exports.verifyExecPassword = async (netid, password) => {
-	const ad = new ActiveDirectory(config);
+	const client = ldap.createClient({
+		url: 'ldaps://windc1.iastate.edu:636',
+		baseDN: 'dc=iastate,dc=edu'
+	});
 
 	return new Promise((resolve, reject) => {
-		ad.authenticate(`${netid}@iastate.edu`, password, (error, auth) => {
-			if (error && error['lde_message'].indexOf('AcceptSecurityContext') === -1) {
-				return reject(new Error(error));
+		client.bind(`${netid}@iastate.edu`, password, error => {
+			if (error) {
+				return reject(error);
 			}
-			resolve(auth);
+			resolve();
 		});
 	});
 };

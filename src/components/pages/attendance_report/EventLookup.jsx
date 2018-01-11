@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputGroup } from '../../common';
-import moment from 'moment';
+import dateFormat from 'dateformat';
 // import {ipcMysql} from '../../../actions/ipcActions';
 // import {isValidInput} from '../../../utils/validation';
 
@@ -11,9 +11,11 @@ export default class EventLookup extends React.Component {
 	constructor(props) {
 		super(props);
 
+		const dateRangeStart = new Date();
+		dateRangeStart.setMonth(dateRangeStart.getMonth() - 6);
 		this.state = {
-			dateRangeStart: moment().subtract(6, 'months').format('YYYY-MM-DD'),
-			dateRangeEnd: moment().format('YYYY-MM-DD'),
+			dateRangeStart: dateFormat(dateRangeStart, 'isoDate'),
+			dateRangeEnd: dateFormat('isoDate'),
 			eventName: ''
 		};
 		this._handleChange = this._handleChange.bind(this);

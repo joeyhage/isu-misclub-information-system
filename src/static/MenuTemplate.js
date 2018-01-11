@@ -1,3 +1,5 @@
+const isDev = require('electron-is-dev');
+
 exports.createMenuTemplate = (appName, shell) => {
 	const template = [
 		{
@@ -16,9 +18,17 @@ exports.createMenuTemplate = (appName, shell) => {
 		},
 		{
 			label: 'View',
-			submenu: [
+			submenu: isDev ? [
 				{role: 'reload'},
 				{role: 'toggledevtools'},
+				{type: 'separator'},
+				{role: 'resetzoom'},
+				{role: 'zoomin'},
+				{role: 'zoomout'},
+				{type: 'separator'},
+				{role: 'togglefullscreen'}
+			] : [
+				{role: 'reload'},
 				{type: 'separator'},
 				{role: 'resetzoom'},
 				{role: 'zoomin'},

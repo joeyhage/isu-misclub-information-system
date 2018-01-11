@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
+import dateFormat from 'dateformat';
 import { Column, Message, PageView } from '../common';
 import CheckInMember from './check_in/CheckInMember';
 import MemberLookup from './check_in/MemberLookup';
@@ -15,7 +15,7 @@ class CheckIn extends React.Component {
 			member: {},
 			createMember: false,
 			message: '',
-			eventDate: moment().format('MMM DD, YYYY')
+			eventDate: dateFormat('mediumDate')
 		};
 		this._resetState = this._resetState.bind(this);
 		this._setMember = this._setMember.bind(this);
@@ -42,7 +42,7 @@ class CheckIn extends React.Component {
 									  onCancel={this._resetState}/>
 					}
 					{Boolean(this.state.message) &&
-						<Message heading='Info' onDelete={() => this.setState({message: ''})} timeout={3000} info>
+						<Message header='Info' onDelete={() => this.setState({message: ''})} timeout={4000} info>
 							{this.state.message}
 						</Message>
 					}

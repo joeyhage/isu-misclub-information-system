@@ -72,34 +72,37 @@ exports.sqlActions = (mysql, logger) => ({
 			throw new Error(errorMessage1);
 		}
 		if (results && results.length) {
-			let auth;
 			try {
-				auth = await verifyExecPassword(netid, ipcArgs.password);
+				await verifyExecPassword(netid, ipcArgs.password);
 			} catch (error) {
 				const errorMessage2 = `Error verifying password for user: ${netid}`;
 				logger.error(error, errorMessage2, true);
 				throw new Error(errorMessage2);
 			}
-			if (auth) {
-				const {admin} = results[0];
-				return {
-					devToolsEnabled: Boolean(admin),
-					userId: netid,
-					accessLevel: Boolean(admin) ? 'exec-admin' : 'exec'
-				};
-			} else {
-				return {devToolsEnabled: false};
-			}
+			const {admin} = results[0];
+			return {
+				devToolsEnabled: Boolean(admin),
+				userId: netid,
+				accessLevel: Boolean(admin) ? 'exec-admin' : 'exec'
+			};
 		}
 	},
 	[ipcMysql.LOOKUP_NETID]: async ipcArgs => {
 		const {netid} = ipcArgs;
 		try {
-			return await Promise.all([
+			const [members, attendance, activity] = await Promise.all([
 				mysql.lookupNetid(netid),
 				mysql.retrieveMemberAttendance(netid),
 				mysql.retrieveMemberActivity(netid)
 			]);
+			if (members && members[0] && members[0].hasOwnProperty('netid')) {
+				const member = members[0];
+				member.attendance = attendance;
+				member.activity = activity;
+				return member;
+			} else {
+				return {};
+			}
 		} catch (error) {
 			const errorMessage = `Error looking up person with Net-ID: ${netid}`;
 			logger.error(error, errorMessage, true);

@@ -1,5 +1,7 @@
-const mysql = require('mysql'),
-	mysqlDB = require('./mysqlDB');
+const isDev = require('electron-is-dev'),
+	mysql = require('mysql'),
+	mysqlDB = require('./mysqlDB'),
+	{ is_acl, is_activity_history, is_attendance, is_event, is_member } = new (require('./tableNames'))().tableNames;
 
 class mysqlManager {
 	constructor() {
@@ -22,6 +24,9 @@ class mysqlManager {
 							if (error) {
 								return reject(error);
 							}
+							if (isDev) {
+								console.log('Sql statement - ', sqlStatement);
+							}
 							resolve(results);
 						}
 					);
@@ -34,99 +39,102 @@ class mysqlManager {
 
 	findEventsToday() {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_events` WHERE `event_date`=CURRENT_DATE ORDER BY `event_id` DESC'
+			`SELECT * FROM ${is_event} WHERE event_date=CURRENT_DATE ORDER BY event_id DESC`
 		);
 	}
 
 	createEvent(eventName) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_events` (`event_name`,`event_date`) VALUES (?,CURRENT_DATE)',
+			`INSERT INTO ${is_event} (event_name,event_date) VALUES (?,CURRENT_DATE)`,
 			[eventName]
 		);
 	}
 
 	deleteEvent(eventId) {
 		return this.sqlQueryHandler(
-			'DELETE FROM `is_events` WHERE `event_id`=?',
+			`DELETE FROM ${is_event} WHERE event_id=?`,
 			[eventId]
 		);
 	}
 
 	retrieveEventData(eventId) {
 		return this.sqlQueryHandler(
-			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
-			'FROM `is_events` WHERE `event_id`=?',
+			'SELECT event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
+			`FROM ${is_event} WHERE event_id=?`,
 			[eventId]
 		);
 	}
 
 	verifyCredentials(netid) {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_acl` WHERE `netid`=?',
+			`SELECT * FROM ${is_acl} WHERE netid=?`,
 			[netid]
 		);
 	}
 
 	lookupNetid(netid) {
 		return this.sqlQueryHandler(
-			'SELECT * FROM `is_members` WHERE `netid`=?',
+			`SELECT * FROM ${is_member} WHERE netid=?`,
 			[netid]
 		);
 	}
 
 	retrieveMemberAttendance(netid) {
 		return this.sqlQueryHandler(
-			'SELECT e.`event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
-			'FROM `is_events` e,`is_attendance` a WHERE e.`event_id`=a.`event_id` AND `netid`=? ' +
-			'ORDER BY e.`event_id` DESC',
+			'SELECT e.event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
+			`FROM ${is_event} e,is_attendance a WHERE e.event_id=a.event_id AND netid=? ` +
+			'ORDER BY e.event_id DESC',
 			[netid]
 		);
 	}
 
 	retrieveMemberActivity(netid) {
 		return this.sqlQueryHandler(
-			'SELECT `activity_type`,DATE_FORMAT(`timestamp`,\'%l:%i%p %b %e, %Y\') as activity_time ' +
-			'FROM `is_activity_history` WHERE `netid`=? ORDER BY `timestamp` DESC',
+			'SELECT activity_type,DATE_FORMAT(timestamp,\'%l:%i%p %b %e, %Y\') as activity_time ' +
+			`FROM ${is_activity_history} WHERE netid=? ORDER BY timestamp DESC`,
 			[netid]
 		);
 	}
 
 	checkInMember(member, eventId) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_attendance` (`netid`,`event_id`,`major`,`classification`) VALUES (?,?,?,?)',
+			`INSERT INTO ${is_attendance} (netid,event_id,major,classification) VALUES (?,?,?,?)`,
 			[member.netid, eventId, member.major, member.classification]
 		);
 	}
 
 	addPersonInfo(member) {
 		return this.sqlQueryHandler(
-			'INSERT INTO `is_members` (`netid`,`first_name`,`last_name`,`major`,`classification`,`semesters_remaining`,' +
-			'`free_meeting_used`) VALUES (?,?,?,?,?,?,?)',
-			[member.netid, member.firstName, member.lastName, member.major, member.classification, member.semestersRemaining, 1]
+			`INSERT INTO ${is_member} (netid,first_name,last_name,major,classification,semesters_remaining,` +
+			'free_meeting_used) VALUES (?,?,?,?,?,?,?)',
+			[member.netid, member.first_name, member.last_name, member.major, member.classification, member.payment, 1]
 		);
 	}
 
 	updateMemberInfo(member) {
 		return this.sqlQueryHandler(
-			'UPDATE `is_members` SET `first_name`=?,`last_name`=?,' +
-			'`major`=?,`classification`=?,`semesters_remaining`=(`semesters_remaining`+?),`free_meeting_used`=? ' +
-			'WHERE `netid`=?',
-			[member.first_name, member.last_name, member.major, member.classification, member.payment, member.free_meeting_used, member.netid]
+			`UPDATE ${is_member} SET first_name=?,last_name=?,` +
+			'major=?,classification=?,semesters_remaining=(semesters_remaining+?),free_meeting_used=? ' +
+			'WHERE netid=?',
+			[
+				member.first_name, member.last_name, member.major, member.classification, member.payment,
+				member.free_meeting_used, member.netid
+			]
 		);
 	}
 
 	getAttendanceForEvent(eventId) {
 		return this.sqlQueryHandler(
-			'SELECT m.* FROM `is_members` m, `is_attendance` a WHERE m.`netid`=a.`netid` AND `event_id`=? ORDER BY `netid` ASC',
+			`SELECT m.* FROM ${is_member} m, ${is_attendance} a WHERE m.netid=a.netid AND event_id=? ORDER BY netid ASC`,
 			[eventId]
 		);
 	}
 
 	queryEvents(dateRangeStart, dateRangeEnd, eventName = '') {
 		return this.sqlQueryHandler(
-			'SELECT `event_id`,`event_name`,DATE_FORMAT(`event_date`,\'%b %e, %Y\') as event_date ' +
-			'FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? AND `event_name` LIKE ? ' +
-			'ORDER BY `event_id` DESC',
+			'SELECT event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
+			`FROM ${is_event} WHERE event_date>=? AND event_date<=? AND event_name LIKE ? ` +
+			'ORDER BY event_id DESC',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);
 	}
@@ -134,7 +142,6 @@ class mysqlManager {
 
 module.exports = mysqlManager;
 
-//
 // function checkIn(memberData, callback) {
 // 	const netId = memberData.netid;
 // 	if (!currentEventId) {
@@ -188,7 +195,7 @@ module.exports = mysqlManager;
 // 		}
 // 	}
 // 	if (memberStatusChange) {
-// 		connection.query('UPDATE `is_members` SET `semesters_remaining`=?,`free_meeting_used`=? WHERE `netid`=?',
+// 		connection.query('UPDATE `is_member` SET `semesters_remaining`=?,`free_meeting_used`=? WHERE `netid`=?',
 // 			[memberData.semesters_remaining, memberData.free_meeting_used, memberData.netid], error => {
 // 				if (error) {
 // 					winston.error(error);
@@ -215,7 +222,7 @@ module.exports = mysqlManager;
 //
 //
 // function findEventsByDate(startDate, endDate, callback) {
-// 	connection.query('SELECT * FROM `is_events` WHERE `event_date`>=? AND `event_date`<=? ORDER BY `event_date` DESC, ' +
+// 	connection.query('SELECT * FROM `is_event` WHERE `event_date`>=? AND `event_date`<=? ORDER BY `event_date` DESC, ' +
 // 		'`event_id` DESC', [startDate, endDate], (error, results) => {
 // 		if (error) {
 // 			winston.error(error);

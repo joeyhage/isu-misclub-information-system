@@ -22,7 +22,7 @@ const ipcMysql = {
 };
 
 // module.exports used because they are needed
-// by main file 'electron-starter.js' which
+// by main file 'electron.js' which
 // is not bundled with webpack
 module.exports = {
 	ipcGeneral,
