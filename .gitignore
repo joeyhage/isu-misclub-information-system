@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/node_modules*
 
 # testing
 /coverage
@@ -20,5 +21,6 @@
 # ide
 .idea
 
+# project
 *.log*
 mysqlDB.js

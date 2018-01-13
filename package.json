@@ -23,10 +23,10 @@
  },
  "devDependencies": {
   "concurrently": "^3.5.1",
-  "electron": "^1.7.8",
+  "electron": "^1.7.10",
   "electron-builder": "^19.52.1",
   "electron-devtools-installer": "^2.2.3",
-  "electron-rebuild": "^1.6.0",
+  "electron-rebuild": "^1.6.1",
   "react-scripts": "1.0.10",
   "wait-on": "^2.0.2"
  },

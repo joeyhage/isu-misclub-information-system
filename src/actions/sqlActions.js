@@ -1,8 +1,10 @@
 const { dialog } = require('electron'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
-	{ ipcMysql } = require('./ipcActions');
+	{ ipcMysql } = require('./ipcActions'),
+	{FREE_MEETING_USED, PAID_1_SEMESTER, PAID_2_SEMESTERS, MEMBER_ADDED, INFORMATION_UPDATED} =
+		require('../sql/sqlConstants');
 
-exports.sqlActions = (mysql, logger) => ({
+const sqlActions = (mysql, logger) => ({
 	[ipcMysql.RETRIEVE_EVENTS_TODAY]: async () => {
 		try {
 			return await mysql.findEventsToday();
@@ -25,7 +27,7 @@ exports.sqlActions = (mysql, logger) => ({
 	[ipcMysql.DELETE_EVENT]: async ipcArgs => {
 		const {eventId} = ipcArgs;
 		try {
-			checkEventId(eventId);
+			_isValidEventId(eventId);
 			await mysql.deleteEvent(eventId);
 			dialog.showMessageBox({
 				type: 'info',
@@ -46,7 +48,7 @@ exports.sqlActions = (mysql, logger) => ({
 		const {eventId} = ipcArgs;
 		let results;
 		try {
-			checkEventId(eventId);
+			_isValidEventId(eventId);
 			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
 			const errorMessage = `Error while retrieving event data for Event ID: ${eventId}`;
@@ -112,10 +114,21 @@ exports.sqlActions = (mysql, logger) => ({
 	[ipcMysql.CHECK_IN_UPDATE_MEMBER]: async ipcArgs => {
 		const {member, eventId} = ipcArgs;
 		try {
-			checkEventId(eventId);
-			return await Promise.all([
+			_isValidEventId(eventId);
+			const sqlCommands = [
 				mysql.checkInMember(member, eventId)
-			]);
+			];
+			const paymentActivity = _getPaymentActivity(member.payment);
+			if (paymentActivity) {
+				sqlCommands.push(mysql.recordMemberActivity(member.netid, paymentActivity));
+			} else if (_didUseFreeMeeting(member)) {
+				sqlCommands.push(mysql.recordMemberActivity(member.netid, FREE_MEETING_USED));
+			}
+			if (member.updated) {
+				sqlCommands.push(mysql.recordMemberActivity(member.netid, INFORMATION_UPDATED));
+				sqlCommands.push(mysql.updateMemberInfo(member));
+			}
+			return await Promise.all([sqlCommands]);
 		} catch (error) {
 			let errorMessage;
 			if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
@@ -128,12 +141,35 @@ exports.sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.CHECK_IN_CREATE_MEMBER]: async ipcArgs => {
-
+		const {member, eventId} = ipcArgs;
+		try {
+			_isValidEventId(eventId);
+			await mysql.createMember(member);
+			const sqlCommands = [
+				mysql.checkInMember(member, eventId),
+				mysql.recordMemberActivity(member.netid, MEMBER_ADDED),
+				mysql.recordMemberActivity(member.netid, FREE_MEETING_USED)
+			];
+			const paymentActivity = _getPaymentActivity(member.payment);
+			if (paymentActivity) {
+				sqlCommands.push(mysql.recordMemberActivity(member.netid, paymentActivity));
+			}
+			return await Promise.all(sqlCommands);
+		} catch (error) {
+			let errorMessage;
+			if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
+				errorMessage = `Error while checking in person with Net-ID: ${member.netid}. Person has already checked in for event with Event ID: ${eventId}.`;
+			} else {
+				errorMessage = `Error while checking in person with Net-ID: ${member.netid} for event with Event ID: ${eventId}.`;
+			}
+			logger.error(error, errorMessage, true);
+			throw new Error(errorMessage);
+		}
 	},
 	[ipcMysql.RETRIEVE_ATTENDANCE]: async ipcArgs => {
 		const {eventId} = ipcArgs;
 		try {
-			checkEventId(eventId);
+			_isValidEventId(eventId);
 			return await mysql.getAttendanceForEvent(eventId);
 		} catch (error) {
 			const errorMessage = `Error while getting event attendance info for event with Event ID: ${eventId}`;
@@ -158,8 +194,22 @@ exports.sqlActions = (mysql, logger) => ({
 	}
 });
 
-const checkEventId = eventId => {
+module.exports = sqlActions;
+
+const _isValidEventId = eventId => {
 	if (!parseInt(eventId, 10)) {
 		throw new Error(`Event ID: ${eventId} is not numeric`);
 	}
+};
+
+const _getPaymentActivity = payment => {
+	if (payment !== 0) {
+		return payment === 1 ? PAID_1_SEMESTER : PAID_2_SEMESTERS;
+	} else {
+		return 0;
+	}
+};
+
+const _didUseFreeMeeting = member => {
+	return member.semesters_remaining === 0 && member.payment === 0 && !member.free_meeting_used;
 };

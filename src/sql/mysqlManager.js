@@ -1,7 +1,7 @@
 const isDev = require('electron-is-dev'),
 	mysql = require('mysql'),
 	mysqlDB = require('./mysqlDB'),
-	{ is_acl, is_activity_history, is_attendance, is_event, is_member } = new (require('./tableNames'))().tableNames;
+	{ is_acl, is_activity_history, is_attendance, is_event, is_member } = new (require('./sqlTableNames'))().tableNames;
 
 class mysqlManager {
 	constructor() {
@@ -31,6 +31,7 @@ class mysqlManager {
 						}
 					);
 				} else {
+					connection.release();
 					resolve();
 				}
 			});
@@ -96,6 +97,13 @@ class mysqlManager {
 		);
 	}
 
+	recordMemberActivity(netid, activityType) {
+		return this.sqlQueryHandler(
+			`INSERT INTO ${is_activity_history} (netid,activity_type) VALUES (?,?)`,
+			[netid, activityType]
+		);
+	}
+
 	checkInMember(member, eventId) {
 		return this.sqlQueryHandler(
 			`INSERT INTO ${is_attendance} (netid,event_id,major,classification) VALUES (?,?,?,?)`,
@@ -103,7 +111,7 @@ class mysqlManager {
 		);
 	}
 
-	addPersonInfo(member) {
+	createMember(member) {
 		return this.sqlQueryHandler(
 			`INSERT INTO ${is_member} (netid,first_name,last_name,major,classification,semesters_remaining,` +
 			'free_meeting_used) VALUES (?,?,?,?,?,?,?)',
