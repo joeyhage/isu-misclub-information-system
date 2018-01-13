@@ -7,7 +7,7 @@
 - [Tools](#tools)
 - [API](#api)
 - [Useful Links](#useful-links)
-- [Help](#troubleshooting)
+- [Troubleshooting](#troubleshooting)
 
 ## Workspace Setup
 
@@ -21,14 +21,14 @@
     your computer. It also makes it easier to update to a new version.
     
     #### Option 2 (Easier)
-    To install the most recent Node.js version, click [here](https://nodejs.org/en/download/current/).
+    To install the most recent Node.js version, go [here](https://nodejs.org/en/download/current/).
     This will also download the most recent version of npm, the official Node.js package manager.
 
 2. ### Getting Started with Git
 
-    **[Download Git](https://git.linux.iastate.edu/help/gitlab-basics/start-using-git.md)**
+    **[Download Git](https://git-scm.com/downloads)**
     
-    **[Basic Commands from the Command Line](https://git.linux.iastate.edu/help/gitlab-basics/command-line-commands.md)**
+    **[Git Tutorial](https://git-scm.com/docs/gittutorial)**
     
     **[Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)**
 
@@ -124,9 +124,9 @@ supports all the same functionality that WebStorm does.
 When developing locally, you may find it useful to utilize the React and Redux DevTools. To open, start the application 
 and click the *View* heading on the menu bar. Then click *Toggle Developer Tools*.
 
-For official documentation on how to use the Redux Developer Tools, click [here](http://extension.remotedev.io/).
+For official documentation on how to use the Redux Developer Tools, go [here](http://extension.remotedev.io/).
 
-For official documentation on how to use the React Developer Tools, click [here](https://github.com/facebook/react-devtools#faq).
+For official documentation on how to use the React Developer Tools, go [here](https://github.com/facebook/react-devtools#faq).
 
 ## API
 
