@@ -75,7 +75,15 @@ class mysqlManager {
 
 	lookupNetid(netid) {
 		return this.sqlQueryHandler(
-			`SELECT * FROM ${is_member} WHERE netid=?`,
+			`SELECT * FROM ${is_member} m, ` +
+			'(' +
+				'SELECT timestamp as last_updated,netid ' +
+				`FROM ${is_activity_history} ` +
+				'WHERE netid=? AND activity_type=\'Information Updated\' ' +
+				'ORDER BY timestamp DESC ' +
+				'LIMIT 1' +
+			') a ' +
+			'WHERE m.netid=a.netid',
 			[netid]
 		);
 	}
@@ -83,7 +91,8 @@ class mysqlManager {
 	retrieveMemberAttendance(netid) {
 		return this.sqlQueryHandler(
 			'SELECT e.event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
-			`FROM ${is_event} e,is_attendance a WHERE e.event_id=a.event_id AND netid=? ` +
+			`FROM ${is_event} e, is_attendance a ` +
+			'WHERE e.event_id=a.event_id AND netid=? ' +
 			'ORDER BY e.event_id DESC',
 			[netid]
 		);
@@ -92,7 +101,8 @@ class mysqlManager {
 	retrieveMemberActivity(netid) {
 		return this.sqlQueryHandler(
 			'SELECT activity_type,DATE_FORMAT(timestamp,\'%l:%i%p %b %e, %Y\') as activity_time ' +
-			`FROM ${is_activity_history} WHERE netid=? ORDER BY timestamp DESC`,
+			`FROM ${is_activity_history} ` +
+			'WHERE netid=? ORDER BY timestamp DESC',
 			[netid]
 		);
 	}
@@ -113,8 +123,9 @@ class mysqlManager {
 
 	createMember(member) {
 		return this.sqlQueryHandler(
-			`INSERT INTO ${is_member} (netid,first_name,last_name,major,classification,semesters_remaining,` +
-			'free_meeting_used) VALUES (?,?,?,?,?,?,?)',
+			`INSERT INTO ${is_member} ` +
+			'(netid,first_name,last_name,major,classification,semesters_remaining,free_meeting_used) ' +
+			'VALUES (?,?,?,?,?,?,?)',
 			[member.netid, member.first_name, member.last_name, member.major, member.classification, member.payment, 1]
 		);
 	}
@@ -133,7 +144,9 @@ class mysqlManager {
 
 	getAttendanceForEvent(eventId) {
 		return this.sqlQueryHandler(
-			`SELECT m.* FROM ${is_member} m, ${is_attendance} a WHERE m.netid=a.netid AND event_id=? ORDER BY netid ASC`,
+			`SELECT m.* FROM ${is_member} m, ${is_attendance} a ` +
+			'WHERE m.netid=a.netid AND event_id=? ' +
+			'ORDER BY netid ASC',
 			[eventId]
 		);
 	}
@@ -141,7 +154,8 @@ class mysqlManager {
 	queryEvents(dateRangeStart, dateRangeEnd, eventName = '') {
 		return this.sqlQueryHandler(
 			'SELECT event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
-			`FROM ${is_event} WHERE event_date>=? AND event_date<=? AND event_name LIKE ? ` +
+			`FROM ${is_event} ` +
+			'WHERE event_date>=? AND event_date<=? AND event_name LIKE ? ' +
 			'ORDER BY event_id DESC',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);
@@ -149,84 +163,6 @@ class mysqlManager {
 }
 
 module.exports = mysqlManager;
-
-// function checkIn(memberData, callback) {
-// 	const netId = memberData.netid;
-// 	if (!currentEventId) {
-// 		winston.error('Event ID was 0 while trying to check-in member: ' + netId);
-// 		app.quit();
-// 	} else {
-// 		connection.query('INSERT INTO `is_attendance` (`netid`, `event_id`, `first_name`, `last_name`, `major`, ' +
-// 			'`classification`) VALUES (?, ?, ?, ?, ?, ?)', [netId, currentEventId, memberData.first_name, memberData.last_name,
-// 				memberData.major, memberData.classification],
-// 			error => {
-// 				if (error) {
-// 					if (error.message.indexOf('ER_DUP_ENTRY') !== -1) {
-// 						dialog.showErrorBox('Error', 'Member with Net-ID: ' + netId + ' has already checked in for event: '
-// 							+ currentEventId);
-// 					} else {
-// 						dialog.showErrorBox('Error', 'Error while trying to check-in member with Net-ID: ' + netId +
-// 							' for event: ' + currentEventId);
-// 						winston.error(error);
-// 					}
-// 				}
-// 				callback();
-// 			})
-// 	}
-// }
-//
-// function updateMember(memberData, callback) {
-// 	const memberDataKeys = Object.keys(memberData);
-// 	let memberStatusChange = false;
-// 	for (let i = 0; i < memberDataKeys.length; i++) {
-// 		const oldValue = currentMember[memberDataKeys[i]];
-// 		const newValue = memberData[memberDataKeys[i]];
-// 		let activityType;
-// 		if (memberDataKeys[i] === 'semesters_remaining') {
-// 			const oldInt = parseInt(oldValue, 10);
-// 			const newInt = parseInt(newValue, 10);
-// 			if (oldInt !== newInt) {
-// 				if (newInt - oldInt === 2) {
-// 					activityType = 'Paid 2 Semesters'
-// 				} else {
-// 					activityType = 'Paid 1 Semester'
-// 				}
-// 			}
-// 		} else if (memberDataKeys[i] === 'free_meeting_used') {
-// 			if (parseInt(oldValue, 10) !== parseInt(newValue, 10)) {
-// 				activityType = 'Free Meeting Used';
-// 			}
-// 		}
-// 		if (activityType) {
-// 			memberStatusChange = true;
-// 			recordMemberActivity(memberData.netid, activityType);
-// 		}
-// 	}
-// 	if (memberStatusChange) {
-// 		connection.query('UPDATE `is_member` SET `semesters_remaining`=?,`free_meeting_used`=? WHERE `netid`=?',
-// 			[memberData.semesters_remaining, memberData.free_meeting_used, memberData.netid], error => {
-// 				if (error) {
-// 					winston.error(error);
-// 					dialog.showErrorBox('Error', 'Error while trying to update member status: ' + JSON.stringify(memberData));
-// 				}
-// 				callback();
-// 			})
-// 	} else {
-// 		callback();
-// 	}
-//
-// }
-//
-//
-// function recordMemberActivity(netId, activityType) {
-// 	connection.query('INSERT INTO `is_activity_history` (`netid`,`activity_type`) VALUES (?,?)', [netId, activityType],
-// 		error => {
-// 			if (error) {
-// 				winston.error(error);
-// 				dialog.showErrorBox('Error', 'Error while recording ' + activityType + ' for member with Net-ID: ' + netId);
-// 			}
-// 		})
-// }
 //
 //
 // function findEventsByDate(startDate, endDate, callback) {

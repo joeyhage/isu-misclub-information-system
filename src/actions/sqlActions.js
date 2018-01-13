@@ -118,14 +118,21 @@ const sqlActions = (mysql, logger) => ({
 			const sqlCommands = [
 				mysql.checkInMember(member, eventId)
 			];
+			let memberNeedsUpdating = false;
 			const paymentActivity = _getPaymentActivity(member.payment);
 			if (paymentActivity) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, paymentActivity));
+				memberNeedsUpdating = true;
 			} else if (_didUseFreeMeeting(member)) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, FREE_MEETING_USED));
+				member.free_meeting_used = 1;
+				memberNeedsUpdating = true;
 			}
-			if (member.updated) {
+			if (member.updatedInfo) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, INFORMATION_UPDATED));
+				memberNeedsUpdating = true;
+			}
+			if (memberNeedsUpdating) {
 				sqlCommands.push(mysql.updateMemberInfo(member));
 			}
 			return await Promise.all([sqlCommands]);
@@ -211,5 +218,5 @@ const _getPaymentActivity = payment => {
 };
 
 const _didUseFreeMeeting = member => {
-	return member.semesters_remaining === 0 && member.payment === 0 && !member.free_meeting_used;
+	return member.semesters_remaining === 0 && member.payment === 0;
 };

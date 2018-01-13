@@ -109,7 +109,7 @@ export default class CheckInMember extends React.Component {
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(classification)) {
 			this.setState({showCheckInFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
-				member: {...this.state.member, payment: this.state.member_payment, updated: this._hasMemberInfoChanged()},
+				member: {...this.state.member, payment: this.state.member_payment, updatedInfo: this._hasMemberInfoChanged()},
 				eventId: this.props.eventId
 			});
 			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
