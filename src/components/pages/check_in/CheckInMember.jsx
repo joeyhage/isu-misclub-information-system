@@ -43,7 +43,7 @@ export default class CheckInMember extends React.Component {
 						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
 									showValidation={this._getCheckInFormValidationState} status>
 							<PaymentRadio checked={this.state.member_payment} onChange={this._handleChange}/>
-							{!this.state.member.semesters_remaining && (this.state.member.free_meeting_used ?
+							{this.state.member.semesters_remaining === 0 && (this.state.member.free_meeting_used ?
 									<Message header='Payment Needed' danger>
 										Member has already used free meeting and has not yet paid dues.
 									</Message> :
@@ -58,10 +58,10 @@ export default class CheckInMember extends React.Component {
 									</Button>
 								}
 								<Button id='edit-info' onClick={this._handleChange} primary>
-									{!this.state.editing ? 'Edit Info' : 'Save'}
+									{this.state.editing ? 'Save' : 'Edit Info'}
 								</Button>
 								<Button id='cancel-member' onClick={this._handleChange} black>
-									{!this.state.editing ? 'Cancel' : 'Discard'}
+									{this.state.editing ? 'Discard' : 'Cancel'}
 								</Button>
 							</ButtonGroup>
 						</MemberInfo>
@@ -109,7 +109,7 @@ export default class CheckInMember extends React.Component {
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(classification)) {
 			this.setState({showCheckInFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
-				member: {...this.state.member, payment: this.state.member_payment},
+				member: {...this.state.member, payment: this.state.member_payment, updated: this._hasMemberInfoChanged()},
 				eventId: this.props.eventId
 			});
 			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
@@ -122,6 +122,12 @@ export default class CheckInMember extends React.Component {
 		} else {
 			this.setState({showCheckInFormErrors: true});
 		}
+	}
+
+	_hasMemberInfoChanged() {
+		const oldInfo = JSON.stringify(Object.values(this.props.member).sort());
+		const newInfo = JSON.stringify(Object.values(this.state.member).sort());
+		return oldInfo !== newInfo;
 	}
 
 	_getCheckInFormValidationState(value) {

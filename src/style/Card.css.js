@@ -9,5 +9,8 @@ export const CardCss = {
 	},
 	'.fa.fa-angle-down.up': {
 		transform: 'rotate(-180deg)'
+	},
+	'#header-options:hover, #header-title:hover': {
+		textDecoration: 'underline'
 	}
 };

@@ -18,10 +18,10 @@ class Card extends React.Component {
 				<Style rules={CardCss}/>
 				<header className='card-header'>
 					<a className='card-header-title has-text-black' onClick={this._onClick}>
-						{this.props.title}
+						<span id='header-title'>{this.props.title}</span>
 					</a>
 					<a className='card-header-icon has-text-black' aria-label='more options' onClick={this._onClick}>
-						{this.state.showContent ? 'Hide' : 'Show'}
+						<span id='header-options'>{this.state.showContent ? 'Hide' : 'Show'}</span>
 						<span className='icon' onClick={this._onClick}>
 							<i className={`fa fa-angle-down ${Boolean(!this.state.showContent) && 'up'}`} aria-hidden='true'
 							   onClick={this._onClick}/>
