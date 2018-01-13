@@ -7,6 +7,7 @@
 - [Tools](#tools)
 - [API](#api)
 - [Useful Links](#useful-links)
+- [Tutorials](#tutorials)
 - [Troubleshooting](#troubleshooting)
 
 ## Workspace Setup
@@ -26,11 +27,11 @@
 
 2. ### Getting Started with Git
 
-    **[Download Git](https://git-scm.com/downloads)**
+    [Download Git](https://git-scm.com/downloads)
     
-    **[Git Tutorial](https://git-scm.com/docs/gittutorial)**
+    [Git Tutorial](https://git-scm.com/docs/gittutorial)
     
-    **[Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)**
+    [Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)
 
 3. ### npm & installing dependencies
     
