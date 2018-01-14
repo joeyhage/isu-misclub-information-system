@@ -3,7 +3,6 @@ copyright: "Copyright © 2018 MIS Club"
 productName: "ISU MIS Club Check-In"
 
 asar: true
-asarUnpack: "**/*.log*"
 extends: null
 
 directories:
