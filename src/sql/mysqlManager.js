@@ -1,7 +1,6 @@
 const isDev = require('electron-is-dev'),
 	mysql = require('mysql'),
-	mysqlDB = require('./mysqlDB'),
-	{ is_acl, is_activity_history, is_attendance, is_event, is_member } = new (require('./sqlTableNames'))().tableNames;
+	mysqlDB = require('./mysqlDB');
 
 class mysqlManager {
 	constructor() {
@@ -163,6 +162,16 @@ class mysqlManager {
 }
 
 module.exports = mysqlManager;
+
+const _determineTableNameForEnv = table => isDev ? table + '_dev' : table;
+
+const is_acl = _determineTableNameForEnv('is_acl');
+const is_activity_history = _determineTableNameForEnv('is_activity_history');
+// const is_admin_history = _determineTableNameForEnv('is_admin_history');
+const is_attendance = _determineTableNameForEnv('is_attendance');
+const is_event = _determineTableNameForEnv('is_event');
+const is_member = _determineTableNameForEnv('is_member');
+
 //
 //
 // function findEventsByDate(startDate, endDate, callback) {

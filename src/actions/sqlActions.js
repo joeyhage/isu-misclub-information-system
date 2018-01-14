@@ -1,7 +1,7 @@
 const { dialog } = require('electron'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
 	{ ipcMysql } = require('./ipcActions'),
-	{FREE_MEETING_USED, PAID_1_SEMESTER, PAID_2_SEMESTERS, MEMBER_ADDED, INFORMATION_UPDATED} =
+	{ FREE_MEETING_USED, PAID_1_SEMESTER, PAID_2_SEMESTERS, MEMBER_ADDED, INFORMATION_UPDATED } =
 		require('../sql/sqlConstants');
 
 const sqlActions = (mysql, logger) => ({
