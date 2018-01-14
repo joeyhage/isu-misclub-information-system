@@ -22,7 +22,6 @@ export default class CreateMember extends React.Component {
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
-		this._getDirectoryInfo();
 	}
 
 	render() {
@@ -52,6 +51,10 @@ export default class CreateMember extends React.Component {
 				</Column>
 			</div>
 		);
+	}
+
+	componentDidMount() {
+		this._getDirectoryInfo();
 	}
 
 	_getDirectoryInfo() {

@@ -18,7 +18,6 @@ class Events extends React.Component {
 			showFormErrors: false,
 			isLoading: false
 		};
-		this._getEventsToday();
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
 		this._handleRowClick = this._handleRowClick.bind(this);
@@ -63,6 +62,10 @@ class Events extends React.Component {
 				</Column>
 			</PageView>
 		);
+	}
+
+	componentDidMount() {
+		this._getEventsToday();
 	}
 
 	_getEventsToday() {
