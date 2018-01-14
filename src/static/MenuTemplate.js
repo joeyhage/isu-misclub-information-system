@@ -1,6 +1,6 @@
 const isDev = require('electron-is-dev');
 
-exports.createMenuTemplate = (appName, shell) => {
+const createMenuTemplate = (appName, shell) => {
 	const template = [
 		{
 			label: 'Edit',
@@ -88,3 +88,5 @@ exports.createMenuTemplate = (appName, shell) => {
 	}
 	return template;
 };
+
+module.exports = createMenuTemplate;

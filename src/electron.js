@@ -1,4 +1,5 @@
-const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron'),
+const electron = require('electron'),
+	{ app, BrowserWindow, Menu, shell, ipcMain } = electron,
 	csv = require('fast-csv'),
 	mysqlDump = require('mysqldump'),
 	isDev = require('electron-is-dev'),
@@ -7,11 +8,9 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron'),
 	mysql = new (require('./sql/mysqlManager'))(),
 	logger = new (require('./utils/logger'))(),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
-	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
-	{ createMenuTemplate } = require('./static/MenuTemplate'),
+	requestDirectoryInfo = require('./utils/isuDirectoryLookup'),
+	createMenuTemplate = require('./static/MenuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
-
-require('hazardous');
 
 let mainWindow, devToolsEnabled = isDev;
 
@@ -87,6 +86,7 @@ app.on('ready', () => {
 		mainWindow.webContents.send(action, results);
 	});
 
+	const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
 		const size = mainWindow.getSize();
 		if (action === ipcGeneral.LOGIN_WINDOW) {
@@ -96,11 +96,11 @@ app.on('ready', () => {
 			mainWindow.hide();
 			mainWindow.setSize(600, 600);
 		} else if (action === ipcGeneral.MIS_CLUB_PAGE_WINDOW) {
-			if (size[0] === 1200 && size[1] === 800) {
+			if (size[0] === width && size[1] === height) {
 				return;
 			}
 			mainWindow.hide();
-			mainWindow.setSize(1200, 800);
+			mainWindow.setSize(width, height);
 		}
 		setTimeout(() => {
 			mainWindow.show();
@@ -118,7 +118,7 @@ app.on('ready', () => {
 			logger.error(error, `Error getting directory info for Net-ID: ${netid}`, true);
 		}
 		if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
-			logger.error(null, `Incomplete data - ${member} - for member with Net-ID: ${netid}`);
+			logger.error(null, `Incomplete data - ${JSON.stringify(member)} - for member with Net-ID: ${netid}`);
 		}
 		mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
 	});
