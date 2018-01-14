@@ -1,43 +1,50 @@
 {
- "name": "isu-misclub-checkin",
- "version": "0.1.0",
- "private": true,
- "homepage": "./",
- "main": "src/electron.js",
- "dependencies": {
-  "dateformat": "^3.0.2",
-  "electron-is-dev": "^0.3.0",
-  "fast-csv": "^2.4.1",
-  "hazardous": "^0.3.0",
-  "ldapjs": "^1.0.1",
-  "mysql": "^2.15.0",
-  "mysqldump": "^1.4.2",
-  "radium": "^0.19.6",
-  "react": "^15.6.2",
-  "react-dom": "^15.6.2",
-  "react-redux": "^5.0.5",
-  "redux": "^3.7.2",
-  "request": "^2.83.0",
-  "winston": "^2.4.0",
-  "winston-daily-rotate-file": "^1.7.2"
- },
- "devDependencies": {
-  "concurrently": "^3.5.1",
-  "electron": "^1.7.10",
-  "electron-builder": "^19.52.1",
-  "electron-devtools-installer": "^2.2.3",
-  "electron-rebuild": "^1.6.1",
-  "react-scripts": "1.0.10",
-  "wait-on": "^2.0.2"
- },
- "scripts": {
-  "start": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-start\"",
-  "build": "react-scripts build",
-  "test": "react-scripts test --env=jsdom",
-  "eject": "react-scripts eject",
-  "electron-start": "electron .",
-  "react-start": "react-scripts start",
-  "distMacWin": "electron-builder -mw",
-  "postinstall": "electron-rebuild"
- }
+	"name": "isu-misclub-checkin",
+	"description": "Check-In System for the Iowa State University MIS Club",
+	"version": "0.1.0",
+	"author": {
+		"name": "Iowa State University MIS Club",
+		"url": "http://www.mis.stuorg.iastate.edu"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/joeyhage/mis-club-check-in-system"
+	},
+	"private": true,
+	"homepage": "./",
+	"main": "src/electron.js",
+	"dependencies": {
+		"dateformat": "^3.0.2",
+		"electron-is-dev": "^0.3.0",
+		"fast-csv": "^2.4.1",
+		"got-lite": "^8.0.1",
+		"ldapjs": "^1.0.1",
+		"mysql": "^2.15.0",
+		"mysqldump": "^1.4.2",
+		"radium": "^0.19.6",
+		"react": "^15.6.2",
+		"react-dom": "^15.6.2",
+		"react-redux": "^5.0.5",
+		"redux": "^3.7.2",
+		"winston": "^2.4.0",
+		"winston-daily-rotate-file": "^1.7.2"
+	},
+	"devDependencies": {
+		"concurrently": "^3.5.1",
+		"electron": "^1.7.10",
+		"electron-builder": "^19.52.1",
+		"electron-devtools-installer": "^2.2.3",
+		"react-scripts": "1.0.10",
+		"wait-on": "^2.0.2"
+	},
+	"scripts": {
+		"start": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-start\"",
+		"build": "react-scripts build",
+		"test": "react-scripts test --env=jsdom",
+		"eject": "react-scripts eject",
+		"electron-start": "electron .",
+		"react-start": "react-scripts start",
+		"distMacWin": "electron-builder -mw",
+		"postinstall": "electron-builder install-app-deps"
+	}
 }

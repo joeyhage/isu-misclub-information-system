@@ -1,17 +1,14 @@
-const request = require('request');
+const got = require('got-lite');
 
-exports.requestDirectoryInfo = netid => {
-	return new Promise((resolve, reject) => {
-		request(`http://info.iastate.edu/individuals/search/${netid}@iastate.edu`, (error, response, body) => {
-			if (error) {
-				return reject(error);
-			}
-			if (body.indexOf('<title>Individual Search Results') === -1) {
-				resolve(parseDirectoryInfo(netid, body));
-			}
-			resolve();
-		});
-	});
+const requestDirectoryInfo = async netid => {
+	try {
+		const {body} = await got(`https://www.info.iastate.edu/individuals/search/${netid}@iastate.edu`);
+		if (body.indexOf('<title>Individual Search Results') === -1) {
+			return parseDirectoryInfo(netid, body);
+		}
+	} catch (error) {
+		console.log(error.response.body);
+	}
 };
 
 const parseDirectoryInfo = (netid, body) => {
@@ -48,3 +45,5 @@ const parseDirectoryInfo = (netid, body) => {
 		}
 	}
 };
+
+module.exports = requestDirectoryInfo;
