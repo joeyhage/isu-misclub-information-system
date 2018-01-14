@@ -6,23 +6,32 @@
 - [Technology Stack](#technology-stack)
 - [Tools](#tools)
 - [API](#api)
-- [Help](#help)
+- [Useful Links](#useful-links)
+- [Tutorials](#tutorials)
+- [Troubleshooting](#troubleshooting)
 
 ## Workspace Setup
 
 1. ### Install Node.js
     
     This project was developed using Node.js major version 8 and therefore it is recommended that you use a version 
-    greater than `8.x.x` for development. To install the most recent Node.js version, click [here](https://nodejs.org/en/download/current/).
+    greater than `8.x.x` for development. 
+    
+    #### Option 1 (Recommended)
+    Install nvm ([Node Version Manager](https://github.com/creationix/nvm)) to manage multiple Node.js installations on
+    your computer. It also makes it easier to update to a new version.
+    
+    #### Option 2 (Easier)
+    To install the most recent Node.js version, go [here](https://nodejs.org/en/download/current/).
     This will also download the most recent version of npm, the official Node.js package manager.
 
 2. ### Getting Started with Git
 
-    **[Download Git](https://git.linux.iastate.edu/help/gitlab-basics/start-using-git.md)**
+    [Download Git](https://git-scm.com/downloads)
     
-    **[Basic Commands from the Command Line](https://git.linux.iastate.edu/help/gitlab-basics/command-line-commands.md)**
+    [Git Tutorial](https://git-scm.com/docs/gittutorial)
     
-    **[Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)**
+    [Using Git with WebStorm](https://www.jetbrains.com/help/webstorm/version-control-with-webstorm.html)
 
 3. ### npm & installing dependencies
     
@@ -39,12 +48,12 @@
         
 4. ### Running Electron locally
     
-    To run the application locally, execute `npm start` from the root directory. This will execute a series of scripts
-    as seen in the package.json file which are needed to start Electron and React simultaneously.
+    To run the application locally, execute `npm start` from the root directory. This will execute two concurrent scripts,
+    as seen in the package.json file, which are needed to start Electron and React simultaneously.
 
 5. ### IDE Setup
 
-    *This step assumes you have downloaded WebStorm for development. See [here](#ide) for more information.*
+    *This step assumes you have downloaded WebStorm or IntelliJ Ultimate for development. See [here](#ide) for more information.*
     
     **Run/Debug Configurations**
      
@@ -77,23 +86,27 @@
 
 - [Website](https://electron.atom.io/)
 - [README](https://github.com/electron/electron/blob/master/docs/README.md)
+- [Electron - FreeCodeCamp](https://guide.freecodecamp.org/electron)
 
 ### React
 
 - [Website](https://facebook.github.io/react/)
 - [Create-React-App README](Create-React-App-README.md)
 - [DevTools](https://github.com/facebook/react-devtools#faq) 
+- [React - FreeCodeCamp](https://guide.freecodecamp.org/react)
 
 ### Redux
 
 - [Website & README](http://redux.js.org/)
 - [DevTools](http://extension.remotedev.io/)
+- [Redux - FreeCodeCamp](https://guide.freecodecamp.org/redux)
 
 ### MySQL Database
 
-- [SQL Reference](http://www.w3schools.com/sql/)
 - [MIS Club Web Admin](http://www.mis.stuorg.iastate.edu/webadmin)
 - [MySQL Reference Manual](https://dev.mysql.com/doc/)
+- [W3 Schools Reference](http://www.w3schools.com/sql/)
+- [SQL - FreeCodeCamp](https://guide.freecodecamp.org/sql)
 
 ## Tools
 
@@ -112,9 +125,9 @@ supports all the same functionality that WebStorm does.
 When developing locally, you may find it useful to utilize the React and Redux DevTools. To open, start the application 
 and click the *View* heading on the menu bar. Then click *Toggle Developer Tools*.
 
-For official documentation on how to use the Redux Developer Tools, click [here](http://extension.remotedev.io/).
+For official documentation on how to use the Redux Developer Tools, go [here](http://extension.remotedev.io/).
 
-For official documentation on how to use the React Developer Tools, click [here](https://github.com/facebook/react-devtools#faq).
+For official documentation on how to use the React Developer Tools, go [here](https://github.com/facebook/react-devtools#faq).
 
 ## API
 
@@ -122,7 +135,30 @@ To improve code readability and reusability, there are several common components
 project. These components can be found [here](/src/components/common). Please add API definitions for new common components when 
 created.
 
-## Help
+### TODO
+
+## Useful Links
+
+### JavaScript
+- [Mozilla Foundation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
+- [FreeCodeCamp Reference](https://guide.freecodecamp.org/javascript)
+
+### Git
+- [Official Docs](https://git-scm.com/docs)
+- [FreeCodeCamp Reference](https://guide.freecodecamp.org/git)
+
+### NPM
+- [Official Docs](https://docs.npmjs.com/)
+- [FreeCodeCamp Reference](https://guide.freecodecamp.org/developer-tools/npm)
+- [FreeCodeCamp Cheat Sheet](https://guide.freecodecamp.org/developer-tools/npm-cheatsheet/)
+
+## Tutorials
+
+- [Node School](https://nodeschool.io/#workshopper-list)
+- [Mozilla Foundation](https://developer.mozilla.org/en-US/docs/Learn/JavaScript)
+- [FreeCodeCamp](https://www.freecodecamp.org/)
+
+## Troubleshooting
 
 This is a list of possible issues that may arise and how to resolve them. 
 
