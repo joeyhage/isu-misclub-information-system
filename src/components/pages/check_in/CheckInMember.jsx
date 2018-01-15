@@ -3,6 +3,7 @@ import { Button, ButtonGroup, Column, Message } from '../../common';
 import { isValidInput } from '../../../utils/validation';
 import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from '../../member';
 import { ipcMysql } from '../../../actions/ipcActions';
+import setMemberDefaults from '../../../utils/setMemberDefaults';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -11,24 +12,10 @@ export default class CheckInMember extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			member: props.member,
-			member_payment: 0,
+			member: setMemberDefaults(props.member),
 			showCheckInFormErrors: false,
 			editing: false,
-			isLoading: false,
-			attendance: props.member.attendance.map((row, index) => (
-				<tr key={index}>
-					<td className='event-id'>{row.event_id}</td>
-					<td className='event-name'>{row.event_name}</td>
-					<td className='event-date'>{row.event_date}</td>
-				</tr>
-			)),
-			activity: props.member.activity.map((row, index) => (
-				<tr key={index}>
-					<td>{row.activity_type}</td>
-					<td>{row.activity_time}</td>
-				</tr>
-			))
+			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -42,7 +29,7 @@ export default class CheckInMember extends React.Component {
 					<form onSubmit={this._handleSubmit}>
 						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
 									showValidation={this._getCheckInFormValidationState} status>
-							<PaymentRadio checked={this.state.member_payment} onChange={this._handleChange}/>
+							<PaymentRadio checked={this.state.member.payment} onChange={this._handleChange}/>
 							{this.state.member.semesters_remaining === 0 && (this.state.member.free_meeting_used ?
 									<Message header='Payment Needed' danger>
 										Member has already used free meeting and has not yet paid dues.
@@ -79,6 +66,30 @@ export default class CheckInMember extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		let attendance, activity;
+		if (this.state.member) {
+			if (this.state.member.attendance) {
+				attendance = this.state.member.attendance.map((row, index) => (
+					<tr key={index}>
+						<td className='event-id'>{row.event_id}</td>
+						<td className='event-name'>{row.event_name}</td>
+						<td className='event-date'>{row.event_date}</td>
+					</tr>
+				));
+			}
+			if (this.state.member.activity) {
+				activity = this.state.member.activity.map((row, index) => (
+					<tr key={index}>
+						<td>{row.activity_type}</td>
+						<td>{row.activity_time}</td>
+					</tr>
+				));
+			}
+			this.setState({attendance, activity});
+		}
+	}
+
 	_handleChange(event) {
 		const {target} = event;
 		if (target.id === 'cancel-member') {
@@ -99,17 +110,22 @@ export default class CheckInMember extends React.Component {
 				}
 			}));
 		} else if (target.name === 'payment') {
-			this.setState({member_payment: parseInt(target.value, 10)});
+			this.setState(prevState => ({
+				member: {
+					...prevState.member,
+					payment: parseInt(target.value, 10)
+				}
+			}));
 		}
 	}
 
 	_handleSubmit(event) {
 		event.preventDefault();
-		const {first_name, last_name, classification} = this.state.member;
-		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(classification)) {
+		const {first_name, last_name, major} = this.state.member;
+		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
 			this.setState({showCheckInFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
-				member: {...this.state.member, payment: this.state.member_payment, updatedInfo: this._hasMemberInfoChanged()},
+				member: {...this.state.member, updatedInfo: this._hasMemberInfoChanged()},
 				eventId: this.props.eventId
 			});
 			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Button, ButtonGroup, Column, Message } from '../../common';
-import { MemberInfo } from '../../member';
-import { ipcGeneral } from '../../../actions/ipcActions';
+import { MemberInfo, PaymentRadio } from '../../member';
+import setMemberDefaults from '../../../utils/setMemberDefaults';
+import { isValidInput } from '../../../utils/validation';
+import {ipcMysql} from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -10,34 +12,29 @@ export default class CreateMember extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			member: {
-				netid: props.netid,
-				first_name: '',
-				last_name: '',
-				major: '',
-				classification: ''
-			},
-			noResults: false,
-			isLoading: false
+			member: setMemberDefaults(props.member),
+			showCreateMemberErrors: false,
+			isLoading: false,
+			didFindMember: this._didFindMember(props.member)
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
+		this._getCreateMemberValidationState = this._getCreateMemberValidationState.bind(this);
 	}
 
 	render() {
 		return (
 			<div className='columns'>
 				<Column is={6}>
-					{this.state.noResults &&
-						<Message heading='No Results' danger>
-							<p>No results were found for Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>
-								{this.props.netid}</span>.
-							</p>
+					{!this.state.didFindMember &&
+						<Message header={`No Results for Net-ID - ${this.state.member.netid}`} danger>
 							<p>Please complete the fields below manually.</p>
 						</Message>
 					}
 					<form onSubmit={this._handleSubmit}>
-						<MemberInfo member={this.state.member} onChange={this._handleChange}>
+						<MemberInfo member={this.state.member} onChange={this._handleChange}
+									showValidation={this._getCreateMemberValidationState} autoFocus>
+							<PaymentRadio checked={this.state.member.payment} onChange={this._handleChange}/>
 							<ButtonGroup isLoading={this.state.isLoading} horizontal>
 								<Button id='check-in' type='submit' info>
 									Check-In
@@ -53,34 +50,51 @@ export default class CreateMember extends React.Component {
 		);
 	}
 
-	componentDidMount() {
-		this._getDirectoryInfo();
-	}
-
-	_getDirectoryInfo() {
-		if (this.props.netid) {
-			ipcRenderer.send(ipcGeneral.REQUEST_DIRECTORY_INFO, null, {netid: this.props.netid});
-			ipcRenderer.once(ipcGeneral.REQUEST_DIRECTORY_INFO, (event, member) => {
-				if (member && member.netid && member.first_name && member.last_name) {
-					this.setState({member});
-				} else {
-					this.setState({noResults: true});
-				}
-			});
-		}
+	_didFindMember(member) {
+		return member && member.first_name && member.last_name;
 	}
 
 	_handleChange(event) {
 		const {target} = event;
-		this.setState(prevState => ({
-			member: {
-				...prevState.member,
-				[target.id]: target.value
-			}
-		}));
+		if (['first_name', 'last_name', 'major', 'classification'].includes(target.id)) {
+			this.setState(prevState => ({
+				member: {
+					...prevState.member,
+					[target.id]: target.value
+				}
+			}));
+		} else if (target.name === 'payment') {
+			this.setState(prevState => ({
+				member: {
+					...prevState.member,
+					payment: parseInt(target.value, 10)
+				}
+			}));
+		}
 	}
 
 	_handleSubmit(event) {
 		event.preventDefault();
+		const {first_name, last_name, major} = this.state.member;
+		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
+			this.setState({showCreateMemberErrors: false, isLoading: true});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_CREATE_MEMBER, {
+				member: this.state.member,
+				eventId: this.props.eventId
+			});
+			ipcRenderer.once(ipcMysql.CHECK_IN_CREATE_MEMBER, (event, results) => {
+				if (results) {
+					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
+				} else {
+					this.setState({isLoading: false});
+				}
+			});
+		} else {
+			this.setState({showCreateMemberErrors: true});
+		}
+	}
+
+	_getCreateMemberValidationState(value) {
+		return !isValidInput(value) && this.state.showCreateMemberErrors;
 	}
 }

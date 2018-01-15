@@ -6,20 +6,23 @@ import CheckInMember from './check_in/CheckInMember';
 import MemberLookup from './check_in/MemberLookup';
 import CreateMember from './check_in/CreateMember';
 import { CheckInCss } from '../../style/CheckIn.css';
+import setMemberDefaults from '../../utils/setMemberDefaults';
 
 class CheckIn extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			member: {},
+			member: setMemberDefaults(),
+			checkInMember: false,
 			createMember: false,
-			message: '',
+			message: null,
 			eventDate: dateFormat('mediumDate')
 		};
 		this._resetState = this._resetState.bind(this);
 		this._setMember = this._setMember.bind(this);
-		this._createMemberForNetID = this._createMemberForNetID.bind(this);
+		this._checkInMember = this._checkInMember.bind(this);
+		this._createMember = this._createMember.bind(this);
 	}
 
 	render() {
@@ -30,19 +33,9 @@ class CheckIn extends React.Component {
 		) : (
 			<PageView rules={CheckInCss}>
 				<Column title={this.props.eventName} subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
-					{!Boolean(this.state.member.netid) && !this.state.createMember &&
-						<MemberLookup setMember={this._setMember} onCreateMember={this._createMemberForNetID}/>
-					}
-					{Boolean(this.state.member) && Boolean(this.state.member.netid) &&
-						<CheckInMember member={this.state.member} eventId={this.props.eventId}
-									   onCancel={this._resetState} onCheckIn={this._resetState}/>
-					}
-					{this.state.createMember &&
-						<CreateMember netid={this.state.createMember} eventId={this.props.eventId}
-									  onCancel={this._resetState}/>
-					}
+					{this._determineSubpage()}
 					{Boolean(this.state.message) &&
-						<Message header='Info' onDelete={() => this.setState({message: ''})} timeout={4000} info>
+						<Message header='Info' onDelete={() => this.setState({message: null})} timeout={4000} info>
 							{this.state.message}
 						</Message>
 					}
@@ -51,19 +44,43 @@ class CheckIn extends React.Component {
 		);
 	}
 
+	_determineSubpage() {
+		if (this.state.checkInMember) {
+			return (
+				<CheckInMember member={this.state.member} eventId={this.props.eventId}
+							   onCancel={this._resetState} onCheckIn={this._resetState}/>
+			);
+		} else if (this.state.createMember) {
+			return (
+				<CreateMember member={this.state.member} eventId={this.props.eventId}
+							  onCancel={this._resetState} onCheckIn={this._resetState}/>
+			);
+		} else {
+			return (
+				<MemberLookup setMember={this._setMember} checkInMember={this._checkInMember}
+							  createMember={this._createMember}/>
+			);
+		}
+	}
+
 	_setMember(member) {
 		this.setState({member});
 	}
 
-	_createMemberForNetID(netid) {
-		this.setState({createMember: netid});
+	_checkInMember() {
+		this.setState({checkInMember: true});
+	}
+
+	_createMember() {
+		this.setState({createMember: true});
 	}
 
 	_resetState(message = '') {
 		this.setState({
 			member: {},
 			createMember: false,
-			message: typeof message === 'string' ? message : ''
+			checkInMember: false,
+			message: typeof message === 'string' ? message : null
 		});
 	}
 }

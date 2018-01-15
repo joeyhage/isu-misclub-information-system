@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, InputGroup, Message, ButtonGroup } from '../../common';
 import { isValidInput } from '../../../utils/validation';
-import { ipcMysql } from '../../../actions/ipcActions';
+import {ipcGeneral, ipcMysql} from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -11,7 +11,7 @@ export default class MemberLookup extends React.Component {
 		super(props);
 		this.state = {
 			netid: '',
-			notFound: false,
+			netIdNotFound: null,
 			showMemberLookupFormErrors: false,
 			isLoading: false
 		};
@@ -28,9 +28,9 @@ export default class MemberLookup extends React.Component {
 							placeholder={'e.g. johndoe'} style={{width:'25%'}} required autoFocus>
 					Net-ID
 				</InputGroup>
-				{this.state.notFound ?
+				{Boolean(this.state.netIdNotFound) ?
 					<Message header='Not Found' info onDelete={this._handleChange}>
-						<p>Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>{this.state.notFound}</span> not found.</p>
+						<p>Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>{this.state.netIdNotFound}</span> not found.</p>
 						<Button id='create-member' onClick={this._handleChange}
 								style={{marginTop:'2%'}} info autoFocus>
 							Create Member?
@@ -47,11 +47,11 @@ export default class MemberLookup extends React.Component {
 
 	_handleChange({target}) {
 		if (target.id === 'netid') {
-			this.setState({netid: target.value, notFound: false});
+			this.setState({netid: target.value, netIdNotFound: null});
 		} else if (target.id === 'create-member') {
-			this.props.onCreateMember(this.state.netid);
+			this._getDirectoryInfo();
 		} else if (target.id === 'member-lookup' || target.className === 'delete') {
-			this.setState({netid: '', notFound: false, showMemberLookupFormErrors: false});
+			this.setState({netid: '', netIdNotFound: null, showMemberLookupFormErrors: false});
 		}
 	}
 
@@ -66,13 +66,28 @@ export default class MemberLookup extends React.Component {
 					this.props.setMember({
 						...results
 					});
+					this.props.checkInMember();
 				} else {
-					this.setState({notFound: netid, isLoading: false});
+					this.setState({netIdNotFound: netid, isLoading: false});
 					this.props.setMember({});
 				}
 			});
 		} else {
 			this.setState({showMemberLookupFormErrors: true});
+		}
+	}
+
+	_getDirectoryInfo() {
+		if (this.state.netIdNotFound) {
+			ipcRenderer.send(ipcGeneral.REQUEST_DIRECTORY_INFO, null, {netid: this.state.netIdNotFound});
+			ipcRenderer.once(ipcGeneral.REQUEST_DIRECTORY_INFO, (event, member) => {
+				if (member && member.netid && member.first_name && member.last_name) {
+					this.props.setMember(member);
+				} else {
+					this.props.setMember({netid: this.state.netIdNotFound});
+				}
+				this.props.createMember();
+			});
 		}
 	}
 

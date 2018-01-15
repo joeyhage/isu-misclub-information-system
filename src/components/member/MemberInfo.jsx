@@ -4,7 +4,7 @@ import { InputGroup } from '../common/index';
 export class MemberInfo extends React.Component {
 	
 	render() {
-		const {member, disabled, showValidation} = this.props;
+		const {member, disabled, showValidation, autoFocus} = this.props;
 		return (
 			<div>
 				<div className='field is-horizontal'>
@@ -12,18 +12,20 @@ export class MemberInfo extends React.Component {
 						<label className='label'>Net-ID</label>
 					</div>
 					<div className='field-body'>
-						{member.netid}
+						<span style={{padding:'0 10px'}}>
+							{member.netid}
+						</span>
 					</div>
 				</div>
-				<InputGroup id='first_name' value={Boolean(member) && member.first_name} onChange={this.props.onChange}
-							disabled={disabled} showValidation={showValidation} horizontal required>
+				<InputGroup id='first_name' value={member.first_name} onChange={this.props.onChange}
+							disabled={disabled} showValidation={showValidation} autoFocus={autoFocus} horizontal required>
 					First
 				</InputGroup>
-				<InputGroup id='last_name' value={Boolean(member) && member.last_name} onChange={this.props.onChange}
+				<InputGroup id='last_name' value={member.last_name} onChange={this.props.onChange}
 							disabled={disabled} showValidation={showValidation} horizontal required>
 					Last
 				</InputGroup>
-				<InputGroup id='major' value={Boolean(member) && member.major} onChange={this.props.onChange}
+				<InputGroup id='major' value={member.major} onChange={this.props.onChange}
 							disabled={disabled} horizontal>
 					Major
 				</InputGroup>
@@ -35,15 +37,15 @@ export class MemberInfo extends React.Component {
 						<div className='field'>
 							<div className='control'>
 								<div className='select is-fullwidth'>
-									<select id='classification' value={Boolean(member) && member.classification}
-											onChange={this.props.onChange} disabled={disabled}>
-										<option>Freshman</option>
-										<option>Sophomore</option>
-										<option>Junior</option>
-										<option>Senior</option>
-										<option>Graduate</option>
-										<option>Faculty</option>
-										<option>Other</option>
+									<select className={Boolean(!member.classification) && 'is-danger'} id='classification'
+											value={member.classification} onChange={this.props.onChange} disabled={disabled}>
+										<option value='Freshman'>Freshman</option>
+										<option value='Sophomore'>Sophomore</option>
+										<option value='Junior'>Junior</option>
+										<option value='Senior'>Senior</option>
+										<option value='Graduate'>Graduate</option>
+										<option value='Faculty'>Faculty</option>
+										<option value='Other'>Other</option>
 									</select>
 								</div>
 							</div>
