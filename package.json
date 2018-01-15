@@ -26,6 +26,7 @@
 		"react-dom": "^15.6.2",
 		"react-redux": "^5.0.5",
 		"redux": "^3.7.2",
+		"unescape-html": "^1.1.0",
 		"winston": "^2.4.0",
 		"winston-daily-rotate-file": "^1.7.2"
 	},

@@ -86,21 +86,21 @@ app.on('ready', () => {
 		mainWindow.webContents.send(action, results);
 	});
 
-	const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
+	const {width: screenWidth, height: screenHeight} = electron.screen.getPrimaryDisplay().workAreaSize;
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
-		const size = mainWindow.getSize();
+		const [windowWidth, windowHeight] = mainWindow.getSize();
 		if (action === ipcGeneral.LOGIN_WINDOW) {
-			if (size[0] === 600 && size[1] === 600) {
+			if (windowWidth === 600 && windowHeight === 600) {
 				return;
 			}
 			mainWindow.hide();
 			mainWindow.setSize(600, 600);
 		} else if (action === ipcGeneral.MIS_CLUB_PAGE_WINDOW) {
-			if (size[0] === width && size[1] === height) {
+			if (windowWidth === screenWidth && windowHeight === screenHeight) {
 				return;
 			}
 			mainWindow.hide();
-			mainWindow.setSize(width, height);
+			mainWindow.setSize(screenWidth, screenHeight);
 		}
 		setTimeout(() => {
 			mainWindow.show();
