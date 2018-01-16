@@ -15,6 +15,7 @@
 	"main": "src/electron.js",
 	"dependencies": {
 		"dateformat": "^3.0.2",
+		"downshift": "^1.25.0",
 		"electron-is-dev": "^0.3.0",
 		"fast-csv": "^2.4.1",
 		"got-lite": "^8.0.1",

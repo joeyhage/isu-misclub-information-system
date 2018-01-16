@@ -1,10 +1,11 @@
 import React from 'react';
-import { InputGroup } from '../common/index';
+import { InputGroup, InputAutocomplete } from '../common';
+import isuMajors from '../../static/isuMajors';
 
 export class MemberInfo extends React.Component {
 	
 	render() {
-		const {member, disabled, showValidation, autoFocus} = this.props;
+		const {member, disabled, showValidation, autoFocus, onChange} = this.props;
 		return (
 			<div>
 				<div className='field is-horizontal'>
@@ -17,18 +18,18 @@ export class MemberInfo extends React.Component {
 						</span>
 					</div>
 				</div>
-				<InputGroup id='first_name' value={member.first_name} onChange={this.props.onChange}
-							disabled={disabled} showValidation={showValidation} autoFocus={autoFocus} horizontal required>
+				<InputGroup id='first_name' value={member.first_name} onChange={onChange} disabled={disabled}
+							showValidation={showValidation} autoFocus={autoFocus} horizontal required>
 					First
 				</InputGroup>
-				<InputGroup id='last_name' value={member.last_name} onChange={this.props.onChange}
-							disabled={disabled} showValidation={showValidation} horizontal required>
+				<InputGroup id='last_name' value={member.last_name} onChange={onChange} disabled={disabled}
+							showValidation={showValidation} horizontal required>
 					Last
 				</InputGroup>
-				<InputGroup id='major' value={member.major} onChange={this.props.onChange}
-							disabled={disabled} horizontal>
+				<InputAutocomplete id='major' value={member.major} onChange={onChange} disabled={disabled}
+								   showValidation={showValidation} items={isuMajors} horizontal required>
 					Major
-				</InputGroup>
+				</InputAutocomplete>
 				<div className='field is-horizontal'>
 					<div className='field-label is-normal'>
 						<label className='label'>Class</label>
@@ -38,7 +39,7 @@ export class MemberInfo extends React.Component {
 							<div className='control'>
 								<div className='select is-fullwidth'>
 									<select className={Boolean(!member.classification) && 'is-danger'} id='classification'
-											value={member.classification} onChange={this.props.onChange} disabled={disabled}>
+											value={member.classification} onChange={onChange} disabled={disabled}>
 										<option value='Freshman'>Freshman</option>
 										<option value='Sophomore'>Sophomore</option>
 										<option value='Junior'>Junior</option>

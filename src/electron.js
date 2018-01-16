@@ -9,7 +9,7 @@ const electron = require('electron'),
 	logger = new (require('./utils/logger'))(),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
 	requestDirectoryInfo = require('./utils/isuDirectoryLookup'),
-	createMenuTemplate = require('./static/MenuTemplate'),
+	createMenuTemplate = require('./static/menuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
 let mainWindow, devToolsEnabled = isDev;
