@@ -13,13 +13,14 @@ export class InputAutocomplete extends React.Component {
 			horizontal: props.horizontal,
 			showValidation: props.showValidation,
 			required: props.required,
-			onChange: props.onChange
+			onChange: props.onChange,
+			inputValue: props.value
 		};
 		this._onChange = this._onChange.bind(this);
 	}
 
 	render() {
-		const {horizontal, id, required, showValidation} = this.state;
+		const {horizontal, id, required, showValidation, inputValue} = this.state;
 		const {value, disabled, style, children} = this.props;
 		const hasErrors = required && showValidation && showValidation(value);
 		const className = `input ${Boolean(hasErrors) && 'is-danger'}`;
@@ -27,9 +28,9 @@ export class InputAutocomplete extends React.Component {
 		return (
 			<Downshift
 				onChange={this._onChange}
-				onStateChange={({inputValue}) => {
-					this._onChange(inputValue);
-				}}
+				onStateChange={({inputValue}) => this._onChange(inputValue)}
+				onInputValueChange={inputValue => this.setState({inputValue})}
+				inputValue={inputValue}
 				selectedItem={value}
 				defaultHighlightedIndex={0}
 				itemToString={item => item && typeof item === 'string' ? item : ''}
@@ -69,6 +70,9 @@ export class InputAutocomplete extends React.Component {
 	}
 
 	_onChange(selection) {
+		if (!selection) {
+			return;
+		}
 		this.state.onChange({
 			target: {
 				id: this.state.id,
