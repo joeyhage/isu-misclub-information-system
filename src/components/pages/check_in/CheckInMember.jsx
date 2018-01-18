@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Column, Message } from '../../common';
 import { isValidInput } from '../../../utils/validation';
 import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from '../../member';
 import { ipcMysql } from '../../../actions/ipcActions';
-import setMemberDefaults from '../../../utils/setMemberDefaults';
+import { hasMemberInfoChanged } from '../../../utils/memberUtil';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -12,7 +12,7 @@ export default class CheckInMember extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			member: setMemberDefaults(props.member),
+			member: props.member,
 			showCheckInFormErrors: false,
 			editing: false,
 			isLoading: false
@@ -121,11 +121,14 @@ export default class CheckInMember extends React.Component {
 
 	_handleSubmit(event) {
 		event.preventDefault();
-		const {first_name, last_name, major} = this.state.member;
+		const {first_name, last_name, major, isUpdated} = this.state.member;
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
 			this.setState({showCheckInFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
-				member: {...this.state.member, updatedInfo: this._hasMemberInfoChanged()},
+				member: {
+					...this.state.member,
+					isUpdated: isUpdated ? true : hasMemberInfoChanged(this.props.member, this.state.member)
+				},
 				eventId: this.props.eventId
 			});
 			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
@@ -138,12 +141,6 @@ export default class CheckInMember extends React.Component {
 		} else {
 			this.setState({showCheckInFormErrors: true});
 		}
-	}
-
-	_hasMemberInfoChanged() {
-		const oldInfo = JSON.stringify(Object.values(this.props.member).sort());
-		const newInfo = JSON.stringify(Object.values(this.state.member).sort());
-		return oldInfo !== newInfo;
 	}
 
 	_getCheckInFormValidationState(value) {

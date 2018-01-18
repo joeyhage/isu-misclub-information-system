@@ -1,5 +1,7 @@
 const { dialog } = require('electron'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
+	requestDirectoryInfo = require('../utils/isuDirectoryLookup'),
+	{ hasMemberInfoChanged } = require('../utils/memberUtil'),
 	{ ipcMysql } = require('./ipcActions'),
 	{ FREE_MEETING_USED, PAID_1_SEMESTER, PAID_2_SEMESTERS, MEMBER_ADDED, INFORMATION_UPDATED } =
 		require('../sql/sqlConstants');
@@ -101,6 +103,22 @@ const sqlActions = (mysql, logger) => ({
 				const member = members[0];
 				member.attendance = attendance;
 				member.activity = activity;
+				if (member.last_updated) {
+					member.isUpdated = true;
+					const lastUpdated = new Date(member.last_updated);
+					const sixMonthsAgo = new Date();
+					sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+					if (lastUpdated < sixMonthsAgo) {
+						try {
+							const directoryInfo = await requestDirectoryInfo(netid);
+							if (hasMemberInfoChanged(member, directoryInfo)) {
+								return Object.assign(member, directoryInfo);
+							}
+						} catch (error) {
+							logger.error(`Error getting directory info for Net-ID: ${netid}. Did not update member info.`);
+						}
+					}
+				}
 				return member;
 			} else {
 				return {};
@@ -113,11 +131,10 @@ const sqlActions = (mysql, logger) => ({
 	},
 	[ipcMysql.CHECK_IN_UPDATE_MEMBER]: async ipcArgs => {
 		const {member, eventId} = ipcArgs;
+		_isValidEventId(eventId);
 		try {
-			_isValidEventId(eventId);
-			const sqlCommands = [
-				mysql.checkInMember(member, eventId)
-			];
+			await mysql.checkInMember(member, eventId);
+			const sqlCommands = [];
 			let memberNeedsUpdating = false;
 			const paymentActivity = _getPaymentActivity(member.payment);
 			if (paymentActivity) {
@@ -128,20 +145,22 @@ const sqlActions = (mysql, logger) => ({
 				member.free_meeting_used = 1;
 				memberNeedsUpdating = true;
 			}
-			if (member.updatedInfo) {
+			if (member.isUpdated) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, INFORMATION_UPDATED));
 				memberNeedsUpdating = true;
 			}
 			if (memberNeedsUpdating) {
 				sqlCommands.push(mysql.updateMemberInfo(member));
 			}
-			return await Promise.all([sqlCommands]);
+			if (sqlCommands.length) {
+				return await Promise.all(sqlCommands);
+			}
 		} catch (error) {
-			let errorMessage;
+			let errorMessage = `Error while checking in person with Net-ID: ${member.netid}`;
 			if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
-				errorMessage = `Error while checking in person with Net-ID: ${member.netid}. Person has already checked in for event with Event ID: ${eventId}.`;
+				errorMessage +=  `. Person has already checked in for event with Event ID: ${eventId}.`;
 			} else {
-				errorMessage = `Error while checking in person with Net-ID: ${member.netid} for event with Event ID: ${eventId}.`;
+				errorMessage += ` for event with Event ID: ${eventId}.`;
 			}
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
@@ -163,12 +182,7 @@ const sqlActions = (mysql, logger) => ({
 			}
 			return await Promise.all(sqlCommands);
 		} catch (error) {
-			let errorMessage;
-			if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
-				errorMessage = `Error while checking in person with Net-ID: ${member.netid}. Person has already checked in for event with Event ID: ${eventId}.`;
-			} else {
-				errorMessage = `Error while checking in person with Net-ID: ${member.netid} for event with Event ID: ${eventId}.`;
-			}
+			const errorMessage = `Error while checking in person with Net-ID: ${member.netid} for event with Event ID: ${eventId}.`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -210,10 +224,10 @@ const _isValidEventId = eventId => {
 };
 
 const _getPaymentActivity = payment => {
-	if (payment !== 0) {
-		return payment === 1 ? PAID_1_SEMESTER : PAID_2_SEMESTERS;
-	} else {
-		return 0;
+	switch (payment) {
+		case 1: return PAID_1_SEMESTER;
+		case 2: return PAID_2_SEMESTERS;
+		default: return 0;
 	}
 };
 

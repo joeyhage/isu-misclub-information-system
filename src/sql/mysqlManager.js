@@ -74,16 +74,17 @@ class mysqlManager {
 
 	lookupNetid(netid) {
 		return this.sqlQueryHandler(
-			`SELECT * FROM ${is_member} m, ` +
-			'(' +
+			`SELECT * FROM ${is_member} m ` +
+			'LEFT JOIN (' +
 				'SELECT timestamp as last_updated,netid ' +
 				`FROM ${is_activity_history} ` +
-				'WHERE netid=? AND activity_type=\'Information Updated\' ' +
+				'WHERE netid=? AND activity_type IN (\'Information Updated\',\'Member Added\',\'Information Imported\') ' +
 				'ORDER BY timestamp DESC ' +
 				'LIMIT 1' +
 			') a ' +
-			'WHERE m.netid=a.netid',
-			[netid]
+			'ON m.netid=a.netid ' +
+			'WHERE m.netid=?',
+			[netid, netid]
 		);
 	}
 

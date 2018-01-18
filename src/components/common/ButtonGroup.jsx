@@ -34,11 +34,12 @@ export class ButtonGroup extends React.Component {
 		if (this.timeout) {
 			clearTimeout(this.timeout);
 		}
+		this.setState({isLoading: false});
 	}
 
 	_manageLoadingState(nextProps) {
 		const props = nextProps || this.props;
-		if (props.isLoading && !this.state.timeout) {
+		if (props.isLoading && !this.timeout) {
 			this.timeout = setTimeout(() => {
 				this.setState({isLoading: true});
 			}, 500);
@@ -53,6 +54,8 @@ export class ButtonGroup extends React.Component {
 	}
 
 	_createLoadingButton() {
+		// Loading CSS cannot be applied to type 'submit'
+		// this changes each submit button to 'button' type
 		return React.Children.map(this.props.children, (element, index) => React.cloneElement(
 			element,
 			{key: index, type: 'button', isLoading: element.props.type === 'submit'}

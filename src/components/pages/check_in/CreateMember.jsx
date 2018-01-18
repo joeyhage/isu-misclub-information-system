@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, ButtonGroup, Column, Message } from '../../common';
 import { MemberInfo, PaymentRadio } from '../../member';
-import setMemberDefaults from '../../../utils/setMemberDefaults';
 import { isValidInput } from '../../../utils/validation';
 import {ipcMysql} from '../../../actions/ipcActions';
 
@@ -12,7 +11,7 @@ export default class CreateMember extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			member: setMemberDefaults(props.member),
+			member: props.member,
 			showCreateMemberErrors: false,
 			isLoading: false,
 			didFindMember: this._didFindMember(props.member)

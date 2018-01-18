@@ -6,7 +6,7 @@ import CheckInMember from './check_in/CheckInMember';
 import MemberLookup from './check_in/MemberLookup';
 import CreateMember from './check_in/CreateMember';
 import { CheckInCss } from '../../style/CheckIn.css';
-import setMemberDefaults from '../../utils/setMemberDefaults';
+import { setMemberDefaults } from '../../utils/memberUtil';
 
 class CheckIn extends React.Component {
 
@@ -28,7 +28,7 @@ class CheckIn extends React.Component {
 	render() {
 		return !this.props.eventId ? (
 			<PageView>
-				<Column title={'No Event Selected'} subtitle={'Please select an event from the Events page.'} title-is-spaced/>
+				<Column title={'No Event Selected'} subtitle={'Please select an event from the Events page.'} titleIsSpaced/>
 			</PageView>
 		) : (
 			<PageView rules={CheckInCss}>
@@ -64,20 +64,20 @@ class CheckIn extends React.Component {
 	}
 
 	_setMember(member) {
-		this.setState({member});
+		this.setState({member: setMemberDefaults(member)});
 	}
 
 	_checkInMember() {
-		this.setState({checkInMember: true});
+		this.setState({checkInMember: true, message: null});
 	}
 
 	_createMember() {
-		this.setState({createMember: true});
+		this.setState({createMember: true, message: null});
 	}
 
 	_resetState(message = '') {
 		this.setState({
-			member: {},
+			member: setMemberDefaults(),
 			createMember: false,
 			checkInMember: false,
 			message: typeof message === 'string' ? message : null

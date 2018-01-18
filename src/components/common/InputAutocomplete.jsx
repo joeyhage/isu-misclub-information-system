@@ -28,8 +28,8 @@ export class InputAutocomplete extends React.Component {
 		return (
 			<Downshift
 				onChange={this._onChange}
-				onStateChange={({inputValue}) => this._onChange(inputValue)}
-				onInputValueChange={inputValue => this.setState({inputValue})}
+				onStateChange={({inputValue}) => this._onChange(this._formatMIS(inputValue))}
+				onInputValueChange={inputValue => this.setState({inputValue: this._formatMIS(inputValue)})}
 				inputValue={inputValue}
 				selectedItem={value}
 				defaultHighlightedIndex={0}
@@ -67,6 +67,10 @@ export class InputAutocomplete extends React.Component {
 				);}}
 			/>
 		);
+	}
+
+	_formatMIS(inputValue) {
+		return inputValue === 'MIS' ? 'Management Information Systems' : inputValue;
 	}
 
 	_onChange(selection) {

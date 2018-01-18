@@ -26,7 +26,7 @@ export class Message extends React.Component {
 						} else {
 							this._deleteMessage(event);
 						}
-					}}/>
+					}}>Close</button>
 				</div>
 				<div className='message-body'>
 					{this.props.children}
