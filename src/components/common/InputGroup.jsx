@@ -1,32 +1,28 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Field } from '.';
 
 export class InputGroup extends React.Component {
 
 	constructor(props) {
 		super(props);
-
 		this.state = {
-			type: props.type || 'text',
-			id: props.id,
-			placeholder: props.placeholder,
-			onChange: props.onChange,
-			autoFocus: props.autoFocus,
-			required: props.required,
-			showValidation: props.showValidation,
-			horizontal: props.horizontal
+			hasErrors: this._hasErrors(props.value)
 		};
 	}
 
 	render() {
-		const {type, id, placeholder, onChange, autoFocus, required, showValidation, horizontal} = this.state;
-		const hasErrors = required && showValidation && showValidation(this.props.value);
-		const className = `input ${Boolean(hasErrors) && 'is-danger'}`;
+		const {hasErrors} = this.state;
+		const {type = 'text', id, placeholder, autoFocus, horizontal, isStatic, onChange} = this.props;
+		const inputClasses = classNames('input', {
+			'is-danger': hasErrors,
+			'is-static': isStatic
+		});
 
 		return (
 			<Field horizontal={horizontal} style={this.props.style} label={this.props.children}>
 				<div className='control'>
-					<input type={type} className={className} id={id} value={this.props.value} onChange={onChange}
+					<input type={type} className={inputClasses} id={id} value={this.props.value} onChange={onChange}
 						   placeholder={placeholder} disabled={this.props.disabled} autoFocus={autoFocus}/>
 				</div>
 				{hasErrors &&
@@ -34,5 +30,13 @@ export class InputGroup extends React.Component {
 				}
 			</Field>
 		);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.setState({hasErrors: this._hasErrors(nextProps.value)});
+	}
+
+	_hasErrors(value) {
+		return this.props.required && this.props.showValidation && this.props.showValidation(value);
 	}
 }

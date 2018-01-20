@@ -1,5 +1,6 @@
 import React from 'react';
 import Downshift from 'downshift';
+import classNames from 'classnames';
 import { Field } from '.';
 import { primaryRed } from '../../style/CssConstants';
 
@@ -8,22 +9,19 @@ export class InputAutocomplete extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			items: props.items,
-			id: props.id,
-			horizontal: props.horizontal,
-			showValidation: props.showValidation,
-			required: props.required,
-			onChange: props.onChange,
-			inputValue: props.value
+			inputValue: props.value,
+			hasErrors: this._hasErrors(props.value)
 		};
 		this._onChange = this._onChange.bind(this);
 	}
 
 	render() {
-		const {horizontal, id, required, showValidation, inputValue} = this.state;
-		const {value, disabled, style, children} = this.props;
-		const hasErrors = required && showValidation && showValidation(value);
-		const className = `input ${Boolean(hasErrors) && 'is-danger'}`;
+		const {inputValue, hasErrors} = this.state;
+		const {value, disabled, style, items, id, horizontal, required, children, isStatic} = this.props;
+		const inputClasses = classNames('input', {
+			'is-danger': hasErrors,
+			'is-static': isStatic
+		});
 
 		return (
 			<Downshift
@@ -46,10 +44,10 @@ export class InputAutocomplete extends React.Component {
 					return (
 						<Field horizontal={horizontal} style={style} label={children} {...getRootProps({refKey: 'innerRef'})}>
 							<div className='control'>
-								<input {...getInputProps({className, id, required, disabled})}/>
+								<input {...getInputProps({className: inputClasses, id, required, disabled})}/>
 								{isOpen && inputValue && inputValue.length > 1 && (
 									<div style={{border:'1px solid #ccc', zIndex:10, position:'absolute', width:'100%'}}>
-										{this.state.items.filter(i =>
+										{items.filter(i =>
 											i.toLowerCase().substring(0, inputValue.length) === inputValue.toLowerCase()
 										).map((item, index) => (
 											<div {...getItemProps({item})} key={item}
@@ -69,20 +67,27 @@ export class InputAutocomplete extends React.Component {
 		);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({hasErrors: this._hasErrors(nextProps.value)});
+	}
+
 	_formatMIS(inputValue) {
 		return inputValue === 'MIS' ? 'Management Information Systems' : inputValue;
 	}
 
 	_onChange(selection) {
-		if (!selection) {
-			return;
+		if (selection) {
+			this.props.onChange({
+				target: {
+					id: this.props.id,
+					value: selection
+				}
+			});
 		}
-		this.state.onChange({
-			target: {
-				id: this.state.id,
-				value: selection
-			}
-		});
+	}
+
+	_hasErrors(value) {
+		return this.props.required && this.props.showValidation && this.props.showValidation(value);
 	}
 
 	_determineStyle({highlightedIndex, index, selectedItem, item}) {

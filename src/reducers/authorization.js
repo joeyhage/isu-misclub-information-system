@@ -1,21 +1,17 @@
-import { SET_ACCESS_LEVEL, SET_USER_ID } from '../actions';
+import { UPDATE_AUTHORIZATION } from '../actions';
 
 const initialState = {
-	accessLevel: null,
-	userId: null
+	accessLevel: '',
+	userId: ''
 };
 
 const authorization = (state = initialState, action) => {
 	switch (action.type) {
-		case SET_ACCESS_LEVEL:
+		case UPDATE_AUTHORIZATION:
 			return {
 				...state,
+				userId: action.userId,
 				accessLevel: action.accessLevel
-			};
-		case SET_USER_ID:
-			return {
-				...state,
-				userId: action.userId
 			};
 		default:
 			return state;

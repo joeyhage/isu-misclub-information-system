@@ -16,14 +16,15 @@ export const resetActiveEvent = () => ({
 	type: RESET_ACTIVE_EVENT
 });
 
-export const SET_ACCESS_LEVEL = 'SET_ACCESS_LEVEL';
-export const setAccessLevel = accessLevel => ({
-	type: SET_ACCESS_LEVEL,
-	accessLevel
+export const SET_EVENTS_TODAY = 'SET_EVENTS_TODAY';
+export const setEventsToday = eventsToday => ({
+	type: SET_EVENTS_TODAY,
+	eventsToday
 });
 
-export const SET_USER_ID = 'SET_USER_ID';
-export const setUserId = userId => ({
-	type: SET_USER_ID,
-	userId
+export const UPDATE_AUTHORIZATION = 'UPDATE_AUTHORIZATION';
+export const updateAuthorization = ({userId, accessLevel}) => ({
+	type: UPDATE_AUTHORIZATION,
+	userId,
+	accessLevel
 });

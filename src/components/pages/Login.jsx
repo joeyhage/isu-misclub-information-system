@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import { InputGroup, Button, Message, ButtonGroup, Column, PageView } from '../common';
 import { isValidInput } from '../../utils/validation';
-import { setUserId, setAccessLevel } from '../../actions';
+import { updateAuthorization, setEventsToday } from '../../actions';
 import { ipcMysql } from '../../actions/ipcActions';
 import { LoginCss } from '../../style/Login.css';
 
@@ -81,7 +81,11 @@ class Login extends React.Component {
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.VERIFY_CREDENTIALS, {netid, password});
 			ipcRenderer.once(ipcMysql.VERIFY_CREDENTIALS, (event, auth) => {
 				if (auth && auth.userId && auth.accessLevel) {
-					this.props.updateAuthorization(auth);
+					ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
+					ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
+						this.props.setEventsToday(results);
+						this.props.updateAuthorization(auth);
+					});
 				} else {
 					this.setState({showFormErrors: true, isLoading: false});
 				}
@@ -97,9 +101,11 @@ class Login extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-	updateAuthorization: ({userId, accessLevel}) => {
-		dispatch(setUserId(userId));
-		dispatch(setAccessLevel(accessLevel));
+	updateAuthorization: authorization => {
+		dispatch(updateAuthorization(authorization));
+	},
+	setEventsToday: eventsToday => {
+		dispatch(setEventsToday(eventsToday));
 	}
 });
 

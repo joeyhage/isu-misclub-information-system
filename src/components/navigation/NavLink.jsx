@@ -1,6 +1,10 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {selectView} from '../../actions/index';
+import { connect } from 'react-redux';
+import classNames from 'classnames';
+import { selectView, setEventsToday } from '../../actions';
+import {ipcMysql} from '../../actions/ipcActions';
+
+const { ipcRenderer } = window.require('electron');
 
 class NavLink extends React.Component {
 
@@ -10,8 +14,9 @@ class NavLink extends React.Component {
 	}
 
 	render() {
+		const navLinkClasses = classNames({'is-active': this.props.view === this.props.id});
 		return (
-			<li className={Boolean(this.props.view === this.props.id) && 'is-active'}>
+			<li className={navLinkClasses}>
 				<a onClick={this.selectView}
 				   id={this.props.id}>
 					<span className='icon is-small' onClick={this.selectView}>
@@ -29,7 +34,19 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	selectView: targetId => dispatch(selectView(targetId))
+	selectView: targetId => {
+		switch (targetId) {
+			case 'events':
+				ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
+				ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
+					dispatch(setEventsToday(results));
+					dispatch(selectView(targetId));
+				});
+				break;
+			default:
+				dispatch(selectView(targetId));
+		}
+	}
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavLink);

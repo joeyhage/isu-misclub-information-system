@@ -14,7 +14,7 @@ class Events extends React.Component {
 		super(props);
 		this.state = {
 			eventName: '',
-			eventsToday: null,
+			eventsTable: this._populateEventsTable(props.eventsToday),
 			showFormErrors: false,
 			isLoading: false
 		};
@@ -25,62 +25,52 @@ class Events extends React.Component {
 	}
 
 	render() {
+		const {eventName, isLoading, eventsTable} = this.state;
 		return (
 			<PageView rules={CreateEventCss}>
 				<Column title='Create Event'>
 					<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
-						<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
+						<InputGroup id='event-name' value={eventName} onChange={this._handleChange}
 									showValidation={this._getValidationState} placeholder='e.g. MIS Club Career Night'
 									required autoFocus>Event Name</InputGroup>
-						<ButtonGroup isLoading={this.state.isLoading}>
+						<ButtonGroup isLoading={isLoading}>
 							<Button type='submit' info>Create</Button>
 							<Button type='reset' black>Clear</Button>
 						</ButtonGroup>
 					</form>
 				</Column>
 				<Column title='Events Today'>
-					<p>
-						{Boolean(this.state.eventsToday) && Boolean(this.state.eventsToday.length) ?
-							'Click an event to start check-in' :
-							'No events today. To start check-in, create an event.'
-						}
-					</p>
-					{Boolean(this.state.eventsToday) && Boolean(this.state.eventsToday.length) &&
-					<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
-						<thead>
-						<tr>
-							<th>Event ID</th>
-							<th>Event Name</th>
-							<th>Delete?</th>
-						</tr>
-						</thead>
-						<tbody onClick={this._handleRowClick}>
-						{this.state.eventsToday}
-						</tbody>
-					</table>
+					<p>{Boolean(eventsTable) ?
+						'Click an event to start check-in' :
+						'No events today. To start check-in, create an event.'
+					}</p>
+					{Boolean(eventsTable) &&
+						<table className='table is-striped is-hoverable is-fullwidth' id='events-today'>
+							<thead>
+							<tr>
+								<th>Event ID</th>
+								<th>Event Name</th>
+								<th>Delete?</th>
+							</tr>
+							</thead>
+							<tbody onClick={this._handleRowClick}>
+								{eventsTable}
+							</tbody>
+						</table>
 					}
 				</Column>
 			</PageView>
 		);
 	}
 
-	componentDidMount() {
-		this._getEventsToday();
-	}
-
-	_getEventsToday() {
-		ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
-		ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
-			this.setState({
-				eventsToday: results ? results.map(result => (
-					<tr key={result.event_id}>
-						<td className='event-id'>{result.event_id}</td>
-						<td className='event-name'>{result.event_name}</td>
-						<td><button className='delete'/></td>
-					</tr>
-				)) : null
-			});
-		});
+	_populateEventsTable(events) {
+		return events ? events.map(event => (
+			<tr key={event.event_id}>
+				<td className='event-id'>{event.event_id}</td>
+				<td className='event-name'>{event.event_name}</td>
+				<td><button className='delete'/></td>
+			</tr>
+		)) : null;
 	}
 
 	_handleChange({target}) {
@@ -110,16 +100,19 @@ class Events extends React.Component {
 		if (target.className === 'delete') {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
-			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, eventId) => {
+			ipcRenderer.once(ipcMysql.DELETE_EVENT, () => {
+				const eventsToday = this.props.eventsToday || [];
+				this.setState({
+					eventsTable: this._populateEventsTable(eventsToday.filter(event =>
+						parseInt(event.event_id, 10) !== parseInt(eventId, 10)
+					))
+				});
 				if (eventId && eventId.toString() === this.props.eventId.toString()) {
 					this.props.resetActiveEvent();
 				}
 			});
 		} else {
-			const event = {
-				eventId: '',
-				eventName: ''
-			};
+			const event = {};
 			if (target.nodeName === 'TR') {
 				const eventIdTD = target.firstChild;
 				event.eventId = eventIdTD.innerHTML;
@@ -131,8 +124,10 @@ class Events extends React.Component {
 				event.eventId = target.previousSibling.innerHTML;
 				event.eventName = target.innerHTML;
 			}
-			this.props.setActiveEvent(event);
-			this.props.selectEventCheckInView();
+			if (event && event.hasOwnProperty('eventId')) {
+				this.props.setActiveEvent(event);
+				this.props.selectEventCheckInView();
+			}
 		}
 	}
 
@@ -142,7 +137,8 @@ class Events extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	eventId: state.activeEvent.eventId
+	eventId: state.activeEvent.eventId,
+	eventsToday: state.activeEvent.eventsToday
 });
 
 const mapDispatchToProps = dispatch => ({

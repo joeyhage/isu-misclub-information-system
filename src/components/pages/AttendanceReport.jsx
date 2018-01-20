@@ -6,10 +6,18 @@ import Report from './attendance_report/Report';
 
 class AttendanceReport extends React.Component {
 
+	constructor(props) {
+		super(props);
+		this.state = {
+			eventId: props.eventId,
+			eventName: props.eventName
+		};
+	}
+
 	render() {
 		return (
 			<PageView>
-				{this.props.eventId ?
+				{this.state.eventId ?
 					<Report/> :
 					<EventLookup/>
 				}
@@ -20,8 +28,7 @@ class AttendanceReport extends React.Component {
 
 const mapStateToProps = state => ({
 	eventId: state.activeEvent.eventId,
-	eventName: state.activeEvent.eventName,
-	eventDate: state.activeEvent.eventDate
+	eventName: state.activeEvent.eventName
 });
 
 export default connect(mapStateToProps)(AttendanceReport);

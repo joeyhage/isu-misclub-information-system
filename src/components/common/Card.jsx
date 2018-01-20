@@ -1,5 +1,6 @@
 import React from 'react';
 import Radium, { Style } from 'radium';
+import classNames from 'classnames';
 import { CardCss } from '../../style/Card.css';
 
 class Card extends React.Component {
@@ -13,6 +14,9 @@ class Card extends React.Component {
 	}
 
 	render() {
+		const iClasses = classNames('fa', 'fa-angle-down', {
+			'up': !this.state.showContent
+		});
 		return (
 			<div className='card' style={{margin:'10px 0'}}>
 				<Style rules={CardCss}/>
@@ -23,7 +27,7 @@ class Card extends React.Component {
 					<a className='card-header-icon has-text-black' aria-label='more options' onClick={this._onClick}>
 						<span id='header-options'>{this.state.showContent ? 'Hide' : 'Show'}</span>
 						<span className='icon' onClick={this._onClick}>
-							<i className={`fa fa-angle-down ${Boolean(!this.state.showContent) && 'up'}`} aria-hidden='true'
+							<i className={iClasses} aria-hidden='true'
 							   onClick={this._onClick}/>
 						</span>
 					</a>

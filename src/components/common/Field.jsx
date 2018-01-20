@@ -1,8 +1,12 @@
 import React from 'react';
+import classNames from 'classnames';
 
 export class Field extends React.Component {
 
 	render() {
+		const fieldClasses = classNames('field', {
+			'is-grouped': this.props.grouped
+		});
 		return this.props.horizontal ? (
 			<div className='field is-horizontal' style={this.props.style} ref={this.props.innerRef}>
 				<div className='field-label is-normal'>
@@ -11,12 +15,12 @@ export class Field extends React.Component {
 					}
 				</div>
 				<div className='field-body'>
-					<div className={`field ${Boolean(this.props.grouped) && 'is-grouped'}`}>
+					<div className={fieldClasses}>
 						{this.props.children}
 					</div>
 				</div>
 			</div> ) : (
-			<div className={`field ${Boolean(this.props.grouped) && 'is-grouped'}`} style={this.props.style}>
+			<div className={fieldClasses} style={this.props.style}>
 				{Boolean(this.props.label) &&
 					<label className='label'>{this.props.label}</label>
 				}

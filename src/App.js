@@ -11,6 +11,7 @@ import './style/font-awesome.min.css';
 const { ipcRenderer } = window.require('electron');
 
 class App extends React.Component {
+
 	render() {
 		return (
 			<div>

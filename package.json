@@ -14,6 +14,7 @@
 	"homepage": "./",
 	"main": "src/electron.js",
 	"dependencies": {
+		"classnames": "^2.2.5",
 		"dateformat": "^3.0.2",
 		"downshift": "^1.25.0",
 		"electron-is-dev": "^0.3.0",
