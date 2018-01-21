@@ -3,9 +3,10 @@ const isDev = require('electron-is-dev'),
 	mysqlDB = require('./mysqlDB');
 
 class mysqlManager {
-	constructor() {
+	constructor(logger) {
 		this.pool = mysql.createPool(mysqlDB);
 		this.ER_DUP_ENTRY = 'ER_DUP_ENTRY';
+		this.logger = logger;
 	}
 
 	sqlQueryHandler(sqlStatement, sqlParams) {
@@ -14,26 +15,40 @@ class mysqlManager {
 				if (error) {
 					return reject(error);
 				}
+				connection.on('error', error => {
+					this.logger.error(error, 'Database error. See logs for more details.', true);
+				});
 				if (sqlStatement) {
-					connection.query(
-						sqlStatement,
-						sqlParams,
-						(error, results) => {
-							connection.release();
-							if (error) {
-								return reject(error);
-							}
-							if (isDev) {
-								console.log('Sql statement - ', sqlStatement);
-							}
-							resolve(results);
+					connection.query(sqlStatement, sqlParams, (error, results) => {
+						connection.release();
+						if (error) {
+							return reject(error);
 						}
-					);
+						if (isDev) {
+							this.logger.info(`Sql statement - ${sqlStatement}`);
+						}
+						resolve(results);
+					});
 				} else {
-					connection.release();
-					resolve();
+					connection.ping(error => {
+						if (error) {
+							return reject(error);
+						}
+						connection.release();
+						resolve();
+					});
 				}
 			});
+		});
+	}
+
+	endPool() {
+		this.pool.end(error => {
+			if (error) {
+				this.logger.error(error);
+			} else {
+				this.logger.debug('Pool ended successfully.');
+			}
 		});
 	}
 

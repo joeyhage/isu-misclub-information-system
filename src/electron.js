@@ -5,8 +5,8 @@ const electron = require('electron'),
 	isDev = require('electron-is-dev'),
 	path = require('path'),
 	url = require('url'),
-	mysql = new (require('./sql/mysqlManager'))(),
 	logger = new (require('./utils/logger'))(),
+	mysql = new (require('./sql/mysqlManager'))(logger),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
 	requestDirectoryInfo = require('./utils/isuDirectoryLookup'),
 	createMenuTemplate = require('./static/menuTemplate'),
@@ -89,9 +89,9 @@ app.on('ready', () => {
 		mainWindow.webContents.send(action, results, status);
 	});
 
-	const {width: screenWidth, height: screenHeight} = electron.screen.getPrimaryDisplay().workAreaSize;
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {
 		const [windowWidth, windowHeight] = mainWindow.getSize();
+		const {width: screenWidth, height: screenHeight} = electron.screen.getPrimaryDisplay().workAreaSize;
 		if (action === ipcGeneral.LOGIN_WINDOW) {
 			if (windowWidth === 600 && windowHeight === 600) {
 				return;
@@ -142,6 +142,10 @@ app.on('activate', () => {
 	if (mainWindow === null) {
 		createWindow();
 	}
+});
+
+app.on('will-quit', () => {
+	mysql.endPool();
 });
 
 // In this file you can include the rest of your app's specific main process
