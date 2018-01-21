@@ -16,7 +16,7 @@ let mainWindow, devToolsEnabled = isDev;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
-		show: false, width: 600, height: 600, minWidth: 600, minHeight: 600, resizable: true, title: 'ISU MIS Club Check-In'
+		show: false, width: 600, height: 600, minWidth: 600, minHeight: 600, resizable: true, title: 'ISU MIS Club Information System'
 	});
 
 	const startUrl = isDev ? 'http://localhost:3000' : url.format({

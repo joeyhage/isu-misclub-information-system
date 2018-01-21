@@ -53,12 +53,10 @@ class Login extends React.Component {
 						}
 					</Column>
 				</PageView>
-				<div className='footer columns is-mobile'>
-					<div className='column'>
-						ISU MIS Club Check-In System
-					</div>
-					<div className='column has-text-right'>
-						&copy; {dateFormat('yyyy')} ISU MIS Club
+				<div className='footer columns is-centered is-mobile'>
+					<div className='column is-6'>
+						<p className='has-text-centered'>ISU MIS Club Information System</p>
+						<p className='has-text-centered'>&copy; {dateFormat('yyyy')} ISU MIS Club</p>
 					</div>
 				</div>
 			</div>

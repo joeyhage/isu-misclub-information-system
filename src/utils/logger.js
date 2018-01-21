@@ -10,7 +10,7 @@ require('winston-daily-rotate-file');
 
 class logUtil {
 	constructor() {
-		const appName = 'ISU MIS Club Check-In';
+		const appName = 'ISU MIS Club Information System';
 		const filePath = path.join(
 			homedir,
 			process.platform === 'darwin' ? '/Library/Logs/' : '\\AppData\\Roaming\\',
@@ -22,6 +22,7 @@ class logUtil {
 		} catch (err) {
 			fs.mkdirSync(filePath);
 		}
+
 		if (isDev) {
 			const consoleTransport = new (winston.transports.Console)({
 				timestamp: () => dateFormat(),

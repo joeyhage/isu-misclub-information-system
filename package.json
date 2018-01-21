@@ -1,6 +1,6 @@
 {
-	"name": "isu-misclub-checkin",
-	"description": "Check-In System for the Iowa State University MIS Club",
+	"name": "isu-misclub-information-system",
+	"description": "Information System for the Iowa State University MIS Club",
 	"version": "0.1.0",
 	"author": {
 		"name": "Iowa State University MIS Club",
@@ -8,7 +8,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/joeyhage/mis-club-check-in-system"
+		"url": "https://github.com/joeyhage/isu-misclub-information-system"
 	},
 	"private": true,
 	"homepage": "./",

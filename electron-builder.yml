@@ -1,6 +1,6 @@
 appId: edu.iastate.MISClub
 copyright: "Copyright © 2018 MIS Club"
-productName: "ISU MIS Club Check-In"
+productName: "ISU MIS Club Information System"
 
 asar: true
 extends: null

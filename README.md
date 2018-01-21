@@ -1,4 +1,4 @@
-# ISU MIS Club Check-In System
+# ISU MIS Club Information System
 
 ## Table of Contents
 

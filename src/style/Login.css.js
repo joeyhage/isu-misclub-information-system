@@ -19,6 +19,6 @@ export const LoginCss = {
 		height: '100px'
 	},
 	'.footer>.column': {
-		margin: 'auto 10px'
+		marginTop: '10px'
 	}
 };
