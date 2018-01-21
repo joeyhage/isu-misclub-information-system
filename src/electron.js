@@ -118,7 +118,7 @@ app.on('ready', () => {
 			logger.error(error, `Error getting directory info for Net-ID: ${netid}`, true);
 		}
 		if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
-			logger.error(null, `Incomplete data - ${JSON.stringify(member)} - for member with Net-ID: ${netid}`);
+			logger.info(null, `Incomplete data - ${JSON.stringify(member)} - for member with Net-ID: ${netid}`);
 		}
 		mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
 	});
