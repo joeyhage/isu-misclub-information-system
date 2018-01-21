@@ -1,26 +1,33 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PageView } from '../common';
-import EventLookup from './attendance_report/EventLookup';
-import Report from './attendance_report/Report';
+import EventLookup from './attendance_reports/EventLookup';
+import Report from './attendance_reports/Report';
+import LookupResults from './attendance_reports/LookupResults';
+import { AttendanceReportsCss } from '../../style/AttendanceReports.css';
 
-class AttendanceReport extends React.Component {
+class AttendanceReports extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			eventId: props.eventId,
-			eventName: props.eventName
+			eventName: props.eventName,
+			lookupResults: []
 		};
 		this._resetState = this._resetState.bind(this);
+		this._setLookupResults = this._setLookupResults.bind(this);
 	}
 
 	render() {
 		return (
-			<PageView>
+			<PageView rules={AttendanceReportsCss}>
 				{this.state.eventId ?
 					<Report/> :
-					<EventLookup/>
+					[
+						<EventLookup key='event-lookup' onResults={this._setLookupResults}/>,
+						<LookupResults key='lookup-results' events={this.state.lookupResults}/>
+					]
 				}
 			</PageView>
 		);
@@ -29,6 +36,10 @@ class AttendanceReport extends React.Component {
 	_resetState() {
 		this.setState({eventId: null, eventName: null});
 	}
+
+	_setLookupResults(events) {
+		this.setState({lookupResults: events});
+	}
 }
 
 const mapStateToProps = state => ({
@@ -36,4 +47,4 @@ const mapStateToProps = state => ({
 	eventName: state.activeEvent.eventName
 });
 
-export default connect(mapStateToProps)(AttendanceReport);
+export default connect(mapStateToProps)(AttendanceReports);

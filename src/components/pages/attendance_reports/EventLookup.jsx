@@ -1,10 +1,10 @@
 import React from 'react';
-import {Column, InputGroup} from '../../common';
+import { Column, InputGroup, ButtonGroup, Button } from '../../common';
 import dateFormat from 'dateformat';
-// import {ipcMysql} from '../../../actions/ipcActions';
-// import {isValidInput} from '../../../utils/validation';
+import { isValidInput } from '../../../utils/validation';
+import { ipcMysql } from '../../../actions/ipcActions';
 
-// const { ipcRenderer } = window.require('electron');
+const { ipcRenderer } = window.require('electron');
 
 export default class EventLookup extends React.Component {
 
@@ -15,67 +15,71 @@ export default class EventLookup extends React.Component {
 		this.state = {
 			dateRangeStart: dateFormat(dateRangeStart, 'isoDate'),
 			dateRangeEnd: dateFormat('isoDate'),
-			eventName: ''
+			eventName: '',
+			showFormErrors: false
 		};
+		this.initialState = {...this.state};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
+		this._getFormValidationState = this._getFormValidationState.bind(this);
 	}
 
 	render() {
 		return (
-			<Column title='Event Lookup'>
+			<Column title='Event Lookup' style={{paddingRight:'40px'}}>
 				<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
-					<InputGroup id='date-range-start' value={this.state.dateRangeStart} onChange={this._handleChange} type='date'/>
-					<InputGroup id='date-range-end' value={this.state.dateRangeEnd} onChange={this._handleChange} type='date'/>
+					<InputGroup id='date-range-start' value={this.state.dateRangeStart}
+								onChange={this._handleChange} type='date'
+								showErrors={this._getFormValidationState} horizontal required>
+						Range Start
+					</InputGroup>
+					<InputGroup id='date-range-end' value={this.state.dateRangeEnd}
+								onChange={this._handleChange} type='date'
+								showErrors={this._getFormValidationState} horizontal required>
+						Range End
+					</InputGroup>
 					<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
-								placeholder={'e.g. MIS Club Career Night'}>
+								placeholder='Optional'
+								showErrors={this._getFormValidationState} horizontal>
 						Event Name
 					</InputGroup>
+					<ButtonGroup isLoading={this.state.isLoading} horizontal>
+						<Button type='submit' info>Lookup</Button>
+						<Button type='reset' black>Clear</Button>
+					</ButtonGroup>
 				</form>
 			</Column>
 		);
 	}
 
 	_handleChange({target}) {
-		const stateValue = {
+		const propName = {
 			'date-range-start': 'dateRangeStart',
 			'date-range-end': 'dateRangeEnd',
 			'event-name': 'eventName'
 		}[target.id];
-		if (stateValue) {
-			let value = target.value;
-			if (stateValue.includes('date')) {
-				const dateValues = value.split('-');
-				if (dateValues[0].length > 4) {
-					dateValues[0] = dateValues[0].substring(0, 4);
-					value = dateValues.join('-');
-				}
-			}
-			this.setState({[stateValue]: value});
+		if (propName) {
+			this.setState({[propName]: target.value});
+		} else {
+			this.setState(this.initialState);
 		}
 	}
 
 	_handleSubmit(event) {
 		event.preventDefault();
-		// const {netid} = this.state;
-		// if (isValidInput(netid)) {
-		// 	this.setState({showMemberLookupFormErrors: false});
-		// 	ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.LOOKUP_NETID, {netid});
-		// 	ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, member) => {
-		// 		if (member && member[0] && member[0][0] && member[0][0].netid) {
-		// 			this.setState({notFound: false});
-		// 			this.props.setMember({
-		// 				...member[0][0],
-		// 				attendance: member[1],
-		// 				activity: member[2]
-		// 			});
-		// 		} else {
-		// 			this.setState({notFound: netid});
-		// 			this.props.setMember({});
-		// 		}
-		// 	});
-		// } else {
-		// 	this.setState({showMemberLookupFormErrors: true});
-		// }
+		const {dateRangeStart, dateRangeEnd, eventName} = this.state;
+		if (isValidInput(dateRangeStart) && isValidInput(dateRangeEnd)) {
+			this.setState({showFormErrors: false});
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
+			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events) => {
+				this.props.onResults(events);
+			});
+		} else {
+			this.setState({showFormErrors: true});
+		}
+	}
+
+	_getFormValidationState(value) {
+		return !isValidInput(value) && this.state.showFormErrors;
 	}
 }
