@@ -23,7 +23,7 @@ export class InputGroup extends React.Component {
 			<Field horizontal={horizontal} style={this.props.style} label={this.props.children}>
 				<div className='control'>
 					<input type={type} className={inputClasses} id={id} value={this.props.value} onChange={onChange}
-						   placeholder={placeholder} disabled={this.props.disabled} autoFocus={autoFocus}/>
+						   placeholder={placeholder} disabled={this.props.disabled || isStatic} autoFocus={autoFocus}/>
 				</div>
 				{hasErrors &&
 					<p className='help is-danger'>This field is required</p>
@@ -37,6 +37,6 @@ export class InputGroup extends React.Component {
 	}
 
 	_hasErrors(value) {
-		return this.props.required && this.props.showValidation && this.props.showValidation(value);
+		return this.props.required && this.props.showErrors && this.props.showErrors(value);
 	}
 }

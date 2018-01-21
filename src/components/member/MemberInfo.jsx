@@ -7,8 +7,8 @@ import MemberStatus from './MemberStatus';
 export class MemberInfo extends React.Component {
 	
 	render() {
-		const {member, disabled, showValidation, autoFocus, onChange, status} = this.props;
-		const inputProps = {onChange, isStatic: disabled, showValidation, horizontal: true, required: true};
+		const {member, disabled, showErrors, autoFocus, onChange, status} = this.props;
+		const inputProps = {onChange, isStatic: disabled, showErrors, horizontal: true, required: true};
 		return (
 			<div>
 				<InputGroup value={member.netid} onChange={onChange} horizontal isStatic>

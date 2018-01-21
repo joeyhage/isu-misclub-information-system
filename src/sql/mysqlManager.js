@@ -91,7 +91,7 @@ class mysqlManager {
 	retrieveMemberAttendance(netid) {
 		return this.sqlQueryHandler(
 			'SELECT e.event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
-			`FROM ${is_event} e, is_attendance a ` +
+			`FROM ${is_event} e, ${is_attendance} a ` +
 			'WHERE e.event_id=a.event_id AND netid=? ' +
 			'ORDER BY e.event_id DESC',
 			[netid]

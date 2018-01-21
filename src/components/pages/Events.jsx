@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { selectView, setActiveEvent, resetActiveEvent } from '../../actions';
-import { CreateEventCss } from '../../style/Events.css';
+import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/reduxActions';
+import { EventsCss } from '../../style/Events.css';
 import { PageView } from '../common';
 import CreateEvent from './events/CreateEvent';
 import EventsToday from './events/EventsToday';
@@ -10,7 +10,7 @@ class Events extends React.Component {
 
 	render() {
 		return (
-			<PageView rules={CreateEventCss}>
+			<PageView rules={EventsCss}>
 				<CreateEvent {...this.props}/>
 				<EventsToday {...this.props}/>
 			</PageView>

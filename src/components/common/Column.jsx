@@ -11,7 +11,7 @@ export class Column extends React.Component {
 			'is-spaced': this.props.titleIsSpaced
 		});
 		return (
-			<div className={columnClasses}>
+			<div className={columnClasses} style={this.props.style}>
 				<h1 className={titleClasses}>{this.props.title}</h1>
 				{this.props.subtitle &&
 					<h2 className='subtitle is-6'>{this.props.subtitle}</h2>

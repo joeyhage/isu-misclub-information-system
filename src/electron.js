@@ -13,6 +13,7 @@ const electron = require('electron'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
 let mainWindow, devToolsEnabled = isDev;
+global.logger = logger;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
@@ -73,17 +74,19 @@ app.on('ready', () => {
 	});
 
 	ipcMain.on(ipcMysql.EXECUTE_SQL, async (event, action, ipcArgs) => {
-		let results;
+		let results, status;
 		try {
 			results = await retrieveSqlData(action, ipcArgs);
+			status = 'SUCCESS';
 		} catch (error) {
 			logger.error(error, `Error retrieving SQL data for action: ${action} with arguments: ${ipcArgs}`);
+			status = 'ERROR';
 		}
 		if (action === ipcMysql.VERIFY_CREDENTIALS && results && results.hasOwnProperty('devToolsEnabled')) {
 			devToolsEnabled = results.devToolsEnabled;
 			delete results.devToolsEnabled;
 		}
-		mainWindow.webContents.send(action, results);
+		mainWindow.webContents.send(action, results, status);
 	});
 
 	const {width: screenWidth, height: screenHeight} = electron.screen.getPrimaryDisplay().workAreaSize;

@@ -12,25 +12,27 @@ export default class MemberLookup extends React.Component {
 		this.state = {
 			netid: '',
 			netIdNotFound: null,
-			showMemberLookupFormErrors: false,
+			showFormErrors: false,
 			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
-		this._getMemberLookupFormValidationState = this._getMemberLookupFormValidationState.bind(this);
+		this._getFormValidationState = this._getFormValidationState.bind(this);
 	}
 
 	render() {
 		return (
-			<form id='member-lookup' onSubmit={this._handleSubmit} onReset={this._handleChange}>
+			<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
 				<InputGroup id='netid' value={this.state.netid} onChange={this._handleChange}
-							showValidation={this._getMemberLookupFormValidationState}
-							placeholder={'e.g. johndoe'} style={{width:'25%'}} required autoFocus>
+							showErrors={this._getFormValidationState}
+							placeholder='e.g. johndoe' style={{width:'25%'}} required autoFocus>
 					Net-ID
 				</InputGroup>
 				{Boolean(this.state.netIdNotFound) ?
 					<Message header='Not Found' info onDelete={this._handleChange}>
-						<p>Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>{this.state.netIdNotFound}</span> not found.</p>
+						<p>Net-ID <span style={{fontStyle:'italic',fontWeight:'bold'}}>
+							{this.state.netIdNotFound}
+						</span> not found.</p>
 						<Button id='create-member' onClick={this._handleChange}
 								style={{marginTop:'2%'}} info autoFocus>
 							Create Member?
@@ -50,8 +52,8 @@ export default class MemberLookup extends React.Component {
 			this.setState({netid: target.value, netIdNotFound: null});
 		} else if (target.id === 'create-member') {
 			this._getDirectoryInfo();
-		} else if (target.id === 'member-lookup' || target.className === 'delete') {
-			this.setState({netid: '', netIdNotFound: null, showMemberLookupFormErrors: false});
+		} else {
+			this.setState({netid: '', netIdNotFound: null, showFormErrors: false});
 		}
 	}
 
@@ -59,11 +61,11 @@ export default class MemberLookup extends React.Component {
 		event.preventDefault();
 		const {netid} = this.state;
 		if (isValidInput(netid)) {
-			this.setState({showMemberLookupFormErrors: false, isLoading: true});
+			this.setState({showFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.LOOKUP_NETID, {netid});
-			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, results) => {
-				if (results && results.hasOwnProperty('netid')) {
-					this.props.setMember(results);
+			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, member) => {
+				if (member && member.hasOwnProperty('netid')) {
+					this.props.setMember(member);
 					this.props.checkInMember();
 				} else {
 					this.setState({netIdNotFound: netid, isLoading: false});
@@ -71,7 +73,7 @@ export default class MemberLookup extends React.Component {
 				}
 			});
 		} else {
-			this.setState({showMemberLookupFormErrors: true});
+			this.setState({showFormErrors: true});
 		}
 	}
 
@@ -89,7 +91,7 @@ export default class MemberLookup extends React.Component {
 		}
 	}
 
-	_getMemberLookupFormValidationState(value) {
-		return !isValidInput(value) && this.state.showMemberLookupFormErrors;
+	_getFormValidationState(value) {
+		return !isValidInput(value) && this.state.showFormErrors;
 	}
 }

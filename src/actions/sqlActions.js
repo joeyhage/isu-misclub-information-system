@@ -104,11 +104,11 @@ const sqlActions = (mysql, logger) => ({
 				member.attendance = attendance;
 				member.activity = activity;
 				if (member.last_updated) {
-					member.isUpdated = true;
 					const lastUpdated = new Date(member.last_updated);
 					const sixMonthsAgo = new Date();
 					sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 					if (lastUpdated < sixMonthsAgo) {
+						member.isUpdated = true;
 						try {
 							const directoryInfo = await requestDirectoryInfo(netid);
 							if (hasMemberInfoChanged(member, directoryInfo)) {

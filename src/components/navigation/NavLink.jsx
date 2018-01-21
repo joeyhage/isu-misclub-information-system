@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import { selectView, setEventsToday } from '../../actions';
+import { selectView, setEventsToday } from '../../actions/reduxActions';
 import {ipcMysql} from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
@@ -38,8 +38,8 @@ const mapDispatchToProps = dispatch => ({
 		switch (targetId) {
 			case 'events':
 				ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
-				ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
-					dispatch(setEventsToday(results));
+				ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday) => {
+					dispatch(setEventsToday(eventsToday));
 					dispatch(selectView(targetId));
 				});
 				break;

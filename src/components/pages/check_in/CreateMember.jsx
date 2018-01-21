@@ -12,13 +12,13 @@ export default class CreateMember extends React.Component {
 		super(props);
 		this.state = {
 			member: props.member,
-			showCreateMemberErrors: false,
+			showFormErrors: false,
 			isLoading: false,
 			didFindMember: this._didFindMember(props.member)
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
-		this._getCreateMemberValidationState = this._getCreateMemberValidationState.bind(this);
+		this._getFormValidationState = this._getFormValidationState.bind(this);
 	}
 
 	render() {
@@ -32,7 +32,7 @@ export default class CreateMember extends React.Component {
 					}
 					<form onSubmit={this._handleSubmit}>
 						<MemberInfo member={this.state.member} onChange={this._handleChange}
-									showValidation={this._getCreateMemberValidationState} autoFocus>
+									showErrors={this._getFormValidationState} autoFocus>
 							<PaymentRadio checked={this.state.member.payment} onChange={this._handleChange}/>
 							<ButtonGroup isLoading={this.state.isLoading} horizontal>
 								<Button id='check-in' type='submit' info>
@@ -76,24 +76,24 @@ export default class CreateMember extends React.Component {
 		event.preventDefault();
 		const {first_name, last_name, major} = this.state.member;
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
-			this.setState({showCreateMemberErrors: false, isLoading: true});
+			this.setState({showFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_CREATE_MEMBER, {
 				member: this.state.member,
 				eventId: this.props.eventId
 			});
-			ipcRenderer.once(ipcMysql.CHECK_IN_CREATE_MEMBER, (event, results) => {
-				if (results) {
+			ipcRenderer.once(ipcMysql.CHECK_IN_CREATE_MEMBER, (event, results, status) => {
+				if (status === 'SUCCESS') {
 					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
 				} else {
 					this.setState({isLoading: false});
 				}
 			});
 		} else {
-			this.setState({showCreateMemberErrors: true});
+			this.setState({showFormErrors: true});
 		}
 	}
 
-	_getCreateMemberValidationState(value) {
-		return !isValidInput(value) && this.state.showCreateMemberErrors;
+	_getFormValidationState(value) {
+		return !isValidInput(value) && this.state.showFormErrors;
 	}
 }

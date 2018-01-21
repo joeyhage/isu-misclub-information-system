@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
 import { InputGroup, Button, Message, ButtonGroup, Column, PageView } from '../common';
 import { isValidInput } from '../../utils/validation';
-import { updateAuthorization, setEventsToday } from '../../actions';
+import { updateAuthorization, setEventsToday } from '../../actions/reduxActions';
 import { ipcMysql } from '../../actions/ipcActions';
 import { LoginCss } from '../../style/Login.css';
 
@@ -33,11 +33,11 @@ class Login extends React.Component {
 					<Column title='Login'>
 						<form onSubmit={this._handleSubmit}>
 							<InputGroup id='netid' value={this.state.netid} onChange={this._handleChange}
-										showValidation={this._getValidationState} required autoFocus>
+										showErrors={this._getValidationState} required autoFocus>
 								Net-ID
 							</InputGroup>
 							<InputGroup type='password' value={this.state.password} onChange={this._handleChange}
-										showValidation={this._getValidationState} required>
+										showErrors={this._getValidationState} required>
 								Password
 							</InputGroup>
 							<ButtonGroup isLoading={this.state.isLoading}>
@@ -80,8 +80,8 @@ class Login extends React.Component {
 			ipcRenderer.once(ipcMysql.VERIFY_CREDENTIALS, (event, auth) => {
 				if (auth && auth.userId && auth.accessLevel) {
 					ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
-					ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, results) => {
-						this.props.setEventsToday(results);
+					ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday) => {
+						this.props.setEventsToday(eventsToday);
 						this.props.updateAuthorization(auth);
 					});
 				} else {

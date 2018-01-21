@@ -44,7 +44,7 @@ export class InputAutocomplete extends React.Component {
 					return (
 						<Field horizontal={horizontal} style={style} label={children} {...getRootProps({refKey: 'innerRef'})}>
 							<div className='control'>
-								<input {...getInputProps({className: inputClasses, id, required, disabled})}/>
+								<input {...getInputProps({className: inputClasses, id, required, disabled: disabled || isStatic})}/>
 								{isOpen && inputValue && inputValue.length > 1 && (
 									<div style={{border:'1px solid #ccc', zIndex:10, position:'absolute', width:'100%'}}>
 										{items.filter(i =>
@@ -87,7 +87,7 @@ export class InputAutocomplete extends React.Component {
 	}
 
 	_hasErrors(value) {
-		return this.props.required && this.props.showValidation && this.props.showValidation(value);
+		return this.props.required && this.props.showErrors && this.props.showErrors(value);
 	}
 
 	_determineStyle({highlightedIndex, index, selectedItem, item}) {

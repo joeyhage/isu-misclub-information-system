@@ -13,13 +13,13 @@ export default class CheckInMember extends React.Component {
 		super(props);
 		this.state = {
 			member: props.member,
-			showCheckInFormErrors: false,
+			showFormErrors: false,
 			editing: false,
 			isLoading: false
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
-		this._getCheckInFormValidationState = this._getCheckInFormValidationState.bind(this);
+		this._getFormValidationState = this._getFormValidationState.bind(this);
 	}
 
 	render() {
@@ -28,7 +28,7 @@ export default class CheckInMember extends React.Component {
 				<Column>
 					<form onSubmit={this._handleSubmit}>
 						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
-									showValidation={this._getCheckInFormValidationState} status>
+									showErrors={this._getFormValidationState} status>
 							<PaymentRadio checked={this.state.member.payment} onChange={this._handleChange}/>
 							{this.state.member.semesters_remaining === 0 && (this.state.member.free_meeting_used ?
 									<Message header='Payment Needed' danger>
@@ -123,7 +123,7 @@ export default class CheckInMember extends React.Component {
 		event.preventDefault();
 		const {first_name, last_name, major, isUpdated} = this.state.member;
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
-			this.setState({showCheckInFormErrors: false, isLoading: true});
+			this.setState({showFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
 				member: {
 					...this.state.member,
@@ -131,19 +131,19 @@ export default class CheckInMember extends React.Component {
 				},
 				eventId: this.props.eventId
 			});
-			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results) => {
-				if (results) {
+			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results, status) => {
+				if (status === 'SUCCESS') {
 					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
 				} else {
 					this.setState({isLoading: false});
 				}
 			});
 		} else {
-			this.setState({showCheckInFormErrors: true});
+			this.setState({showFormErrors: true});
 		}
 	}
 
-	_getCheckInFormValidationState(value) {
-		return !isValidInput(value) && this.state.showCheckInFormErrors;
+	_getFormValidationState(value) {
+		return !isValidInput(value) && this.state.showFormErrors;
 	}
 }

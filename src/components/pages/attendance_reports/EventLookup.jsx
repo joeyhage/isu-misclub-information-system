@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputGroup } from '../../common';
+import {Column, InputGroup} from '../../common';
 import dateFormat from 'dateformat';
 // import {ipcMysql} from '../../../actions/ipcActions';
 // import {isValidInput} from '../../../utils/validation';
@@ -10,7 +10,6 @@ export default class EventLookup extends React.Component {
 
 	constructor(props) {
 		super(props);
-
 		const dateRangeStart = new Date();
 		dateRangeStart.setMonth(dateRangeStart.getMonth() - 6);
 		this.state = {
@@ -24,33 +23,31 @@ export default class EventLookup extends React.Component {
 
 	render() {
 		return (
-			<form id='event-lookup' onSubmit={this._handleSubmit} onReset={this._handleChange}>
-				<InputGroup id='date-range-start' value={this.state.dateRangeStart} onChange={this._handleChange} type='date'/>
-				<InputGroup id='date-range-end' value={this.state.dateRangeEnd} onChange={this._handleChange} type='date'/>
-				<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
-							placeholder={'e.g. MIS Club Career Night'} style={{width:'25%'}}>
-					Event Name
-				</InputGroup>
-			</form>
+			<Column title='Event Lookup'>
+				<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
+					<InputGroup id='date-range-start' value={this.state.dateRangeStart} onChange={this._handleChange} type='date'/>
+					<InputGroup id='date-range-end' value={this.state.dateRangeEnd} onChange={this._handleChange} type='date'/>
+					<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
+								placeholder={'e.g. MIS Club Career Night'}>
+						Event Name
+					</InputGroup>
+				</form>
+			</Column>
 		);
 	}
 
 	_handleChange({target}) {
-		const targetIdSwitch = {
+		const stateValue = {
 			'date-range-start': 'dateRangeStart',
 			'date-range-end': 'dateRangeEnd',
 			'event-name': 'eventName'
-		};
-		const stateValue = targetIdSwitch[target.id];
+		}[target.id];
 		if (stateValue) {
 			let value = target.value;
 			if (stateValue.includes('date')) {
-				console.log(value);
 				const dateValues = value.split('-');
 				if (dateValues[0].length > 4) {
-					console.log(dateValues[0]);
 					dateValues[0] = dateValues[0].substring(0, 4);
-					console.log(dateValues[0]);
 					value = dateValues.join('-');
 				}
 			}

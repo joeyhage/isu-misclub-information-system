@@ -8,7 +8,7 @@ import { AppCss } from './style/App.css.js';
 import './style/bulma.min.css';
 import './style/font-awesome.min.css';
 
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer, remote } = window.require('electron');
 
 class App extends React.Component {
 
@@ -30,6 +30,13 @@ class App extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		this._updateWindow(nextProps);
+	}
+
+	componentDidCatch(error, info) {
+		const logger = remote.getGlobal('logger');
+		if (logger) {
+			logger.error(error, info);
+		}
 	}
 
 	_updateWindow(props) {

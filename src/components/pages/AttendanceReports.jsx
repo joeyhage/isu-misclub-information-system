@@ -12,6 +12,7 @@ class AttendanceReport extends React.Component {
 			eventId: props.eventId,
 			eventName: props.eventName
 		};
+		this._resetState = this._resetState.bind(this);
 	}
 
 	render() {
@@ -23,6 +24,10 @@ class AttendanceReport extends React.Component {
 				}
 			</PageView>
 		);
+	}
+
+	_resetState() {
+		this.setState({eventId: null, eventName: null});
 	}
 }
 

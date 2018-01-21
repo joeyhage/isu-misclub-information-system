@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import AdminTools from './pages/AdminTools';
-import AttendanceReport from './pages/AttendanceReport';
+import AttendanceReports from './pages/AttendanceReports';
 import Events from './pages/Events';
 import CheckIn from './pages/CheckIn';
 import GraphsTrends from './pages/GraphsTrends';
@@ -23,7 +23,7 @@ class MISClubPage extends React.Component {
 		return {
 			'events': <Events/>,
 			'check-in': <CheckIn/>,
-			'attendance-report': <AttendanceReport/>,
+			'attendance-reports': <AttendanceReports/>,
 			'graphs-trends': <GraphsTrends/>,
 			'admin-tools': <AdminTools/>,
 			'help': <Help/>

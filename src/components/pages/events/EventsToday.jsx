@@ -17,24 +17,24 @@ export default class EventsToday extends React.Component {
 	render() {
 		const {eventsTable} = this.state;
 		return (
-			<Column title='Events Today'>
+			<Column title='Events Today' style={{paddingLeft:'40px'}}>
 				<p>{Boolean(eventsTable) ?
-					'Click an event to start check-in' :
+					'Click an event to start check-in.' :
 					'No events today. To start check-in, create an event.'
 				}</p>
 				{Boolean(eventsTable) &&
-				<Table id='events-today'>
-					<thead>
-						<tr>
-							<th>Event ID</th>
-							<th>Event Name</th>
-							<th>Delete?</th>
-						</tr>
-					</thead>
-					<tbody onClick={this._handleRowClick}>
-						{eventsTable}
-					</tbody>
-				</Table>
+					<Table id='events-today' style={{marginTop:'20px'}}>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Delete?</th>
+							</tr>
+						</thead>
+						<tbody onClick={this._handleRowClick}>
+							{eventsTable}
+						</tbody>
+					</Table>
 				}
 			</Column>
 		);
@@ -54,15 +54,17 @@ export default class EventsToday extends React.Component {
 		if (target.className === 'delete') {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
-			ipcRenderer.once(ipcMysql.DELETE_EVENT, () => {
-				const eventsToday = this.props.eventsToday || [];
-				this.setState({
-					eventsTable: this._populateEventsTable(eventsToday.filter(event =>
-						parseInt(event.event_id, 10) !== parseInt(eventId, 10)
-					))
-				});
-				if (eventId && eventId.toString() === this.props.eventId.toString()) {
-					this.props.resetActiveEvent();
+			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, results, status) => {
+				if (status === 'SUCCESS') {
+					const eventsToday = this.props.eventsToday || [];
+					this.setState({
+						eventsTable: this._populateEventsTable(eventsToday.filter(event =>
+							parseInt(event.event_id, 10) !== parseInt(eventId, 10)
+						))
+					});
+					if (eventId && eventId.toString() === this.props.eventId.toString()) {
+						this.props.resetActiveEvent();
+					}
 				}
 			});
 		} else {
