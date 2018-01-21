@@ -23,4 +23,5 @@ export { Column } from './Column';
 export { Message } from './Message';
 export { ButtonGroup } from './ButtonGroup';
 export { Field } from './Field';
+export { Table } from './Table';
 export { InputAutocomplete } from './InputAutocomplete';

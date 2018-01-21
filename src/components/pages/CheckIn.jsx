@@ -26,20 +26,27 @@ class CheckIn extends React.Component {
 	}
 
 	render() {
-		return !this.props.eventId ? (
-			<PageView>
-				<Column title={'No Event Selected'} subtitle={'Please select an event from the Events page.'} titleIsSpaced/>
-			</PageView>
-		) : (
+		return (
 			<PageView rules={CheckInCss}>
-				<Column title={this.props.eventName} subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
-					{this._determineSubpage()}
-					{Boolean(this.state.message) &&
-						<Message header='Info' onDelete={() => this.setState({message: null})} timeout={4000} info>
-							{this.state.message}
-						</Message>
-					}
-				</Column>
+				{this.props.eventId &&
+					<Column title={this.props.eventName}
+							subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
+						{this._determineSubpage()}
+						{Boolean(this.state.message) &&
+							<Message header='Info'
+									 timeout={4000}
+									 onDelete={() => this.setState({message: null})}
+									 info>
+								{this.state.message}
+							</Message>
+						}
+					</Column>
+				}
+				{!this.props.eventId &&
+					<Column title={'No Event Selected'}
+							subtitle={'Please create or select an event on the Events page.'}
+							titleIsSpaced/>
+				}
 			</PageView>
 		);
 	}

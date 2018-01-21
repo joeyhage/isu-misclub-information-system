@@ -1,12 +1,12 @@
 import React from 'react';
-import { Card } from '../common';
+import { Card, Table } from '../common';
 
 export class MemberAttendance extends React.Component {
 
 	render() {
 		return (
 			<Card title='Attendance' up={this.props.up}>
-				<table className='table is-striped is-hoverable is-fullwidth' id='attendance'>
+				<Table id='attendance'>
 					<thead>
 						<tr>
 							<th>Event ID</th>
@@ -17,7 +17,7 @@ export class MemberAttendance extends React.Component {
 					<tbody>
 						{this.props.children}
 					</tbody>
-				</table>
+				</Table>
 			</Card>
 		);
 	}

@@ -5,7 +5,6 @@ export default class MemberStatus extends React.Component {
 	render() {
 		return this.props.status ? (
 			<div>
-				<hr/>
 				<div className='field is-horizontal' style={{margin:'20px 0'}}>
 					<div className='field-label'>
 						<label className='label'>Status</label>
