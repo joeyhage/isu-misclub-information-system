@@ -14,11 +14,10 @@ class mysqlManager {
 				if (error) {
 					return reject(error);
 				}
-				connection.on('error', error => {
-					this.logger.error(error, 'Database error. See logs for more details.', true);
-				});
+				connection.on('error', this._onConnectionError);
 				if (sqlStatement) {
 					connection.query(sqlStatement, sqlParams, (error, results) => {
+						connection.removeListener('error', this._onConnectionError);
 						connection.release();
 						if (error) {
 							return reject(error);
@@ -30,10 +29,11 @@ class mysqlManager {
 					});
 				} else {
 					connection.ping(error => {
+						connection.removeListener('error', this._onConnectionError);
+						connection.release();
 						if (error) {
 							return reject(error);
 						}
-						connection.release();
 						resolve();
 					});
 				}
@@ -195,6 +195,10 @@ class mysqlManager {
 			'ORDER BY event_id DESC',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);
+	}
+
+	_onConnectionError(error) {
+		this.logger.error(error, 'Database error. See logs for more details.', true);
 	}
 }
 

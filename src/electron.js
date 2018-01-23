@@ -60,6 +60,7 @@ app.on('ready', () => {
 		logger.error(error);
 		app.quit();
 	});
+	process.on('warning', error => logger.error(error));
 	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
 	Menu.setApplicationMenu(menu);
 
