@@ -51,7 +51,7 @@ export default class CreateEvent extends React.Component {
 			const {eventName} = this.state;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CREATE_EVENT, {eventName});
 			ipcRenderer.once(ipcMysql.CREATE_EVENT, (event, eventId, status) => {
-				if (status === 'SUCCESS') {
+				if (status === ipcMysql.SUCCESS) {
 					this.props.setActiveEvent({eventId, eventName});
 					this.props.selectEventCheckInView();
 				}

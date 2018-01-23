@@ -8,6 +8,7 @@ export default class LookupResults extends React.Component {
 		this.state = {
 			eventsTable: this._populateEventsTable(props.events)
 		};
+		this._handleRowClick = this._handleRowClick.bind(this);
 	}
 
 	render() {
@@ -27,7 +28,7 @@ export default class LookupResults extends React.Component {
 								<th>Date</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody onClick={this._handleRowClick}>
 							{eventsTable}
 						</tbody>
 					</Table>
@@ -50,5 +51,24 @@ export default class LookupResults extends React.Component {
 				<td className='event-date'>{event.event_date}</td>
 			</tr>
 		)) : null;
+	}
+
+	_handleRowClick({target}) {
+		let rowEl;
+		if (target.nodeName === 'TR') {
+			rowEl = target;
+		} else {
+			rowEl = target.parentNode;
+		}
+		const eventId = rowEl.querySelector('.event-id');
+		const eventName = rowEl.querySelector('.event-name');
+		const eventDate = rowEl.querySelector('.event-date');
+		if (eventId && eventName && eventDate) {
+			this.props.onEventSelected({
+				eventId: eventId.innerHTML,
+				eventName: eventName.innerHTML,
+				eventDate: eventDate.innerHTML
+			});
+		}
 	}
 }

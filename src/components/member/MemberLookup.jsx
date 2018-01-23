@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, InputGroup, Message, ButtonGroup } from '../../common';
-import { isValidInput } from '../../../utils/validation';
-import {ipcGeneral, ipcMysql} from '../../../actions/ipcActions';
+import { Button, InputGroup, Message, ButtonGroup } from '../common/index';
+import { isValidInput } from '../../utils/validation';
+import {ipcGeneral, ipcMysql} from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -66,7 +66,7 @@ export default class MemberLookup extends React.Component {
 			ipcRenderer.once(ipcMysql.LOOKUP_NETID, (event, member) => {
 				if (member && member.hasOwnProperty('netid')) {
 					this.props.setMember(member);
-					this.props.checkInMember();
+					this.props.updateMember();
 				} else {
 					this.setState({netIdNotFound: netid, isLoading: false});
 					this.props.setMember({netid});

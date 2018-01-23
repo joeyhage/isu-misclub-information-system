@@ -16,7 +16,8 @@ export default class EventLookup extends React.Component {
 			dateRangeStart: dateFormat(dateRangeStart, 'isoDate'),
 			dateRangeEnd: dateFormat('isoDate'),
 			eventName: '',
-			showFormErrors: false
+			showFormErrors: false,
+			isLoading: false
 		};
 		this.initialState = {...this.state};
 		this._handleChange = this._handleChange.bind(this);
@@ -25,25 +26,26 @@ export default class EventLookup extends React.Component {
 	}
 
 	render() {
+		const {dateRangeStart, dateRangeEnd, eventName, isLoading} = this.state;
 		return (
 			<Column title='Event Lookup' style={{paddingRight:'40px'}}>
 				<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
-					<InputGroup id='date-range-start' value={this.state.dateRangeStart}
+					<InputGroup id='date-range-start' value={dateRangeStart}
 								onChange={this._handleChange} type='date'
 								showErrors={this._getFormValidationState} horizontal required>
 						Range Start
 					</InputGroup>
-					<InputGroup id='date-range-end' value={this.state.dateRangeEnd}
+					<InputGroup id='date-range-end' value={dateRangeEnd}
 								onChange={this._handleChange} type='date'
 								showErrors={this._getFormValidationState} horizontal required>
 						Range End
 					</InputGroup>
-					<InputGroup id='event-name' value={this.state.eventName} onChange={this._handleChange}
+					<InputGroup id='event-name' value={eventName} onChange={this._handleChange}
 								placeholder='Optional'
 								showErrors={this._getFormValidationState} horizontal>
 						Event Name
 					</InputGroup>
-					<ButtonGroup isLoading={this.state.isLoading} horizontal>
+					<ButtonGroup isLoading={isLoading} horizontal>
 						<Button type='submit' info>Lookup</Button>
 						<Button type='reset' black>Clear</Button>
 					</ButtonGroup>
@@ -69,10 +71,13 @@ export default class EventLookup extends React.Component {
 		event.preventDefault();
 		const {dateRangeStart, dateRangeEnd, eventName} = this.state;
 		if (isValidInput(dateRangeStart) && isValidInput(dateRangeEnd)) {
-			this.setState({showFormErrors: false});
+			this.setState({showFormErrors: false, isLoading: true});
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
-			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events) => {
-				this.props.onResults(events);
+			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events, status) => {
+				this.setState({isLoading: false});
+				if (status === ipcMysql.SUCCESS) {
+					this.props.onResults(events);
+				}
 			});
 		} else {
 			this.setState({showFormErrors: true});

@@ -1,21 +1,24 @@
 import React from 'react';
-import { Button, ButtonGroup, Column, Message } from '../../common';
-import { isValidInput } from '../../../utils/validation';
-import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from '../../member';
-import { ipcMysql } from '../../../actions/ipcActions';
-import { hasMemberInfoChanged } from '../../../utils/memberUtil';
+import { Button, ButtonGroup, Column, Message } from '../common/index';
+import { isValidInput } from '../../utils/validation';
+import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from './index';
+import { ipcMysql } from '../../actions/ipcActions';
+import { hasMemberInfoChanged } from '../../utils/memberUtil';
 
 const { ipcRenderer } = window.require('electron');
 
-export default class CheckInMember extends React.Component {
+export default class UpdateMember extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			member: props.member,
+			isCheckIn: Boolean(props.eventId),
 			showFormErrors: false,
 			editing: false,
-			isLoading: false
+			isLoading: false,
+			activity: [],
+			attendance: []
 		};
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
@@ -23,32 +26,40 @@ export default class CheckInMember extends React.Component {
 	}
 
 	render() {
+		const {member, editing, isLoading, activity, attendance, isCheckIn} = this.state;
 		return (
 			<div className='columns'>
 				<Column>
 					<form onSubmit={this._handleSubmit}>
-						<MemberInfo member={this.state.member} disabled={!this.state.editing} onChange={this._handleChange}
+						<MemberInfo member={member} disabled={!editing} onChange={this._handleChange}
 									showErrors={this._getFormValidationState} status>
-							<PaymentRadio checked={this.state.member.payment} onChange={this._handleChange}/>
-							{this.state.member.semesters_remaining === 0 && (this.state.member.free_meeting_used ?
+							<PaymentRadio checked={member.payment} onChange={this._handleChange}/>
+							{member.semesters_remaining === 0 && isCheckIn &&
+								(member.free_meeting_used ?
 									<Message header='Payment Needed' danger>
 										Member has already used free meeting and has not yet paid dues.
 									</Message> :
 									<Message header='Free Meeting' warning>
 										If checked in with no payment, member's free meeting will be used.
 									</Message>
-							)}
-							<ButtonGroup isLoading={this.state.isLoading} horizontal>
-								{!this.state.editing &&
-									<Button id='check-in' type='submit' info autoFocus>
-										Check-In
-									</Button>
+								)
+							}
+							<ButtonGroup isLoading={isLoading} horizontal>
+								{!editing &&
+									(isCheckIn ?
+										<Button id='check-in' type='submit' info autoFocus>
+											Check-In
+										</Button> :
+										<Button id='update' type='submit' info autoFocus>
+											Update
+										</Button>
+									)
 								}
 								<Button id='edit-info' onClick={this._handleChange} primary>
-									{this.state.editing ? 'Save' : 'Edit Info'}
+									{editing ? 'Save' : 'Edit Info'}
 								</Button>
 								<Button id='cancel-member' onClick={this._handleChange} black>
-									{this.state.editing ? 'Discard' : 'Cancel'}
+									{editing ? 'Discard' : 'Cancel'}
 								</Button>
 							</ButtonGroup>
 						</MemberInfo>
@@ -56,10 +67,10 @@ export default class CheckInMember extends React.Component {
 				</Column>
 				<Column>
 					<MemberActivity>
-						{this.state.activity}
+						{activity}
 					</MemberActivity>
 					<MemberAttendance up>
-						{this.state.attendance}
+						{attendance}
 					</MemberAttendance>
 				</Column>
 			</div>
@@ -124,16 +135,19 @@ export default class CheckInMember extends React.Component {
 		const {first_name, last_name, major, isUpdated} = this.state.member;
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
 			this.setState({showFormErrors: false, isLoading: true});
-			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_UPDATE_MEMBER, {
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.UPDATE_MEMBER, {
 				member: {
 					...this.state.member,
 					isUpdated: isUpdated ? true : hasMemberInfoChanged(this.props.member, this.state.member)
 				},
-				eventId: this.props.eventId
+				eventId: this.state.isCheckIn ? this.props.eventId : null
 			});
-			ipcRenderer.once(ipcMysql.CHECK_IN_UPDATE_MEMBER, (event, results, status) => {
-				if (status === 'SUCCESS') {
-					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
+			ipcRenderer.once(ipcMysql.UPDATE_MEMBER, (event, results, status) => {
+				if (status === ipcMysql.SUCCESS) {
+					this.props.onSubmit(this.state.isCheckIn ?
+						`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!` :
+						`Successfully updated member, ${first_name} ${last_name}.`
+					);
 				} else {
 					this.setState({isLoading: false});
 				}

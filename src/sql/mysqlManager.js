@@ -5,7 +5,6 @@ const isDev = require('electron-is-dev'),
 class mysqlManager {
 	constructor(logger) {
 		this.pool = mysql.createPool(mysqlDB);
-		this.ER_DUP_ENTRY = 'ER_DUP_ENTRY';
 		this.logger = logger;
 	}
 
@@ -159,9 +158,31 @@ class mysqlManager {
 
 	getAttendanceForEvent(eventId) {
 		return this.sqlQueryHandler(
-			`SELECT m.* FROM ${is_member} m, ${is_attendance} a ` +
-			'WHERE m.netid=a.netid AND event_id=? ' +
-			'ORDER BY netid ASC',
+			'SELECT a.*, m.first_name, m.last_name ' +
+			`FROM ${is_attendance} a LEFT JOIN ${is_member} m ` +
+			'ON m.netid=a.netid ' +
+			'WHERE event_id=? ' +
+			'ORDER BY a.netid ASC',
+			[eventId]
+		);
+	}
+
+	getEventClassificationStats(eventId) {
+		return this.sqlQueryHandler(
+			'SELECT classification, COUNT(*) as count ' +
+			`FROM ${is_attendance} ` +
+			'WHERE event_id=? ' +
+			'GROUP BY classification',
+			[eventId]
+		);
+	}
+
+	getEventMajorStats(eventId) {
+		return this.sqlQueryHandler(
+			'SELECT major, COUNT(*) as count ' +
+			`FROM ${is_attendance} ` +
+			'WHERE event_id=? ' +
+			'GROUP BY major',
 			[eventId]
 		);
 	}

@@ -41,7 +41,10 @@ const sqlActions = (mysql, logger) => ({
 			});
 			return eventId;
 		} catch (error) {
-			const errorMessage = `Error while deleting event with ID: ${ipcArgs.eventId}`;
+			let errorMessage = `Error while deleting event with ID: ${ipcArgs.eventId}`;
+			if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+				errorMessage += '. Cannot delete an event people have checked into.';
+			}
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -129,18 +132,20 @@ const sqlActions = (mysql, logger) => ({
 			throw new Error(errorMessage);
 		}
 	},
-	[ipcMysql.CHECK_IN_UPDATE_MEMBER]: async ipcArgs => {
+	[ipcMysql.UPDATE_MEMBER]: async ipcArgs => {
 		const {member, eventId} = ipcArgs;
-		_isValidEventId(eventId);
+		const isCheckIn = Boolean(eventId);
 		try {
-			await mysql.checkInMember(member, eventId);
 			const sqlCommands = [];
 			let memberNeedsUpdating = false;
 			const paymentActivity = _getPaymentActivity(member.payment);
+			if (isCheckIn) {
+				sqlCommands.push(_checkInMember(mysql, logger, member, eventId));
+			}
 			if (paymentActivity) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, paymentActivity));
 				memberNeedsUpdating = true;
-			} else if (_didUseFreeMeeting(member)) {
+			} else if (isCheckIn && _didUseFreeMeeting(member)) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, FREE_MEETING_USED));
 				member.free_meeting_used = 1;
 				memberNeedsUpdating = true;
@@ -156,33 +161,37 @@ const sqlActions = (mysql, logger) => ({
 				return await Promise.all(sqlCommands);
 			}
 		} catch (error) {
-			let errorMessage = `Error while checking in person with Net-ID: ${member.netid}`;
-			if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
+			let errorMessage = `Error while updating person with Net-ID: ${member.netid}`;
+			if (error.code === 'ER_DUP_ENTRY') {
 				errorMessage +=  `. Person has already checked in for event with Event ID: ${eventId}.`;
-			} else {
-				errorMessage += ` for event with Event ID: ${eventId}.`;
+			} else if (isCheckIn) {
+				errorMessage += ` and checking in for event with Event ID: ${eventId}.`;
 			}
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
 	},
-	[ipcMysql.CHECK_IN_CREATE_MEMBER]: async ipcArgs => {
+	[ipcMysql.CREATE_MEMBER]: async ipcArgs => {
 		const {member, eventId} = ipcArgs;
+		const isCheckIn = Boolean(eventId);
 		try {
-			_isValidEventId(eventId);
 			await mysql.createMember(member);
-			const sqlCommands = [
-				mysql.checkInMember(member, eventId),
-				mysql.recordMemberActivity(member.netid, MEMBER_ADDED),
-				mysql.recordMemberActivity(member.netid, FREE_MEETING_USED)
-			];
+			const sqlCommands = [mysql.recordMemberActivity(member.netid, MEMBER_ADDED)];
 			const paymentActivity = _getPaymentActivity(member.payment);
 			if (paymentActivity) {
 				sqlCommands.push(mysql.recordMemberActivity(member.netid, paymentActivity));
 			}
+			if (isCheckIn) {
+				sqlCommands.push(_checkInMember(mysql, logger, member, eventId));
+			}
 			return await Promise.all(sqlCommands);
 		} catch (error) {
-			const errorMessage = `Error while checking in person with Net-ID: ${member.netid} for event with Event ID: ${eventId}.`;
+			let errorMessage = `Error while creating person with Net-ID: ${member.netid}`;
+			if (error.code === 'ER_DUP_ENTRY') {
+				errorMessage +=  '. Person already exists in database.';
+			} else if (isCheckIn) {
+				errorMessage += ` and checking in for event with Event ID: ${eventId}.`;
+			}
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -191,7 +200,12 @@ const sqlActions = (mysql, logger) => ({
 		const {eventId} = ipcArgs;
 		try {
 			_isValidEventId(eventId);
-			return await mysql.getAttendanceForEvent(eventId);
+			const [attendance, majorStats, classificationStats] = await Promise.all([
+				mysql.getAttendanceForEvent(eventId),
+				mysql.getEventMajorStats(eventId),
+				mysql.getEventClassificationStats(eventId)
+			]);
+			return {attendance, majorStats, classificationStats};
 		} catch (error) {
 			const errorMessage = `Error while getting event attendance info for event with Event ID: ${eventId}`;
 			logger.error(error, errorMessage, true);
@@ -216,6 +230,21 @@ const sqlActions = (mysql, logger) => ({
 });
 
 module.exports = sqlActions;
+
+const _checkInMember = async (mysql, logger, member, eventId) => {
+	try {
+		await mysql.checkInMember(member, eventId);
+	} catch (error) {
+		let errorMessage = `Error while checking in person with Net-ID: ${member.netid}`;
+		if (error.message && error.message.includes(mysql.ER_DUP_ENTRY)) {
+			errorMessage +=  `. Person has already checked in for event with Event ID: ${eventId}.`;
+		} else {
+			errorMessage += ` for event with Event ID: ${eventId}.`;
+		}
+		logger.error(error, errorMessage);
+		throw new Error(errorMessage);
+	}
+};
 
 const _isValidEventId = eventId => {
 	if (!parseInt(eventId, 10)) {

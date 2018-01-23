@@ -7,6 +7,7 @@ import CheckIn from './pages/CheckIn';
 import GraphsTrends from './pages/GraphsTrends';
 import Help from './pages/Help';
 import NavPanel from './navigation/NavPanel';
+import Members from './pages/Members';
 
 class MISClubPage extends React.Component {
 
@@ -25,6 +26,7 @@ class MISClubPage extends React.Component {
 			'check-in': <CheckIn/>,
 			'attendance-reports': <AttendanceReports/>,
 			'graphs-trends': <GraphsTrends/>,
+			'members': <Members/>,
 			'admin-tools': <AdminTools/>,
 			'help': <Help/>
 		}[this.props.view];

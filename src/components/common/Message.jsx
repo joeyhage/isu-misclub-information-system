@@ -7,10 +7,11 @@ export class Message extends React.Component {
 	constructor(props) {
 		super(props);
 		if (props.timeout && typeof props.timeout === 'number' && this.props.onDelete) {
-			setTimeout(() => {
+			this.timeout = setTimeout(() => {
 				this.props.onDelete();
 			}, props.timeout);
 		}
+		this._deleteMessage = this._deleteMessage.bind(this);
 	}
 
 	render() {
@@ -20,11 +21,7 @@ export class Message extends React.Component {
 				<div className='message-header'>
 					<p>{this.props.header}</p>
 					<button className='delete' onClick={(event) => {
-						if (this.props.onDelete) {
-							this.props.onDelete(event);
-						} else {
-							this._deleteMessage(event);
-						}
+
 					}}>Close</button>
 				</div>
 				<div className='message-body'>
@@ -34,7 +31,15 @@ export class Message extends React.Component {
 		);
 	}
 
-	_deleteMessage({target}) {
-		target.parentNode.parentNode.remove();
+	componentWillUnmount() {
+		clearTimeout(this.timeout);
+	}
+
+	_deleteMessage(event) {
+		if (this.props.onDelete) {
+			this.props.onDelete(event);
+		} else {
+			event.target.parentNode.parentNode.remove();
+		}
 	}
 }

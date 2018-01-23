@@ -1,14 +1,12 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import dateFormat from 'dateformat';
 import { Column, Message, PageView } from '../common';
 import UpdateMember from '../member/UpdateMember';
 import MemberLookup from '../member/MemberLookup';
 import CreateMember from '../member/CreateMember';
 import { setMemberDefaults } from '../../utils/memberUtil';
-import { CheckInCss } from '../../style/CheckIn.css';
+import { MembersCss } from '../../style/Members.css';
 
-class CheckIn extends React.Component {
+export default class Members extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -16,8 +14,7 @@ class CheckIn extends React.Component {
 			member: setMemberDefaults(),
 			updateMember: false,
 			createMember: false,
-			message: null,
-			eventDate: dateFormat('mediumDate')
+			message: null
 		};
 		this._resetState = this._resetState.bind(this);
 		this._setMember = this._setMember.bind(this);
@@ -27,26 +24,18 @@ class CheckIn extends React.Component {
 
 	render() {
 		return (
-			<PageView rules={CheckInCss}>
-				{this.props.eventId &&
-					<Column title={this.props.eventName}
-							subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
-						{this._determineSubpage()}
-						{Boolean(this.state.message) &&
-							<Message header='Info'
-									 timeout={4000}
-									 onDelete={() => this.setState({message: null})}
-									 info>
-								{this.state.message}
-							</Message>
-						}
-					</Column>
-				}
-				{!this.props.eventId &&
-					<Column title={'No Event Selected'}
-							subtitle={'Please create or select an event on the Events page.'}
-							titleIsSpaced/>
-				}
+			<PageView rules={MembersCss}>
+				<Column title='Member Management'>
+					{this._determineSubpage()}
+					{Boolean(this.state.message) &&
+						<Message header='Info'
+								 timeout={4000}
+								 onDelete={() => this.setState({message: null})}
+								 info>
+							{this.state.message}
+						</Message>
+					}
+				</Column>
 			</PageView>
 		);
 	}
@@ -91,11 +80,3 @@ class CheckIn extends React.Component {
 		});
 	}
 }
-
-const mapStateToProps = state => ({
-	eventId: state.activeEvent.eventId,
-	eventName: state.activeEvent.eventName,
-	eventDate: state.activeEvent.eventDate
-});
-		
-export default connect(mapStateToProps)(CheckIn);

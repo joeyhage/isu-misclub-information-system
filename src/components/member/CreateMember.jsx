@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, ButtonGroup, Column, Message } from '../../common';
-import { MemberInfo, PaymentRadio } from '../../member';
-import { isValidInput } from '../../../utils/validation';
-import {ipcMysql} from '../../../actions/ipcActions';
+import { Button, ButtonGroup, Column, Message } from '../common/index';
+import { MemberInfo, PaymentRadio } from './index';
+import { isValidInput } from '../../utils/validation';
+import { ipcMysql } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -12,6 +12,7 @@ export default class CreateMember extends React.Component {
 		super(props);
 		this.state = {
 			member: props.member,
+			isCheckIn: Boolean(props.eventId),
 			showFormErrors: false,
 			isLoading: false,
 			didFindMember: this._didFindMember(props.member)
@@ -77,13 +78,16 @@ export default class CreateMember extends React.Component {
 		const {first_name, last_name, major} = this.state.member;
 		if (isValidInput(first_name) && isValidInput(last_name) && isValidInput(major)) {
 			this.setState({showFormErrors: false, isLoading: true});
-			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CHECK_IN_CREATE_MEMBER, {
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CREATE_MEMBER, {
 				member: this.state.member,
-				eventId: this.props.eventId
+				eventId: this.state.isCheckIn ? this.props.eventId : null
 			});
-			ipcRenderer.once(ipcMysql.CHECK_IN_CREATE_MEMBER, (event, results, status) => {
-				if (status === 'SUCCESS') {
-					this.props.onCheckIn(`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!`);
+			ipcRenderer.once(ipcMysql.CREATE_MEMBER, (event, results, status) => {
+				if (status === ipcMysql.SUCCESS) {
+					this.props.onSubmit(this.state.isCheckIn ?
+						`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!` :
+						`Successfully created member, ${first_name} ${last_name}.`
+					);
 				} else {
 					this.setState({isLoading: false});
 				}

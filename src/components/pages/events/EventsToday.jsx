@@ -55,7 +55,7 @@ export default class EventsToday extends React.Component {
 			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, results, status) => {
-				if (status === 'SUCCESS') {
+				if (status === ipcMysql.SUCCESS) {
 					const eventsToday = this.props.eventsToday || [];
 					this.setState({
 						eventsTable: this._populateEventsTable(eventsToday.filter(event =>
