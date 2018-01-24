@@ -31,11 +31,11 @@ const createWindow = () => {
 
 		installExtension(REACT_DEVELOPER_TOOLS)
 			.then((name) => logger.debug(`Added Extension: ${name}`))
-			.catch((err) => logger.error('An error occurred: ', err));
+			.catch((error) => logger.error('An error occurred: ', error));
 
 		installExtension(REDUX_DEVTOOLS)
 			.then((name) => logger.debug(`Added Extension: ${name}`))
-			.catch((err) => logger.error('An error occurred: ', err));
+			.catch((error) => logger.error('An error occurred: ', error));
 	}
 
 	mainWindow.on('closed', () => {

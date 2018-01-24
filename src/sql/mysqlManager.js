@@ -22,9 +22,7 @@ class mysqlManager {
 						if (error) {
 							return reject(error);
 						}
-						if (isDev) {
-							this.logger.info(`Sql statement - ${sqlStatement}`);
-						}
+						this.logger.debug(`Sql statement - ${sqlStatement}`);
 						resolve(results);
 					});
 				} else {

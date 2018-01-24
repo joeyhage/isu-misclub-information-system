@@ -47,14 +47,14 @@ class logUtil {
 	}
 
 	error(error, message, displayDialog = false) {
-		if (error) {
-			this.log.error(error);
-		}
 		if (message) {
 			this.log.error(new Error(message));
 			if (displayDialog) {
 				dialog.showErrorBox('Error', message);
 			}
+		}
+		if (error) {
+			this.log.error(error);
 		}
 	}
 

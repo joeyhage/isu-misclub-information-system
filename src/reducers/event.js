@@ -1,4 +1,4 @@
-import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT, SET_EVENTS_TODAY } from '../actions';
+import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT, SET_EVENTS_TODAY } from '../actions/reduxActions';
 
 const initialState = {
 	eventId: '',
