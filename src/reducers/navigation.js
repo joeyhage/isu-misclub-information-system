@@ -1,4 +1,4 @@
-import { SELECT_VIEW } from '../actions';
+import { SELECT_VIEW } from '../actions/reduxActions';
 
 const initialState = {
 	view: 'events'

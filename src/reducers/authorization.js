@@ -1,4 +1,4 @@
-import { UPDATE_AUTHORIZATION } from '../actions';
+import { UPDATE_AUTHORIZATION } from '../actions/reduxActions';
 
 const initialState = {
 	accessLevel: '',
