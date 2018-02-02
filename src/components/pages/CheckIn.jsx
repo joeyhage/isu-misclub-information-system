@@ -93,9 +93,9 @@ class CheckIn extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	eventId: state.activeEvent.eventId,
-	eventName: state.activeEvent.eventName,
-	eventDate: state.activeEvent.eventDate
+	eventId: state.event.eventId,
+	eventName: state.event.eventName,
+	eventDate: state.event.eventDate
 });
 		
 export default connect(mapStateToProps)(CheckIn);

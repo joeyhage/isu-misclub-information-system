@@ -2,6 +2,7 @@ const { dialog } = require('electron'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
 	requestDirectoryInfo = require('../utils/isuDirectoryLookup'),
 	{ hasMemberInfoChanged } = require('../utils/memberUtil'),
+	{ isValidEventId } = require('../utils/validation'),
 	{ ipcMysql } = require('./ipcActions'),
 	{ FREE_MEETING_USED, PAID_1_SEMESTER, PAID_2_SEMESTERS, MEMBER_ADDED, INFORMATION_UPDATED } =
 		require('../sql/sqlConstants');
@@ -29,7 +30,7 @@ const sqlActions = (mysql, logger) => ({
 	[ipcMysql.DELETE_EVENT]: async ipcArgs => {
 		const {eventId} = ipcArgs;
 		try {
-			_isValidEventId(eventId);
+			isValidEventId(eventId);
 			await mysql.deleteEvent(eventId);
 			dialog.showMessageBox({
 				type: 'info',
@@ -53,7 +54,7 @@ const sqlActions = (mysql, logger) => ({
 		const {eventId} = ipcArgs;
 		let results;
 		try {
-			_isValidEventId(eventId);
+			isValidEventId(eventId);
 			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
 			const errorMessage = `Error while retrieving event data for Event ID: ${eventId}`;
@@ -199,7 +200,7 @@ const sqlActions = (mysql, logger) => ({
 	[ipcMysql.RETRIEVE_ATTENDANCE]: async ipcArgs => {
 		const {eventId} = ipcArgs;
 		try {
-			_isValidEventId(eventId);
+			isValidEventId(eventId);
 			const [attendance, majorStats, classificationStats] = await Promise.all([
 				mysql.getAttendanceForEvent(eventId),
 				mysql.getEventMajorStats(eventId),
@@ -243,12 +244,6 @@ const _checkInMember = async (mysql, logger, member, eventId) => {
 		}
 		logger.error(error, errorMessage);
 		throw new Error(errorMessage);
-	}
-};
-
-const _isValidEventId = eventId => {
-	if (!parseInt(eventId, 10)) {
-		throw new Error(`Event ID: ${eventId} is not numeric`);
 	}
 };
 

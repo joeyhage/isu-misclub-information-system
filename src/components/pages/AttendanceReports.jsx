@@ -17,9 +17,9 @@ class AttendanceReports extends React.Component {
 		this.state = {
 			eventId: props.eventId,
 			eventName: props.eventName,
-			eventDate: dateFormat('isoDate'),
+			eventDate: dateFormat('mediumDate'),
 			lookupResults: null,
-			reportData: {}
+			reportData: props.reportData
 		};
 		this._resetState = this._resetState.bind(this);
 		this._setLookupResults = this._setLookupResults.bind(this);
@@ -66,8 +66,9 @@ class AttendanceReports extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	eventId: state.activeEvent.eventId,
-	eventName: state.activeEvent.eventName
+	eventId: state.event.eventId,
+	eventName: state.event.eventName,
+	reportData: state.event.reportData
 });
 
 export default connect(mapStateToProps)(AttendanceReports);

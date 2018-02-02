@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import navigation from './navigation';
-import activeEvent from './event';
+import event from './event';
 import authorization from './authorization';
 
 export const checkinApp = combineReducers({
 	navigation,
-	activeEvent,
+	event,
 	authorization
 });

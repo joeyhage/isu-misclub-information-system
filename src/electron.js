@@ -56,22 +56,31 @@ const createWindow = () => {
 };
 
 app.on('ready', () => {
-	process.on('uncaughtException', error => {
-		logger.error(error);
-		app.quit();
-	});
-	process.on('warning', error => logger.error(error));
-	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
-	Menu.setApplicationMenu(menu);
-
-	mysql.sqlQueryHandler().then(() => {
-		createWindow();
-		logger.debug('Connected to database successfully');
-	}).catch(error => {
+	const onFailedPoolConnection = error => {
 		logger.error(error, 'Error connecting to database. Please ensure you have an internet connection and are ' +
 			'connected to the ISU Network. VPN is needed if connecting from off-campus.', true);
 		app.quit();
+	};
+	process.on('uncaughtException', error => {
+		if (error.code === 'ECONNRESET') {
+			mysql.endPool().then(() => {
+				mysql.createPool();
+				mysql.testPoolConnection().catch(onFailedPoolConnection);
+			});
+		} else {
+			logger.error('Uncaught exception. App will quit.');
+			logger.error(error);
+			app.quit();
+		}
 	});
+	process.on('warning', error => logger.error(`Warning: ${error}`));
+	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
+	Menu.setApplicationMenu(menu);
+
+	mysql.testPoolConnection().then(() => {
+		createWindow();
+		logger.debug('Connected to database successfully');
+	}).catch(onFailedPoolConnection);
 
 	ipcMain.on(ipcMysql.EXECUTE_SQL, async (event, action, ipcArgs) => {
 		let results, status;

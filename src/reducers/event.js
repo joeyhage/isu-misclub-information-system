@@ -3,7 +3,8 @@ import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT, SET_EVENTS_TODAY } from '../actio
 const initialState = {
 	eventId: '',
 	eventName: '',
-	eventsToday: []
+	eventsToday: [],
+	reportData: {}
 };
 
 const event = (state = initialState, action) => {
@@ -12,7 +13,8 @@ const event = (state = initialState, action) => {
 			return {
 				...state,
 				eventId: action.eventId,
-				eventName: action.eventName
+				eventName: action.eventName,
+				reportData: action.reportData
 			};
 		case SET_EVENTS_TODAY:
 			return {

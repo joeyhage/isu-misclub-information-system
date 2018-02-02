@@ -41,7 +41,7 @@
 		"wait-on": "^2.0.2"
 	},
 	"scripts": {
-		"start": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-start\"",
+		"start": "concurrently -k \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-start\"",
 		"build": "react-scripts build",
 		"test": "react-scripts test --env=jsdom",
 		"eject": "react-scripts eject",

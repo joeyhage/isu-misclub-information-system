@@ -14,7 +14,7 @@ export default class Report extends React.Component {
 	}
 
 	render() {
-		const {classificationStats, majorStats} = this.state;
+		const {classificationStats} = this.state;
 		return (
 			<Column title={this.props.event.eventName}
 					subtitle={`Event ID: ${this.props.event.eventId} | Date: ${this.props.event.eventDate}`}>

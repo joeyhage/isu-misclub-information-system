@@ -4,48 +4,54 @@ const isDev = require('electron-is-dev'),
 
 class mysqlManager {
 	constructor(logger) {
-		this.pool = mysql.createPool(mysqlDB);
+		this.createPool();
 		this.logger = logger;
 	}
 
+	createPool() {
+		this.pool = mysql.createPool(mysqlDB);
+	}
+
+	endPool() {
+		return new Promise(resolve => {
+			this.pool.end(error => {
+				if (error) {
+					this.logger.error(error);
+				} else {
+					this.logger.debug('Pool ended successfully.');
+				}
+				resolve();
+			});
+		});
+	}
+
 	sqlQueryHandler(sqlStatement, sqlParams) {
+		this.logger.debug(`Executing query... | ${sqlStatement}`);
+		return new Promise((resolve, reject) => {
+			this.pool.query(sqlStatement, sqlParams, (error, results) => {
+				if (error) {
+					return reject(error);
+				}
+				resolve(results);
+			});
+		});
+	}
+
+	testPoolConnection() {
+		this.logger.debug('Testing pool connection...');
 		return new Promise((resolve, reject) => {
 			this.pool.getConnection((error, connection) => {
 				if (error) {
 					return reject(error);
 				}
-				connection.on('error', this._onConnectionError);
-				if (sqlStatement) {
-					connection.query(sqlStatement, sqlParams, (error, results) => {
-						connection.removeListener('error', this._onConnectionError);
-						connection.release();
-						if (error) {
-							return reject(error);
-						}
-						this.logger.debug(`Sql statement - ${sqlStatement}`);
-						resolve(results);
-					});
-				} else {
-					connection.ping(error => {
-						connection.removeListener('error', this._onConnectionError);
-						connection.release();
-						if (error) {
-							return reject(error);
-						}
-						resolve();
-					});
-				}
+				connection.ping(error => {
+					connection.release();
+					if (error) {
+						return reject(error);
+					}
+					resolve();
+				});
 			});
-		});
-	}
-
-	endPool() {
-		this.pool.end(error => {
-			if (error) {
-				this.logger.error(error);
-			} else {
-				this.logger.debug('Pool ended successfully.');
-			}
 		});
 	}
 
@@ -193,10 +199,6 @@ class mysqlManager {
 			'ORDER BY event_id DESC',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);
-	}
-
-	_onConnectionError(error) {
-		this.logger.error(error, 'Database error. See logs for more details.', true);
 	}
 }
 
