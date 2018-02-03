@@ -5,7 +5,7 @@ export class MemberActivity extends React.Component {
 
 	render() {
 		return (
-			<Card title='Activity' up={this.props.up}>
+			<Card title='Activity'>
 				<Table id='activity'>
 					<thead>
 						<tr>

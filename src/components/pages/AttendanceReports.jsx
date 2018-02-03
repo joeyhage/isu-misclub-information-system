@@ -18,7 +18,7 @@ class AttendanceReports extends React.Component {
 			eventId: props.eventId,
 			eventName: props.eventName,
 			eventDate: dateFormat('mediumDate'),
-			lookupResults: null,
+			lookupResults: [],
 			reportData: props.reportData
 		};
 		this._resetState = this._resetState.bind(this);
@@ -45,8 +45,22 @@ class AttendanceReports extends React.Component {
 		);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({
+			eventId: nextProps.eventId,
+			eventName: nextProps.eventName,
+			eventDate: dateFormat('mediumDate'),
+			reportData: {}
+		});
+	}
+
 	_resetState() {
-		this.setState({eventId: null, eventName: null, reportData: {}});
+		this.setState({
+			eventId: null,
+			eventName: null,
+			eventDate: dateFormat('mediumDate'),
+			reportData: {}
+		});
 	}
 
 	_setLookupResults(events) {

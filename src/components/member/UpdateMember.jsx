@@ -69,7 +69,7 @@ export default class UpdateMember extends React.Component {
 					<MemberActivity>
 						{activity}
 					</MemberActivity>
-					<MemberAttendance up>
+					<MemberAttendance>
 						{attendance}
 					</MemberAttendance>
 				</Column>

@@ -40,7 +40,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	selectView: ({id, eventId, eventName}) => {
+	selectView: ({id, eventId, eventName, view}) => {
 		switch (id) {
 			case 'events':
 				ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
@@ -52,7 +52,7 @@ const mapDispatchToProps = dispatch => ({
 				});
 				break;
 			case 'attendance-reports':
-				if (eventId) {
+				if (eventId && view !== 'attendance-reports') {
 					ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_ATTENDANCE, {eventId});
 					ipcRenderer.once(ipcMysql.RETRIEVE_ATTENDANCE, (event, reportData, status) => {
 						if (status === ipcMysql.SUCCESS) {
@@ -61,6 +61,7 @@ const mapDispatchToProps = dispatch => ({
 						dispatch(selectView(id));
 					});
 				} else {
+					dispatch(setActiveEvent());
 					dispatch(selectView(id));
 				}
 				break;

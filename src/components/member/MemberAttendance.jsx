@@ -5,7 +5,7 @@ export class MemberAttendance extends React.Component {
 
 	render() {
 		return (
-			<Card title='Attendance' up={this.props.up}>
+			<Card title='Attendance' up>
 				<Table id='attendance'>
 					<thead>
 						<tr>

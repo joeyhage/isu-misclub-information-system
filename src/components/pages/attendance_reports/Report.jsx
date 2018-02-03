@@ -1,5 +1,6 @@
 import React from 'react';
-import { Column, Table } from '../../common';
+import { Column, Table, Card } from '../../common';
+import ReactHighcharts from 'react-highcharts';
 
 export default class Report extends React.Component {
 
@@ -8,33 +9,49 @@ export default class Report extends React.Component {
 		const {attendance, majorStats, classificationStats} = props.reportData;
 		this.state = {
 			attendanceTable: this._populateAttendanceTable(attendance),
-			majorStats: this._formatMajorStats(majorStats),
-			classificationStats: this._formatClassificationStats(classificationStats)
+			majorChartConfig: this._formatMajorStats(majorStats),
+			classificationChartConfig: this._formatClassificationStats(classificationStats)
 		};
 	}
 
 	render() {
-		const {classificationStats} = this.state;
+		const {attendanceTable, majorChartConfig, classificationChartConfig} = this.state;
 		return (
 			<Column title={this.props.event.eventName}
-					subtitle={`Event ID: ${this.props.event.eventId} | Date: ${this.props.event.eventDate}`}>
-				<div className='level'>
-					{classificationStats}
+					subtitle={[
+						`Event ID: ${this.props.event.eventId} | Date: ${this.props.event.eventDate}`,
+						`Total Attendance: ${attendanceTable.length}`
+					]}>
+				<div style={{height:'500px'}}>
+					<ReactHighcharts config={majorChartConfig} domProps={{id:'major-chart'}}/>
+					<ReactHighcharts config={classificationChartConfig} domProps={{id:'classification-chart'}}/>
 				</div>
-				<div className='columns'>
-					<Column>
-						<Table/>
-					</Column>
-					<Column/>
-				</div>
+				<Card title='Attendance List'>
+					<Table id='attendance' className='is-narrow'>
+						<thead>
+							<tr>
+								<th>Net-ID</th>
+								<th>Name</th>
+								<th>Major</th>
+								<th>Classification</th>
+							</tr>
+						</thead>
+						<tbody>
+							{attendanceTable}
+						</tbody>
+					</Table>
+				</Card>
 			</Column>
 		);
 	}
 
 	_populateAttendanceTable(attendance) {
 		return attendance ? attendance.map(member => (
-			<tr>
-
+			<tr key={member.netid}>
+				<td>{member.netid}</td>
+				<td>{member.last_name}, {member.first_name}</td>
+				<td>{member.major}</td>
+				<td>{member.classification}</td>
 			</tr>
 		)) : null;
 	}
@@ -43,38 +60,79 @@ export default class Report extends React.Component {
 		if (!majorStats) {
 			return;
 		}
-		majorStats.sort((a, b) => b.count - a.count);
-		return majorStats.map(stat => (
-			<div className='level-item has-text-centered' key={stat.major}>
-				<div>
-					<p className='heading'>{stat.major}</p>
-					<p className='title'>{stat.count}</p>
-				</div>
-			</div>
-		));
+		return {
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false,
+				type: 'pie',
+				width: 500,
+				height: 400
+			},
+			title: {
+				text: 'Major Breakdown'
+			},
+			tooltip: {
+				pointFormat: '<b>{point.y}</b>'
+			},
+			plotOptions: {
+				pie: {
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: true,
+						format: '{point.y}'
+					},
+					showInLegend: true
+				}
+			},
+			series: [{
+				name: 'Classifications',
+				colorByPoint: true,
+				data: majorStats.map(stat => ({
+					name: stat.major,
+					y: stat.count
+				}))
+			}]
+		};
 	}
 
 	_formatClassificationStats(classificationStats) {
 		if (!classificationStats) {
 			return;
 		}
-		const classifications = classification => ({
-				Freshman: 1,
-				Sophomore: 2,
-				Junior: 3,
-				Senior: 4,
-				Graduate: 5,
-				Faculty: 6,
-				Other: 7
-		})[classification] || 8;
-		classificationStats.sort((a, b) => classifications(a.classification) - classifications(b.classification));
-		return classificationStats.map(stat => (
-			<div className='level-item has-text-centered' key={stat.classification}>
-				<div>
-					<p className='heading'>{stat.classification}</p>
-					<p className='title'>{stat.count}</p>
-				</div>
-			</div>
-		));
+		return {
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false,
+				type: 'pie',
+				width: 500,
+				height: 400
+			},
+			title: {
+				text: 'Classification Breakdown'
+			},
+			tooltip: {
+				pointFormat: '<b>{point.y}</b>'
+			},
+			plotOptions: {
+				pie: {
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: true,
+						format: '{point.y}'
+					},
+					showInLegend: true
+				}
+			},
+			series: [{
+				name: 'Classifications',
+				colorByPoint: true,
+				data: classificationStats.map(stat => ({
+					name: stat.classification,
+					y: stat.count
+				}))
+			}]
+		};
 	}
 }

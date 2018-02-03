@@ -1,6 +1,5 @@
 const electron = require('electron'),
 	{ app, BrowserWindow, Menu, shell, ipcMain } = electron,
-	csv = require('fast-csv'),
 	mysqlDump = require('mysqldump'),
 	isDev = require('electron-is-dev'),
 	path = require('path'),

@@ -12,5 +12,8 @@ export const CardCss = {
 	},
 	'#header-options:hover, #header-title:hover': {
 		textDecoration: 'underline'
+	},
+	'.card .card-content>.content>table>thead>tr:hover': {
+		backgroundColor: '#fff'
 	}
 };
