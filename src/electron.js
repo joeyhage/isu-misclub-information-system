@@ -7,7 +7,7 @@ const electron = require('electron'),
 	logger = new (require('./utils/logger'))(),
 	mysql = new (require('./sql/mysqlManager'))(logger),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
-	requestDirectoryInfo = require('./utils/isuDirectoryLookup'),
+	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
 	createMenuTemplate = require('./static/menuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 

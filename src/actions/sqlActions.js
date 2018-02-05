@@ -1,6 +1,7 @@
 const { dialog } = require('electron'),
+	isDev = require('electron-is-dev'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
-	requestDirectoryInfo = require('../utils/isuDirectoryLookup'),
+	{ requestDirectoryInfo } = require('../utils/isuDirectoryLookup'),
 	{ hasMemberInfoChanged } = require('../utils/memberUtil'),
 	{ isValidEventId } = require('../utils/validation'),
 	{ ipcMysql } = require('./ipcActions'),
@@ -70,6 +71,13 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.VERIFY_CREDENTIALS]: async ipcArgs => {
+		if (process.argv[2] === 'offline' || isDev) {
+			return {
+				devToolsEnabled: true,
+				userId: 'dev',
+				accessLevel: 'exec-admin'
+			};
+		}
 		const {netid} = ipcArgs;
 		let results;
 		try {

@@ -1,7 +1,10 @@
 const got = require('got-lite'),
 	  unescape = require('unescape-html');
 
-const requestDirectoryInfo = async netid => {
+exports.requestDirectoryInfo = async netid => {
+	if (process.argv[2] === 'offline') {
+		return;
+	}
 	try {
 		const {body} = await got(`https://www.info.iastate.edu/individuals/search/${netid}@iastate.edu`);
 		if (body.includes('<title>Individual Search Results')) {
@@ -54,5 +57,3 @@ const parseDirectoryInfo = (netid, body) => {
 };
 
 const _buildRegex = attributeName => new RegExp(`${attributeName}:</span>\\s*([ a-zA-Z()-]+)`);
-
-module.exports = requestDirectoryInfo;

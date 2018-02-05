@@ -6,14 +6,21 @@ class mysqlManager {
 	constructor(logger) {
 		this.createPool();
 		this.logger = logger;
+		this.isOffline = process.argv[2] === 'offline';
 	}
 
 	createPool() {
+		if (this.isOffline) {
+			return;
+		}
 		this.pool = mysql.createPool(mysqlDB);
 	}
 
 	endPool() {
 		return new Promise(resolve => {
+			if (this.isOffline) {
+				return resolve();
+			}
 			this.pool.end(error => {
 				if (error) {
 					this.logger.error(error);
@@ -26,8 +33,12 @@ class mysqlManager {
 	}
 
 	sqlQueryHandler(sqlStatement, sqlParams) {
-		this.logger.debug(`Executing query... | ${sqlStatement}`);
 		return new Promise((resolve, reject) => {
+			if (this.isOffline) {
+				this.logger.debug(`Offline Mode... | ${sqlStatement}`);
+				return resolve();
+			}
+			this.logger.debug(`Executing query... | ${sqlStatement}`);
 			this.pool.query(sqlStatement, sqlParams, (error, results) => {
 				if (error) {
 					return reject(error);
@@ -38,8 +49,12 @@ class mysqlManager {
 	}
 
 	testPoolConnection() {
-		this.logger.debug('Testing pool connection...');
 		return new Promise((resolve, reject) => {
+			if (this.isOffline) {
+				this.logger.debug('Offline Mode Active');
+				return resolve();
+			}
+			this.logger.debug('Testing pool connection...');
 			this.pool.getConnection((error, connection) => {
 				if (error) {
 					return reject(error);
