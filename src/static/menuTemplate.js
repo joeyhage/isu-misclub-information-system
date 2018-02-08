@@ -1,6 +1,9 @@
-const isDev = require('electron-is-dev');
+const { app, BrowserWindow, shell, dialog } = require('electron'),
+	fs = require('fs'),
+	path = require('path'),
+	isDev = require('electron-is-dev');
 
-const createMenuTemplate = (appName, shell) => {
+const createMenuTemplate = logger => {
 	const template = [
 		{
 			label: 'Edit',
@@ -49,7 +52,7 @@ const createMenuTemplate = (appName, shell) => {
 			submenu: [
 				{
 					label: 'ISU MIS Club Website',
-					click () { shell.openExternal('http://www.mis.stuorg.iastate.edu') }
+					click () { shell.openExternal('http://www.mis.stuorg.iastate.edu'); }
 				}
 			]
 		}
@@ -57,16 +60,19 @@ const createMenuTemplate = (appName, shell) => {
 
 	if (process.platform === 'darwin') {
 		template.unshift({
-			label: appName,
+			label: app.getName(),
 			submenu: [
-				{role: 'about'},
+				{label: `About ${app.getName()}`, role: 'about'},
 				{type: 'separator'},
-				{role: 'hide'},
+				{label: `Hide ${app.getName()}`, role: 'hide'},
 				{role: 'hideothers'},
 				{role: 'unhide'},
 				{type: 'separator'},
-				{role: 'quit'}
+				{label: `Quit ${app.getName()}`, role: 'quit'},
 			]
+		}, {
+			label: 'File',
+			submenu: [savePageAs(logger)]
 		});
 		// Window menu.
 		template[3].submenu = [
@@ -80,13 +86,43 @@ const createMenuTemplate = (appName, shell) => {
 		template.unshift({
 			label: 'File',
 			submenu: [
-				{role: 'about'},
+				{label: `About ${app.getName()}`, role: 'about'},
 				{type: 'separator'},
-				{role: 'quit'}
+				savePageAs(logger),
+				{label: `Quit ${app.getName()}`, role: 'quit'},
 			]
 		});
 	}
 	return template;
 };
+
+const savePageAs = logger => ({
+	label: 'Save Page As PDF',
+	accelerator: 'CmdOrCtrl+S',
+	click () {
+		const mainWindow = BrowserWindow.getFocusedWindow();
+		if (mainWindow) {
+			dialog.showSaveDialog(
+				mainWindow,
+				{defaultPath: path.join(app.getPath('documents'), 'Untitled.pdf')},
+				filename => {
+					if (filename) {
+						mainWindow.webContents.printToPDF({landscape: true}, (error, data) => {
+							if (error) {
+								logger.error(error, 'Error creating PDF', true);
+							}
+							fs.writeFile(filename, data, error => {
+								if (error) {
+									logger.error(error, 'Error saving PDF', true);
+								}
+								logger.debug('Saved PDF successfully.');
+							});
+						});
+					}
+				}
+			);
+		}
+	}
+});
 
 module.exports = createMenuTemplate;

@@ -1,6 +1,5 @@
 const electron = require('electron'),
-	{ app, BrowserWindow, Menu, shell, ipcMain } = electron,
-	mysqlDump = require('mysqldump'),
+	{ app, BrowserWindow, Menu, ipcMain } = electron,
 	isDev = require('electron-is-dev'),
 	path = require('path'),
 	url = require('url'),
@@ -73,7 +72,7 @@ app.on('ready', () => {
 		}
 	});
 	process.on('warning', error => logger.error(`Warning: ${error}`));
-	const menu = Menu.buildFromTemplate(createMenuTemplate(app.getName(), shell));
+	const menu = Menu.buildFromTemplate(createMenuTemplate(logger));
 	Menu.setApplicationMenu(menu);
 
 	mysql.testPoolConnection().then(() => {
