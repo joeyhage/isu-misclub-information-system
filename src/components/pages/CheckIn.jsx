@@ -30,7 +30,7 @@ class CheckIn extends React.Component {
 			<PageView rules={CheckInCss}>
 				{this.props.eventId &&
 					<Column title={this.props.eventName}
-							subtitle={`Event ID: ${this.props.eventId} | Date: ${this.state.eventDate}`}>
+							subtitle={`Date: ${this.state.eventDate}`}>
 						{this._determineSubpage()}
 						{Boolean(this.state.message) &&
 							<Message header='Info'

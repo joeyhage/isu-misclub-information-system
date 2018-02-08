@@ -19,7 +19,7 @@ export default class Report extends React.Component {
 		return (
 			<Column title={this.props.event.eventName}
 					subtitle={[
-						`Event ID: ${this.props.event.eventId} | Date: ${this.props.event.eventDate}`,
+						`Date: ${this.props.event.eventDate}`,
 						`Total Attendance: ${attendanceTable.length}`
 					]}>
 				<div style={{height:'500px'}}>

@@ -21,7 +21,6 @@
 		"got-lite": "^8.0.1",
 		"ldapjs": "^1.0.1",
 		"mysql": "^2.15.0",
-		"mysqldump": "^1.4.2",
 		"radium": "^0.19.6",
 		"react": "^15.6.2",
 		"react-dom": "^15.6.2",

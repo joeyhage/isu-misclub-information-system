@@ -1,2 +1,2 @@
 export const primaryRed = '#c6202c';
-export const primaryGold = '#FCBD17';
+export const primaryGold = '#fcbd17';

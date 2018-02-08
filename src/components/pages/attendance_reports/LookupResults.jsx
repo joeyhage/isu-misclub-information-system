@@ -23,7 +23,6 @@ export default class LookupResults extends React.Component {
 					<Table id='lookup-results' style={{marginTop:'20px', maxHeight:'40vh', overflow:'scroll'}}>
 						<thead>
 							<tr>
-								<th>ID</th>
 								<th>Name</th>
 								<th>Date</th>
 							</tr>
@@ -45,8 +44,7 @@ export default class LookupResults extends React.Component {
 
 	_populateEventsTable(events) {
 		return events ? events.map(event => (
-			<tr key={event.event_id}>
-				<td className='event-id'>{event.event_id}</td>
+			<tr id={event.event_id} key={event.event_id}>
 				<td className='event-name'>{event.event_name}</td>
 				<td className='event-date'>{event.event_date}</td>
 			</tr>
@@ -60,12 +58,12 @@ export default class LookupResults extends React.Component {
 		} else {
 			rowEl = target.parentNode;
 		}
-		const eventId = rowEl.querySelector('.event-id');
+		const eventId = rowEl.id;
 		const eventName = rowEl.querySelector('.event-name');
 		const eventDate = rowEl.querySelector('.event-date');
 		if (eventId && eventName && eventDate) {
 			this.props.onEventSelected({
-				eventId: eventId.innerHTML,
+				eventId,
 				eventName: eventName.innerHTML,
 				eventDate: eventDate.innerHTML
 			});

@@ -26,7 +26,6 @@ export default class EventsToday extends React.Component {
 					<Table id='events-today' style={{marginTop:'20px'}}>
 						<thead>
 							<tr>
-								<th>ID</th>
 								<th>Name</th>
 								<th>Delete?</th>
 							</tr>
@@ -42,8 +41,7 @@ export default class EventsToday extends React.Component {
 
 	_populateEventsTable(events) {
 		return events ? events.map(event => (
-			<tr key={event.event_id}>
-				<td className='event-id'>{event.event_id}</td>
+			<tr id={event.event_id} key={event.event_id}>
 				<td className='event-name'>{event.event_name}</td>
 				<td><button className='delete'/></td>
 			</tr>
@@ -52,7 +50,7 @@ export default class EventsToday extends React.Component {
 
 	_handleRowClick({target}) {
 		if (target.className === 'delete') {
-			const eventId = target.parentNode.parentNode.firstChild.innerHTML;
+			const eventId = target.parentNode.parentNode.id;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, results, status) => {
 				if (status === ipcMysql.SUCCESS) {
@@ -70,14 +68,10 @@ export default class EventsToday extends React.Component {
 		} else {
 			const event = {};
 			if (target.nodeName === 'TR') {
-				const eventIdTD = target.firstChild;
-				event.eventId = eventIdTD.innerHTML;
-				event.eventName = eventIdTD.nextSibling.innerHTML;
-			} else if (target.className === 'event-id') {
-				event.eventId = target.innerHTML;
-				event.eventName = target.nextSibling.innerHTML;
+				event.eventId = target.id;
+				event.eventName = target.firstChild.innerHTML;
 			} else if (target.className === 'event-name') {
-				event.eventId = target.previousSibling.innerHTML;
+				event.eventId = target.parentNode.id;
 				event.eventName = target.innerHTML;
 			}
 			if (event && event.hasOwnProperty('eventId')) {
