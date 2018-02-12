@@ -42,7 +42,13 @@ const createMenuTemplate = logger => {
 		},
 		{
 			role: 'window',
-			submenu: [
+			submenu: process.platform === 'darwin' ? [
+				{label: 'Close', accelerator: 'CmdOrCtrl+W', role: 'close'},
+				{label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize'},
+				{label: 'Zoom', role: 'zoom'},
+				{type: 'separator'},
+				{label: 'Bring All to Front', role: 'front'}
+			] : [
 				{role: 'minimize'},
 				{role: 'close'}
 			]
@@ -74,14 +80,6 @@ const createMenuTemplate = logger => {
 			label: 'File',
 			submenu: [savePageAs(logger)]
 		});
-		// Window menu.
-		template[3].submenu = [
-			{label: 'Close', accelerator: 'CmdOrCtrl+W', role: 'close'},
-			{label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize'},
-			{label: 'Zoom', role: 'zoom'},
-			{type: 'separator'},
-			{label: 'Bring All to Front', role: 'front'}
-		];
 	} else {
 		template.unshift({
 			label: 'File',
@@ -104,10 +102,10 @@ const savePageAs = logger => ({
 		if (mainWindow) {
 			dialog.showSaveDialog(
 				mainWindow,
-				{defaultPath: path.join(app.getPath('documents'), 'Untitled.pdf')},
+				{ defaultPath: path.join(app.getPath('documents'), 'Untitled.pdf') },
 				filename => {
 					if (filename) {
-						mainWindow.webContents.printToPDF({landscape: true}, (error, data) => {
+						mainWindow.webContents.printToPDF({ landscape: true }, (error, data) => {
 							if (error) {
 								logger.error(error, 'Error creating PDF', true);
 							}

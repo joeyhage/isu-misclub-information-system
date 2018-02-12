@@ -45,6 +45,10 @@ export default class Report extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	_populateAttendanceTable(attendance) {
 		return attendance ? attendance.map(member => (
 			<tr key={member.netid}>

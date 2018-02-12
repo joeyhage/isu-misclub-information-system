@@ -16,6 +16,10 @@ class Events extends React.Component {
 			</PageView>
 		);
 	}
+
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
 }
 
 const mapStateToProps = state => ({

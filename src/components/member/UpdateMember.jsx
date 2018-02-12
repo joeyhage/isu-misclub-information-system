@@ -78,6 +78,7 @@ export default class UpdateMember extends React.Component {
 	}
 
 	componentDidMount() {
+		window.scrollTo(0, 0);
 		let attendance, activity;
 		if (this.state.member) {
 			if (this.state.member.attendance) {

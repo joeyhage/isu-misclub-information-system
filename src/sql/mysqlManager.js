@@ -227,22 +227,3 @@ const is_activity_history = _determineTableNameForEnv('is_activity_history');
 const is_attendance = _determineTableNameForEnv('is_attendance');
 const is_event = _determineTableNameForEnv('is_event');
 const is_member = _determineTableNameForEnv('is_member');
-
-//
-//
-// function findEventsByDate(startDate, endDate, callback) {
-// 	connection.query('SELECT * FROM `is_event` WHERE `event_date`>=? AND `event_date`<=? ORDER BY `event_date` DESC, ' +
-// 		'`event_id` DESC', [startDate, endDate], (error, results) => {
-// 		if (error) {
-// 			winston.error(error);
-// 			dialog.showErrorBox('Error', 'Error while finding events between ' + startDate + ' and ' + endDate);
-// 			return callback();
-// 		}
-// 		if (results) {
-// 			for (let i = 0; i < results.length; i++) {
-// 				results[i].event_date = moment(results[i].event_date).format("YYYY-MM-DD");
-// 			}
-// 		}
-// 		callback(results);
-// 	})
-// }

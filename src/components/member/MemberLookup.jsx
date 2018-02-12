@@ -47,6 +47,10 @@ export default class MemberLookup extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	_handleChange({target}) {
 		if (target.id === 'netid') {
 			this.setState({netid: target.value, netIdNotFound: null});

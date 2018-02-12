@@ -9,4 +9,8 @@ export default class AdminTools extends React.Component {
 			</div>
 		);
 	}
+
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
 }

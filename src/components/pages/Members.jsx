@@ -40,6 +40,10 @@ export default class Members extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	_determineSubpage() {
 		if (this.state.updateMember) {
 			return (

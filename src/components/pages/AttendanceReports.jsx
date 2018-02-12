@@ -45,6 +45,10 @@ class AttendanceReports extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			eventId: nextProps.eventId,

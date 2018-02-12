@@ -11,7 +11,7 @@ export default class EventLookup extends React.Component {
 	constructor(props) {
 		super(props);
 		const dateRangeStart = new Date();
-		dateRangeStart.setMonth(dateRangeStart.getMonth() - 6);
+		dateRangeStart.setFullYear(dateRangeStart.getFullYear() - 1);
 		this.state = {
 			dateRangeStart: dateFormat(dateRangeStart, 'isoDate'),
 			dateRangeEnd: dateFormat('isoDate'),

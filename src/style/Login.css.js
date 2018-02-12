@@ -2,6 +2,7 @@ export const LoginCss = {
 	'.container.is-fluid': {
 		marginLeft: '32px',
 		marginRight: '32px',
+		paddingBottom: '100px',
 		maxWidth: 'none',
 		width: 'auto'
 	},
@@ -14,7 +15,7 @@ export const LoginCss = {
 	'.footer': {
 		position: 'absolute',
 		right: 0,
-		bottom: 0,
+		bottom: '12px',
 		left: 0,
 		height: '100px'
 	},
