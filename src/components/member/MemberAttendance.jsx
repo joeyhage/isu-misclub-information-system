@@ -9,7 +9,6 @@ export class MemberAttendance extends React.Component {
 				<Table id='attendance'>
 					<thead>
 						<tr>
-							<th>Event ID</th>
 							<th>Event Name</th>
 							<th>Event Date</th>
 						</tr>

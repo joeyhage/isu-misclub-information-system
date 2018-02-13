@@ -43,7 +43,7 @@ export default class LookupResults extends React.Component {
 	}
 
 	_populateEventsTable(events) {
-		return events ? events.map(event => (
+		return events && events.length ? events.map(event => (
 			<tr id={event.event_id} key={event.event_id}>
 				<td className='event-name'>{event.event_name}</td>
 				<td className='event-date'>{event.event_date}</td>

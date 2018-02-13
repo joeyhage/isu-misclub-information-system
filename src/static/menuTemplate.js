@@ -123,4 +123,4 @@ const savePageAs = logger => ({
 	}
 });
 
-module.exports = createMenuTemplate;
+module.exports = { createMenuTemplate };

@@ -28,12 +28,14 @@ export default class Members extends React.Component {
 				<Column title='Member Management'>
 					{this._determineSubpage()}
 					{Boolean(this.state.message) &&
-						<Message header='Info'
-								 timeout={4000}
-								 onDelete={() => this.setState({message: null})}
-								 info>
-							{this.state.message}
-						</Message>
+						<Column is={6} style={{paddingLeft:0}}>
+							<Message header='Info'
+									 timeout={4000}
+									 onDelete={() => this.setState({message: null})}
+									 info>
+								{this.state.message}
+							</Message>
+						</Column>
 					}
 				</Column>
 			</PageView>

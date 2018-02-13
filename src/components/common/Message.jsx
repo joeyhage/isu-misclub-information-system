@@ -17,12 +17,10 @@ export class Message extends React.Component {
 	render() {
 		const messageClasses = classNames('message', determineColor(this.props));
 		return (
-			<div className={messageClasses}>
+			<div className={messageClasses} style={this.props.style}>
 				<div className='message-header'>
 					<p>{this.props.header}</p>
-					<button className='delete' onClick={(event) => {
-
-					}}>Close</button>
+					<button className='delete' onClick={this._deleteMessage}>Close</button>
 				</div>
 				<div className='message-body'>
 					{this.props.children}

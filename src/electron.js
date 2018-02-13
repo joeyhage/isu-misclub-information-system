@@ -7,14 +7,20 @@ const electron = require('electron'),
 	mysql = new (require('./sql/mysqlManager'))(logger),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
 	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
-	createMenuTemplate = require('./static/menuTemplate'),
+	{ createMenuTemplate } = require('./static/menuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
 let mainWindow, devToolsEnabled = isDev;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
-		show: false, width: 600, height: 600, minWidth: 600, minHeight: 600, resizable: true, title: 'ISU MIS Club Information System'
+		show: false,
+		width: 600,
+		height: 600,
+		minWidth: 600,
+		minHeight: 600,
+		resizable: true,
+		title: 'ISU MIS Club Information System'
 	});
 
 	const startUrl = isDev ? 'http://localhost:3000' : url.format({

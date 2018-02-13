@@ -19,11 +19,12 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.CREATE_EVENT]: async ipcArgs => {
+		const eventName = ipcArgs.eventName.trim();
 		try {
-			const results = await mysql.createEvent(ipcArgs.eventName);
+			const results = await mysql.createEvent(eventName);
 			return results.insertId;
 		} catch (error) {
-			const errorMessage = `Error while adding event: ${ipcArgs.eventName}`;
+			const errorMessage = `Error while adding event: ${eventName}`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -71,14 +72,14 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.VERIFY_CREDENTIALS]: async ipcArgs => {
-		if (process.argv[2] === 'offline' || isDev) {
+		if (process.argv[2] === 'offline') {
 			return {
 				devToolsEnabled: true,
 				userId: 'dev',
 				accessLevel: 'exec-admin'
 			};
 		}
-		const {netid} = ipcArgs;
+		const netid = ipcArgs.netid.trim();
 		let results;
 		try {
 			results = await mysql.verifyCredentials(netid);
@@ -97,14 +98,14 @@ const sqlActions = (mysql, logger) => ({
 			}
 			const {admin} = results[0];
 			return {
-				devToolsEnabled: Boolean(admin),
+				devToolsEnabled: isDev || Boolean(admin),
 				userId: netid,
-				accessLevel: Boolean(admin) ? 'exec-admin' : 'exec'
+				accessLevel: isDev || Boolean(admin) ? 'exec-admin' : 'exec'
 			};
 		}
 	},
 	[ipcMysql.LOOKUP_NETID]: async ipcArgs => {
-		const {netid} = ipcArgs;
+		const netid = ipcArgs.netid.trim();
 		try {
 			const [members, attendance, activity] = await Promise.all([
 				mysql.lookupNetid(netid),
@@ -142,7 +143,13 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.UPDATE_MEMBER]: async ipcArgs => {
-		const {member, eventId} = ipcArgs;
+		const eventId = ipcArgs.eventId;
+		const member = Object.assign(ipcArgs.member, {
+			netid: ipcArgs.member.netid.trim(),
+			first_name: ipcArgs.member.first_name.trim(),
+			last_name: ipcArgs.member.last_name.trim(),
+			major: ipcArgs.member.major.trim()
+		});
 		const isCheckIn = Boolean(eventId);
 		try {
 			const sqlCommands = [];
@@ -181,7 +188,13 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.CREATE_MEMBER]: async ipcArgs => {
-		const {member, eventId} = ipcArgs;
+		const eventId = ipcArgs.eventId;
+		const member = Object.assign(ipcArgs.member, {
+			netid: ipcArgs.member.netid.trim(),
+			first_name: ipcArgs.member.first_name.trim(),
+			last_name: ipcArgs.member.last_name.trim(),
+			major: ipcArgs.member.major.trim()
+		});
 		const isCheckIn = Boolean(eventId);
 		try {
 			await mysql.createMember(member);
@@ -222,7 +235,8 @@ const sqlActions = (mysql, logger) => ({
 		}
 	},
 	[ipcMysql.FIND_EVENTS]: async ipcArgs => {
-		const {dateRangeStart, dateRangeEnd, eventName} = ipcArgs;
+		const {dateRangeStart, dateRangeEnd} = ipcArgs;
+		const eventName = ipcArgs.eventName.trim();
 		try {
 			return await mysql.queryEvents(dateRangeStart, dateRangeEnd, eventName);
 		} catch (error) {

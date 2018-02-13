@@ -32,7 +32,7 @@ class AttendanceReports extends React.Component {
 			<PageView rules={AttendanceReportsCss}>
 				{eventId &&
 					<Report event={{eventId, eventName, eventDate}} reportData={reportData}
-							onNewSearch={this._resetState}/>
+							onReset={this._resetState}/>
 				}
 				{!eventId &&
 					[

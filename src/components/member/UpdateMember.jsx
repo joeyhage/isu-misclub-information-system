@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, ButtonGroup, Column, Message } from '../common/index';
+import { Button, ButtonGroup, Column } from '../common/index';
 import { isValidInput } from '../../utils/validation';
 import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from './index';
 import { ipcMysql } from '../../actions/ipcActions';
 import { hasMemberInfoChanged } from '../../utils/memberUtil';
+import MemberMessages from './MemberMessages';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -34,16 +35,7 @@ export default class UpdateMember extends React.Component {
 						<MemberInfo member={member} disabled={!editing} onChange={this._handleChange}
 									showErrors={this._getFormValidationState} status>
 							<PaymentRadio checked={member.payment} onChange={this._handleChange}/>
-							{member.semesters_remaining === 0 && isCheckIn &&
-								(member.free_meeting_used ?
-									<Message header='Payment Needed' danger>
-										Member has already used free meeting and has not yet paid dues.
-									</Message> :
-									<Message header='Free Meeting' warning>
-										If checked in with no payment, member's free meeting will be used.
-									</Message>
-								)
-							}
+							<MemberMessages {...{member, isCheckIn}}/>
 							<ButtonGroup isLoading={isLoading} horizontal>
 								{!editing &&
 									(isCheckIn ?
@@ -84,7 +76,6 @@ export default class UpdateMember extends React.Component {
 			if (this.state.member.attendance) {
 				attendance = this.state.member.attendance.map((row, index) => (
 					<tr key={index}>
-						<td className='event-id'>{row.event_id}</td>
 						<td className='event-name'>{row.event_name}</td>
 						<td className='event-date'>{row.event_date}</td>
 					</tr>

@@ -4,15 +4,16 @@ const isDev = require('electron-is-dev'),
 
 class mysqlManager {
 	constructor(logger) {
-		this.createPool();
 		this.logger = logger;
 		this.isOffline = process.argv[2] === 'offline';
+		this.createPool();
 	}
 
 	createPool() {
 		if (this.isOffline) {
 			return;
 		}
+		this.logger.debug('Creating pool.');
 		this.pool = mysql.createPool(mysqlDB);
 	}
 
@@ -35,7 +36,7 @@ class mysqlManager {
 	sqlQueryHandler(sqlStatement, sqlParams) {
 		return new Promise((resolve, reject) => {
 			if (this.isOffline) {
-				this.logger.debug(`Offline Mode... | ${sqlStatement}`);
+				this.logger.debug(`Offline Mode | ${sqlStatement}`);
 				return resolve();
 			}
 			this.logger.debug(`Executing query... | ${sqlStatement}`);
