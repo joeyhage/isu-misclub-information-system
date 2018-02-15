@@ -15,6 +15,7 @@ class NavPanel extends React.Component {
 					<NavLink id='attendance-reports' icon='fa fa-file-text-o'>Reports</NavLink>
 					<NavLink id='graphs-trends' icon='fa fa-bar-chart'>Graphs</NavLink>
 					<NavLink id='members' icon='fa fa-user-o'>Members</NavLink>
+					<NavLink id='financials' icon='fa fa-money'>Financials</NavLink>
 					<NavLink id='admin-tools' icon='fa fa-cog'>Admin</NavLink>
 					<NavLink id='help' icon='fa fa-info-circle'>Help</NavLink>
 				</ul>
