@@ -3,7 +3,8 @@ import { SET_ACTIVE_EVENT, RESET_ACTIVE_EVENT, SET_EVENTS_TODAY, ADD_REPORT_DATA
 const initialState = {
 	eventId: '',
 	eventName: '',
-	eventsToday: [],
+	eventsToday: {},
+	eventsTodayNeedUpdating: true,
 	reportData: {}
 };
 
@@ -24,7 +25,8 @@ const event = (state = initialState, action) => {
 		case SET_EVENTS_TODAY:
 			return {
 				...state,
-				eventsToday: action.eventsToday
+				eventsToday: action.eventsToday,
+				eventsTodayNeedUpdating: false
 			};
 		case RESET_ACTIVE_EVENT:
 			return {

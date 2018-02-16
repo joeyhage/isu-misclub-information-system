@@ -39,6 +39,19 @@ export default class EventsToday extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		if (this.props.eventsTodayNeedUpdating) {
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
+			ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday, status) => {
+				if (status === ipcGeneral.SUCCESS) {
+					this.setState({
+						eventsTable: this._populateEventsTable(eventsToday)
+					});
+				}
+			});
+		}
+	}
+
 	_populateEventsTable(events) {
 		return events && events.length ? events.map(event => (
 			<tr id={event.event_id} key={event.event_id}>

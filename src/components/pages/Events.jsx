@@ -24,7 +24,8 @@ class Events extends React.Component {
 
 const mapStateToProps = state => ({
 	eventId: state.event.eventId,
-	eventsToday: state.event.eventsToday
+	eventsToday: state.event.eventsToday,
+	eventsTodayNeedUpdating: state.event.eventsTodayNeedUpdating
 });
 
 const mapDispatchToProps = dispatch => ({
