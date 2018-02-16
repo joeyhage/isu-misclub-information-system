@@ -8,6 +8,7 @@ import GraphsTrends from './pages/GraphsTrends';
 import Help from './pages/Help';
 import NavPanel from './navigation/NavPanel';
 import Members from './pages/Members';
+import Finances from './pages/Finances';
 
 class MISClubPage extends React.Component {
 
@@ -27,6 +28,7 @@ class MISClubPage extends React.Component {
 			'attendance-reports': <AttendanceReports/>,
 			'graphs-trends': <GraphsTrends/>,
 			'members': <Members/>,
+			'finances': <Finances/>,
 			'admin-tools': <AdminTools/>,
 			'help': <Help/>
 		}[this.props.view];
