@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default class Help extends React.Component {
+export default class Finances extends React.Component {
 
 	render() {
 		return (
