@@ -6,7 +6,7 @@ export default class Help extends React.Component {
 	render() {
 		return (
 			<div>
-                💵😎🤪Finances🤪😎💵 
+                💵😎🤪FINANCES🤪😎💵 
 			</div>
 		);
 	}
