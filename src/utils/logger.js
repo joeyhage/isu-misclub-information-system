@@ -58,6 +58,12 @@ class logUtil {
 		}
 	}
 
+	notify(message) {
+		if (message) {
+			dialog.showErrorBox('Could Not Perform Action', message);
+		}
+	}
+
 	info(message) {
 		this.log.info(message);
 	}

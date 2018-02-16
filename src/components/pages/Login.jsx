@@ -47,7 +47,7 @@ class Login extends React.Component {
 							</ButtonGroup>
 						</form>
 						{this.state.showFormErrors &&
-							<Message header='Error' danger>
+							<Message header='Error' danger disableDelete>
 								Invalid Net-ID or Password
 							</Message>
 						}

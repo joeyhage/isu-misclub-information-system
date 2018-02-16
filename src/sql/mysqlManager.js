@@ -13,7 +13,7 @@ class mysqlManager {
 		if (this.isOffline) {
 			return;
 		}
-		this.logger.debug('Creating pool.');
+		this.logger.debug('Creating pool');
 		this.pool = mysql.createPool(mysqlDB);
 	}
 

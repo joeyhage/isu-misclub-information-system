@@ -20,7 +20,9 @@ export class Message extends React.Component {
 			<div className={messageClasses} style={this.props.style}>
 				<div className='message-header'>
 					<p>{this.props.header}</p>
-					<button className='delete' onClick={this._deleteMessage}>Close</button>
+					{!this.props.disableDelete &&
+						<button className='delete' onClick={this._deleteMessage}>Close</button>
+					}
 				</div>
 				<div className='message-body'>
 					{this.props.children}

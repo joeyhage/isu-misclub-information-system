@@ -91,14 +91,16 @@ app.on('ready', () => {
 		let results, status;
 		try {
 			results = await retrieveSqlData(action, ipcArgs);
-			status = ipcGeneral.SUCCESS;
+			status = results === ipcGeneral.ACTION_NOT_PERFORMED ? ipcGeneral.ERROR : ipcGeneral.SUCCESS;
 		} catch (error) {
-			logger.error(error, `Error performing SQL action: ${action} with arguments: ${ipcArgs}`);
+			logger.error(`Error performing SQL action: ${action}`);
+			if (action !== ipcMysql.VERIFY_CREDENTIALS) {
+				logger.error(`${action} arguments: ${JSON.stringify(ipcArgs)}`);
+			}
 			status = ipcGeneral.ERROR;
 		}
-		if (action === ipcMysql.VERIFY_CREDENTIALS && results && results.hasOwnProperty('devToolsEnabled')) {
-			devToolsEnabled = results.devToolsEnabled;
-			delete results.devToolsEnabled;
+		if (action === ipcMysql.VERIFY_CREDENTIALS && results) {
+			devToolsEnabled = results.accessLevel === 'exec-admin';
 		}
 		mainWindow.webContents.send(action, results, status);
 	});
