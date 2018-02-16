@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { addReportData, selectView, setEventsToday } from '../../actions/reduxActions';
-import { ipcMysql } from '../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -45,7 +45,7 @@ const mapDispatchToProps = dispatch => ({
 			case 'events':
 				ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
 				ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday, status) => {
-					if (status === ipcMysql.SUCCESS) {
+					if (status === ipcGeneral.SUCCESS) {
 						dispatch(setEventsToday(eventsToday));
 					}
 					dispatch(selectView(id));
@@ -55,7 +55,7 @@ const mapDispatchToProps = dispatch => ({
 				if (eventId && view !== 'attendance-reports') {
 					ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_ATTENDANCE, {eventId});
 					ipcRenderer.once(ipcMysql.RETRIEVE_ATTENDANCE, (event, reportData, status) => {
-						if (status === ipcMysql.SUCCESS) {
+						if (status === ipcGeneral.SUCCESS) {
 							dispatch(addReportData(reportData));
 						}
 						dispatch(selectView(id));

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Column, Table } from '../../common';
-import { ipcMysql } from '../../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -53,7 +53,7 @@ export default class EventsToday extends React.Component {
 			const eventId = target.parentNode.parentNode.id;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.DELETE_EVENT, {eventId});
 			ipcRenderer.once(ipcMysql.DELETE_EVENT, (event, results, status) => {
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					const eventsToday = this.props.eventsToday || [];
 					this.setState({
 						eventsTable: this._populateEventsTable(eventsToday.filter(event =>

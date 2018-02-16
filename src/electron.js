@@ -1,5 +1,5 @@
 const electron = require('electron'),
-	{ app, BrowserWindow, Menu, ipcMain } = electron,
+	{ app, BrowserWindow, Menu, ipcMain, dialog } = electron,
 	isDev = require('electron-is-dev'),
 	path = require('path'),
 	url = require('url'),
@@ -7,6 +7,7 @@ const electron = require('electron'),
 	mysql = new (require('./sql/mysqlManager'))(logger),
 	sqlActions = require('./actions/sqlActions')(mysql, logger),
 	{ requestDirectoryInfo } = require('./utils/isuDirectoryLookup'),
+	{ writeCsv } = require('./utils/csvUtil'),
 	{ createMenuTemplate } = require('./static/menuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
@@ -90,10 +91,10 @@ app.on('ready', () => {
 		let results, status;
 		try {
 			results = await retrieveSqlData(action, ipcArgs);
-			status = ipcMysql.SUCCESS;
+			status = ipcGeneral.SUCCESS;
 		} catch (error) {
 			logger.error(error, `Error performing SQL action: ${action} with arguments: ${ipcArgs}`);
-			status = ipcMysql.ERROR;
+			status = ipcGeneral.ERROR;
 		}
 		if (action === ipcMysql.VERIFY_CREDENTIALS && results && results.hasOwnProperty('devToolsEnabled')) {
 			devToolsEnabled = results.devToolsEnabled;
@@ -134,9 +135,26 @@ app.on('ready', () => {
 			logger.error(error, `Error getting directory info for Net-ID: ${netid}`, true);
 		}
 		if (!member || !(member.first_name && member.last_name && member.classification && member.major)) {
-			logger.info(null, `Incomplete data - ${JSON.stringify(member)} - for member with Net-ID: ${netid}`);
+			logger.debug(null, `Incomplete data - ${JSON.stringify(member)} - for member with Net-ID: ${netid}`);
 		}
 		mainWindow.webContents.send(ipcGeneral.REQUEST_DIRECTORY_INFO, member);
+	});
+
+	ipcMain.on(ipcGeneral.WRITE_ATTENDANCE_TO_CSV, async (event, action, ipcArgs) => {
+		const {attendance, eventName, eventDate} = ipcArgs;
+		try {
+			await dialog.showSaveDialog(
+				mainWindow,
+				{ defaultPath: path.join(app.getPath('documents'), `${eventName}_${eventDate}.csv`) },
+				async filename => {
+					if (filename) {
+						await writeCsv(filename, attendance);
+					}
+				}
+			);
+		} catch (error) {
+			logger.error(error, 'Failed to export data to csv.', true);
+		}
 	});
 });
 

@@ -5,7 +5,7 @@ import { PageView } from '../common';
 import EventLookup from './attendance_reports/EventLookup';
 import Report from './attendance_reports/Report';
 import LookupResults from './attendance_reports/LookupResults';
-import { ipcMysql } from '../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 import { AttendanceReportsCss } from '../../style/AttendanceReports.css';
 
 const { ipcRenderer } = window.require('electron');
@@ -75,7 +75,7 @@ class AttendanceReports extends React.Component {
 		if (eventId) {
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_ATTENDANCE, {eventId});
 			ipcRenderer.once(ipcMysql.RETRIEVE_ATTENDANCE, (event, reportData, status) => {
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					this.setState({eventId, eventName, eventDate, reportData});
 				}
 			});

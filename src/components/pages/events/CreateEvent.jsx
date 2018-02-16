@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column, InputGroup, ButtonGroup, Button } from '../../common';
 import { isValidInput } from '../../../utils/validation';
-import { ipcMysql } from '../../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -51,7 +51,7 @@ export default class CreateEvent extends React.Component {
 			const {eventName} = this.state;
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.CREATE_EVENT, {eventName});
 			ipcRenderer.once(ipcMysql.CREATE_EVENT, (event, eventId, status) => {
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					this.props.setActiveEvent({eventId, eventName});
 					this.props.selectEventCheckInView();
 				}

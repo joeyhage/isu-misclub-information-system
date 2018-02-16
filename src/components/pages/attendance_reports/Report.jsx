@@ -1,8 +1,12 @@
 import React from 'react';
 import { Column } from '../../common';
-import MajorPieChart from './MajorPieChart';
-import ClassificationPieChart from './ClassificationPieChart';
-import AttendanceList from './AttendanceList';
+import MajorPieChart from './report/MajorPieChart';
+import ClassificationPieChart from './report/ClassificationPieChart';
+import AttendanceList from './report/AttendanceList';
+import ReportHeader from './report/ReportHeader';
+import { ipcGeneral } from '../../../actions/ipcActions';
+
+const { ipcRenderer } = window.require('electron');
 
 export default class Report extends React.Component {
 
@@ -11,22 +15,28 @@ export default class Report extends React.Component {
 		this.state = {
 			attendanceTable: this._populateAttendanceTable(props.reportData.attendance)
 		};
+		this._exportAttendance = this._exportAttendance.bind(this);
 	}
 
 	render() {
 		const {attendanceTable} = this.state;
+		const {event} = this.props;
 		const {majorStats, classificationStats} = this.props.reportData;
 		return (
-			<Column title={this.props.event.eventName}
-					subtitle={[
-						`Date: ${this.props.event.eventDate}`,
-						`Total Attendance: ${attendanceTable.length}`
-					]}>
-				<div style={{height:'500px'}}>
-					<MajorPieChart stats={majorStats}/>
-					<ClassificationPieChart stats={classificationStats}/>
-				</div>
-				<AttendanceList {...{attendanceTable}}/>
+			<Column>
+				<ReportHeader event={event} attendance={attendanceTable} onReset={this.props.onReset}
+							  exportAttendance={this._exportAttendance}/>
+				<hr className='divider'/>
+				{Boolean(attendanceTable && attendanceTable.length) ?
+					<div>
+						<div style={{height:'500px'}}>
+							<MajorPieChart stats={majorStats}/>
+							<ClassificationPieChart stats={classificationStats}/>
+						</div>
+						<AttendanceList {...{attendanceTable}}/>
+					</div> :
+					<p>No results</p>
+				}
 			</Column>
 		);
 	}
@@ -44,5 +54,13 @@ export default class Report extends React.Component {
 				<td>{member.classification}</td>
 			</tr>
 		)) : null;
+	}
+
+	_exportAttendance() {
+		const {attendance} = this.props.reportData;
+		const {eventName, eventDate} = this.props.event;
+		if (attendance && attendance.length) {
+			ipcRenderer.send(ipcGeneral.WRITE_ATTENDANCE_TO_CSV, null, {attendance, eventName, eventDate});
+		}
 	}
 }

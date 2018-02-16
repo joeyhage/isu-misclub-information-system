@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table } from '../../common';
+import { Card, Table } from '../../../common/index';
 
 export default class AttendanceList extends React.Component {
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, ButtonGroup, Column, Message } from '../common/index';
 import { MemberInfo, PaymentRadio } from './index';
 import { isValidInput } from '../../utils/validation';
-import { ipcMysql } from '../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -83,7 +83,7 @@ export default class CreateMember extends React.Component {
 				eventId: this.state.isCheckIn ? this.props.eventId : null
 			});
 			ipcRenderer.once(ipcMysql.CREATE_MEMBER, (event, results, status) => {
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					this.props.onSubmit(this.state.isCheckIn ?
 						`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!` :
 						`Successfully created member, ${first_name} ${last_name}.`

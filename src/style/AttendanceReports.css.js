@@ -29,5 +29,8 @@ export const AttendanceReportsCss = {
 	},
 	'text.highcharts-credits': {
 		display: 'none'
+	},
+	'ul.menu-list>li a': {
+		padding: '.25em .75em'
 	}
 };

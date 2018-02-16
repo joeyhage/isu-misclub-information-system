@@ -12,14 +12,12 @@ export class Column extends React.Component {
 		});
 		return (
 			<div className={columnClasses} style={this.props.style}>
-				<h1 className={titleClasses}>{this.props.title}</h1>
-				{this.props.subtitle && (
-					Array.isArray(this.props.subtitle) ?
-						this.props.subtitle.map((subtitle, index) => (
-							<h2 className='subtitle is-6' key={index}>{subtitle}</h2>
-						)) :
-						<h2 className='subtitle is-6'>{this.props.subtitle}</h2>
-				)}
+				{this.props.title &&
+					<h1 className={titleClasses}>{this.props.title}</h1>
+				}
+				{this.props.subtitle &&
+					<h2 className='subtitle is-6'>{this.props.subtitle}</h2>
+				}
 				{(this.props.title || this.props.subtitle) &&
 					<hr className='divider'/>
 				}

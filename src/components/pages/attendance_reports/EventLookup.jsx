@@ -2,7 +2,7 @@ import React from 'react';
 import { Column, InputGroup, ButtonGroup, Button } from '../../common';
 import dateFormat from 'dateformat';
 import { isValidInput } from '../../../utils/validation';
-import { ipcMysql } from '../../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -75,7 +75,7 @@ export default class EventLookup extends React.Component {
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
 			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events, status) => {
 				this.setState({isLoading: false});
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					this.props.onResults(events);
 				}
 			});

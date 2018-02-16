@@ -1,23 +1,23 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 
-export default class ClassificationPieChart extends React.Component {
+export default class MajorPieChart extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			config: this._formatClassificationStats(props.stats)
+			config: this._formatMajorStats(props.stats)
 		};
 	}
 
 	render() {
 		return (
-			<ReactHighcharts config={this.state.config} domProps={{id:'classification-chart'}}/>
+			<ReactHighcharts config={this.state.config} domProps={{id:'major-chart'}}/>
 		);
 	}
 
-	_formatClassificationStats(classificationStats) {
-		if (!classificationStats) {
+	_formatMajorStats(majorStats) {
+		if (!majorStats) {
 			return;
 		}
 		return {
@@ -27,10 +27,10 @@ export default class ClassificationPieChart extends React.Component {
 				plotShadow: false,
 				type: 'pie',
 				width: 500,
-				height: 400
+				height: 475
 			},
 			title: {
-				text: 'Classification Breakdown'
+				text: 'Major Breakdown'
 			},
 			tooltip: {
 				pointFormat: '<b>{point.y}</b>'
@@ -48,8 +48,8 @@ export default class ClassificationPieChart extends React.Component {
 			series: [{
 				name: 'Classifications',
 				colorByPoint: true,
-				data: classificationStats.map(stat => ({
-					name: stat.classification,
+				data: majorStats.map(stat => ({
+					name: stat.major,
 					y: stat.count
 				}))
 			}]

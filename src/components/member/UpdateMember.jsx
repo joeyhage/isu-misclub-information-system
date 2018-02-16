@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, ButtonGroup, Column } from '../common/index';
 import { isValidInput } from '../../utils/validation';
 import { MemberInfo, MemberAttendance, MemberActivity, PaymentRadio } from './index';
-import { ipcMysql } from '../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 import { hasMemberInfoChanged } from '../../utils/memberUtil';
 import MemberMessages from './MemberMessages';
 
@@ -135,7 +135,7 @@ export default class UpdateMember extends React.Component {
 				eventId: this.state.isCheckIn ? this.props.eventId : null
 			});
 			ipcRenderer.once(ipcMysql.UPDATE_MEMBER, (event, results, status) => {
-				if (status === ipcMysql.SUCCESS) {
+				if (status === ipcGeneral.SUCCESS) {
 					this.props.onSubmit(this.state.isCheckIn ?
 						`Successfully checked in ${first_name} ${last_name}. Please welcome them to the meeting!` :
 						`Successfully updated member, ${first_name} ${last_name}.`
