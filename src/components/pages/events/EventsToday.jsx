@@ -45,7 +45,7 @@ export default class EventsToday extends React.Component {
 				<td className='event-name'>{event.event_name}</td>
 				<td><button className='delete'/></td>
 			</tr>
-		)) : null;
+		)) : [];
 	}
 
 	_handleRowClick({target}) {

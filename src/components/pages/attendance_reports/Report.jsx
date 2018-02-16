@@ -13,7 +13,7 @@ export default class Report extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			attendanceTable: this._populateAttendanceTable(props.reportData ? props.reportData.attendance : null)
+			attendanceTable: this._populateAttendanceTable(props.reportData.attendance)
 		};
 		this._exportAttendance = this._exportAttendance.bind(this);
 	}
@@ -53,7 +53,7 @@ export default class Report extends React.Component {
 				<td>{member.major}</td>
 				<td>{member.classification}</td>
 			</tr>
-		)) : null;
+		)) : [];
 	}
 
 	_exportAttendance() {

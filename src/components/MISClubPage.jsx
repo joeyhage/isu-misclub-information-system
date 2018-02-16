@@ -2,13 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import AdminTools from './pages/AdminTools';
 import AttendanceReports from './pages/AttendanceReports';
-import Events from './pages/Events';
 import CheckIn from './pages/CheckIn';
+import Events from './pages/Events';
+import Finances from './pages/Finances';
 import GraphsTrends from './pages/GraphsTrends';
 import Help from './pages/Help';
-import NavPanel from './navigation/NavPanel';
 import Members from './pages/Members';
-import Finances from './pages/Finances';
+import NavPanel from './navigation/NavPanel';
 
 class MISClubPage extends React.Component {
 

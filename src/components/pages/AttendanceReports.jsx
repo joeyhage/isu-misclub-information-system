@@ -19,7 +19,7 @@ class AttendanceReports extends React.Component {
 			eventName: props.eventName,
 			eventDate: dateFormat('mediumDate'),
 			lookupResults: [],
-			reportData: props.reportData
+			reportData: props.reportData || {}
 		};
 		this._resetState = this._resetState.bind(this);
 		this._setLookupResults = this._setLookupResults.bind(this);
