@@ -1,5 +1,4 @@
-const { dialog } = require('electron'),
-	isDev = require('electron-is-dev'),
+const isDev = require('electron-is-dev'),
 	{ verifyExecPassword } = require('../utils/activeDirectoryLookup'),
 	{ requestDirectoryInfo } = require('../utils/isuDirectoryLookup'),
 	{ hasMemberInfoChanged } = require('../utils/memberUtil'),
@@ -13,7 +12,7 @@ const sqlActions = (mysql, logger) => ({
 		try {
 			return await mysql.findEventsToday();
 		} catch (error) {
-			const errorMessage = 'Error while retrieving events for today';
+			const errorMessage = 'Error retrieving events for today';
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -24,7 +23,19 @@ const sqlActions = (mysql, logger) => ({
 			const results = await mysql.createEvent(eventName);
 			return results.insertId;
 		} catch (error) {
-			const errorMessage = `Error while adding event '${eventName}'`;
+			const errorMessage = `Error adding event '${eventName}'`;
+			logger.error(error, errorMessage, true);
+			throw new Error(errorMessage);
+		}
+	},
+	[ipcMysql.EDIT_EVENT]: async ipcArgs => {
+		const {eventId} = ipcArgs;
+		const eventName = ipcArgs.eventName.trim();
+		try {
+			isValidEventId(eventId);
+			await mysql.editEvent(eventId, eventName);
+		} catch (error) {
+			const errorMessage = `Error editing event '${eventName}'`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -34,17 +45,8 @@ const sqlActions = (mysql, logger) => ({
 		try {
 			isValidEventId(eventId);
 			await mysql.deleteEvent(eventId);
-			dialog.showMessageBox({
-				type: 'info',
-				message: 'Event Deleted',
-				detail: 'Successfully deleted event.',
-				buttons: ['Ok'],
-				defaultId: 0,
-				cancelId: 0
-			});
-			return eventId;
 		} catch (error) {
-			let errorMessage = `Error while deleting event with ID '${ipcArgs.eventId}'`;
+			let errorMessage = `Error deleting event with ID '${ipcArgs.eventId}'`;
 			if (error.code === 'ER_ROW_IS_REFERENCED_2') {
 				errorMessage += '. Cannot delete an event people have checked into.';
 				logger.notify(errorMessage);
@@ -61,7 +63,7 @@ const sqlActions = (mysql, logger) => ({
 			isValidEventId(eventId);
 			results = await mysql.retrieveEventData(eventId);
 		} catch (error) {
-			const errorMessage = `Error while retrieving event data for Event ID '${eventId}'`;
+			const errorMessage = `Error retrieving event data for Event ID '${eventId}'`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -214,7 +216,7 @@ const sqlActions = (mysql, logger) => ({
 			}
 			await Promise.all(sqlCommands);
 		} catch (error) {
-			let errorMessage = `Error while creating member with Net-ID '${member.netid}'`;
+			let errorMessage = `Error creating member with Net-ID '${member.netid}'`;
 			if (error.code === 'ER_DUP_ENTRY') {
 				errorMessage +=  '. Member already exists in database.';
 				logger.notify(errorMessage);
@@ -237,7 +239,7 @@ const sqlActions = (mysql, logger) => ({
 			]);
 			return {attendance, majorStats, classificationStats};
 		} catch (error) {
-			const errorMessage = `Error while getting event attendance info for event with Event ID '${eventId}'`;
+			const errorMessage = `Error getting event attendance info for event with Event ID '${eventId}'`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}
@@ -248,7 +250,7 @@ const sqlActions = (mysql, logger) => ({
 		try {
 			return await mysql.queryEvents(dateRangeStart, dateRangeEnd, eventName);
 		} catch (error) {
-			const errorMessage = `Error while finding events between '${dateRangeStart}' and '${dateRangeEnd}' with event name '${eventName}'`;
+			const errorMessage = `Error finding events between '${dateRangeStart}' and '${dateRangeEnd}' with event name '${eventName}'`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}

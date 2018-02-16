@@ -84,6 +84,13 @@ class mysqlManager {
 		);
 	}
 
+	editEvent(eventId, eventName) {
+		return this.sqlQueryHandler(
+			`UPDATE ${is_event} SET event_name=? WHERE event_id=?`,
+			[eventName, eventId]
+		);
+	}
+
 	deleteEvent(eventId) {
 		return this.sqlQueryHandler(
 			`DELETE FROM ${is_event} WHERE event_id=?`,

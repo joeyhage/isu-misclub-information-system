@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { selectView, setActiveEvent, resetActiveEvent } from '../../actions/reduxActions';
+import { selectView, setActiveEvent, resetActiveEvent, setEventsToday } from '../../actions/reduxActions';
 import { EventsCss } from '../../style/Events.css';
 import { PageView } from '../common';
 import CreateEvent from './events/CreateEvent';
@@ -31,7 +31,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	selectEventCheckInView: () => dispatch(selectView('check-in')),
 	setActiveEvent: ({eventId, eventName}) => dispatch(setActiveEvent(eventId, eventName)),
-	resetActiveEvent: () => dispatch(resetActiveEvent())
+	resetActiveEvent: () => dispatch(resetActiveEvent()),
+	setEventsToday: eventsToday => dispatch(setEventsToday(eventsToday))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Events);

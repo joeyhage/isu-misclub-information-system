@@ -16,7 +16,7 @@ export class ButtonGroup extends React.Component {
 			<Field grouped horizontal={this.props.horizontal}>
 				{!this.state.isLoading ?
 					this.props.children :
-					this._createLoadingButton()
+					this._addLoadingButton()
 				}
 			</Field>
 		);
@@ -53,7 +53,7 @@ export class ButtonGroup extends React.Component {
 		}
 	}
 
-	_createLoadingButton() {
+	_addLoadingButton() {
 		// Loading CSS cannot be applied to type 'submit'
 		// this changes each submit button to 'button' type
 		return React.Children.map(this.props.children, (element, index) => React.cloneElement(
