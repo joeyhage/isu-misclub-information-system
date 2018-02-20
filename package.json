@@ -48,6 +48,7 @@
 		"electron-start": "electron .",
 		"react-start": "react-scripts start",
 		"distMacWin": "electron-builder -mw",
+		"build-all": "npm run build && rm -rf dist/ && npm run distMacWin",
 		"postinstall": "electron-builder install-app-deps"
 	}
 }

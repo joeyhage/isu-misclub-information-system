@@ -22,23 +22,23 @@ export default class EventsToday extends React.Component {
 		const {eventsTable, editEvent} = this.state;
 		return (
 			<Column title='Events Today' style={{paddingLeft:'40px'}}>
-				<p>{Boolean(eventsTable) ?
-					'Click an event to start check-in.' :
-					'No events today. To start check-in, create an event.'
-				}</p>
-				{Boolean(eventsTable) &&
-					<Table id='events-today' style={{marginTop:'20px'}}>
-						<thead>
+				{Boolean(eventsTable && eventsTable.length) ?
+					<div>
+						<p>Click an event to start check-in.</p>
+						<Table id='events-today' style={{marginTop:'20px'}}>
+							<thead>
 							<tr>
 								<th>Edit</th>
 								<th>Name</th>
 								<th>Delete?</th>
 							</tr>
-						</thead>
-						<tbody>
+							</thead>
+							<tbody>
 							{eventsTable}
-						</tbody>
-					</Table>
+							</tbody>
+						</Table>
+					</div>:
+					<p>No events today. To start check-in, create an event.</p>
 				}
 				{Boolean(editEvent.eventId && editEvent.eventName) &&
 					<EditEvent eventName={editEvent.eventName} onSave={this._onModalSave} onClose={this._onModalClose}/>

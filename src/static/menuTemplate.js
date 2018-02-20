@@ -66,15 +66,15 @@ const createMenuTemplate = logger => {
 
 	if (process.platform === 'darwin') {
 		template.unshift({
-			label: app.getName(),
+			label: 'ISU MIS Club Information System',
 			submenu: [
-				{label: `About ${app.getName()}`, role: 'about'},
+				{label: 'About ISU MIS Club Information System', role: 'about'},
 				{type: 'separator'},
-				{label: `Hide ${app.getName()}`, role: 'hide'},
+				{label: 'Hide ISU MIS Club Information System', role: 'hide'},
 				{role: 'hideothers'},
 				{role: 'unhide'},
 				{type: 'separator'},
-				{label: `Quit ${app.getName()}`, role: 'quit'},
+				{label: 'Quit ISU MIS Club Information System', role: 'quit'},
 			]
 		}, {
 			label: 'File',
@@ -84,10 +84,10 @@ const createMenuTemplate = logger => {
 		template.unshift({
 			label: 'File',
 			submenu: [
-				{label: `About ${app.getName()}`, role: 'about'},
+				{label: 'About ISU MIS Club Information System', role: 'about'},
 				{type: 'separator'},
 				savePageAs(logger),
-				{label: `Quit ${app.getName()}`, role: 'quit'},
+				{label: 'Quit ISU MIS Club Information System', role: 'quit'},
 			]
 		});
 	}

@@ -43,22 +43,30 @@ const mapDispatchToProps = dispatch => ({
 	selectView: ({id, eventId, eventName, view}) => {
 		switch (id) {
 			case 'events':
-				ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
-				ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday, status) => {
-					if (status === ipcGeneral.SUCCESS) {
-						dispatch(setEventsToday(eventsToday));
-					}
-					dispatch(selectView(id));
+				smoothTransition(dispatch, id, () => {
+					return new Promise(resolve => {
+						ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_EVENTS_TODAY);
+						ipcRenderer.once(ipcMysql.RETRIEVE_EVENTS_TODAY, (event, eventsToday, status) => {
+							if (status === ipcGeneral.SUCCESS) {
+								dispatch(setEventsToday(eventsToday));
+							}
+							resolve();
+						});
+					});
 				});
 				break;
 			case 'attendance-reports':
 				if (eventId && view !== 'attendance-reports') {
-					ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_ATTENDANCE, {eventId});
-					ipcRenderer.once(ipcMysql.RETRIEVE_ATTENDANCE, (event, reportData, status) => {
-						if (status === ipcGeneral.SUCCESS) {
-							dispatch(addReportData(reportData));
-						}
-						dispatch(selectView(id));
+					smoothTransition(dispatch, id, () => {
+						return new Promise(resolve => {
+							ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.RETRIEVE_ATTENDANCE, {eventId});
+							ipcRenderer.once(ipcMysql.RETRIEVE_ATTENDANCE, (event, reportData, status) => {
+								if (status === ipcGeneral.SUCCESS) {
+									dispatch(addReportData(reportData));
+								}
+								resolve();
+							});
+						});
 					});
 				} else {
 					dispatch(selectView(id));
@@ -69,5 +77,21 @@ const mapDispatchToProps = dispatch => ({
 		}
 	}
 });
+
+const smoothTransition = (dispatch, id, promise) => {
+	let dispatchedView = false;
+	const timeout = setTimeout(() => {
+		if (!dispatchedView) {
+			dispatchedView = true;
+			dispatch(selectView(id));
+		}
+	}, 3000);
+	promise().then(() => {
+		if (!dispatchedView) {
+			clearTimeout(timeout);
+			dispatch(selectView(id));
+		}
+	});
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavLink);
