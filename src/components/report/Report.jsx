@@ -1,10 +1,10 @@
 import React from 'react';
-import { Column } from '../../common';
-import MajorPieChart from './report/MajorPieChart';
-import ClassificationPieChart from './report/ClassificationPieChart';
-import AttendanceList from './report/AttendanceList';
-import ReportHeader from './report/ReportHeader';
-import { ipcGeneral } from '../../../actions/ipcActions';
+import { Column } from '../common/index';
+import MajorPieChart from './MajorPieChart';
+import ClassificationPieChart from './ClassificationPieChart';
+import AttendanceList from './AttendanceList';
+import ReportHeader from './ReportHeader';
+import { ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 

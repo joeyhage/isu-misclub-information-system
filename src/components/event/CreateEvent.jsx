@@ -1,7 +1,7 @@
 import React from 'react';
-import { Column, InputGroup, ButtonGroup, Button } from '../../common';
-import { isValidInput } from '../../../utils/validation';
-import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
+import { Column, InputGroup, ButtonGroup, Button } from '../common/index';
+import { isValidInput } from '../../utils/validation';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -26,7 +26,9 @@ export default class CreateEvent extends React.Component {
 				<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
 					<InputGroup id='event-name' value={eventName} onChange={this._handleChange}
 								showErrors={this._getFormValidationState} placeholder='e.g. MIS Club Career Night'
-								required autoFocus>Event Name</InputGroup>
+								required autoFocus>
+						Event Name
+					</InputGroup>
 					<ButtonGroup isLoading={isLoading}>
 						<Button type='submit' info>Create</Button>
 						<Button type='reset' black>Clear</Button>

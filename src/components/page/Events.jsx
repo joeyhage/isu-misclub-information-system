@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { selectView, setActiveEvent, resetActiveEvent, setEventsToday } from '../../actions/reduxActions';
 import { EventsCss } from '../../style/Events.css';
 import { PageView } from '../common';
-import CreateEvent from './events/CreateEvent';
-import EventsToday from './events/EventsToday';
+import CreateEvent from '../event/CreateEvent';
+import EventsToday from '../event/EventsToday';
 
 class Events extends React.Component {
 

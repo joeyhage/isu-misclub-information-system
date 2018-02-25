@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
-import MISClubPage from './components/MISClubPage';
-import Login from './components/pages/Login';
+import MISClubPage from './components/page/MISClubPage';
+import Login from './components/page/Login';
 import { ipcGeneral } from './actions/ipcActions';
 import { AppCss } from './style/App.css.js';
 import './style/bulma.min.css';

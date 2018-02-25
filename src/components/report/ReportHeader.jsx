@@ -1,6 +1,6 @@
 import React from 'react';
-import { primaryRed } from '../../../../style/CssConstants';
-import { Column } from '../../../common';
+import { primaryRed } from '../../style/CssConstants';
+import { Column } from '../common/index';
 
 export default class ReportHeader extends React.Component {
 

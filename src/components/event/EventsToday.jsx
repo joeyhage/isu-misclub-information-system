@@ -1,7 +1,7 @@
 import React from 'react';
-import { Column, Table } from '../../common';
+import { Column, Table } from '../common/index';
 import EditEvent from './EditEvent';
-import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -27,14 +27,14 @@ export default class EventsToday extends React.Component {
 						<p>Click an event to start check-in.</p>
 						<Table id='events-today' style={{marginTop:'20px'}}>
 							<thead>
-							<tr>
-								<th>Edit</th>
-								<th>Name</th>
-								<th>Delete?</th>
-							</tr>
+								<tr>
+									<th>Edit</th>
+									<th>Name</th>
+									<th>Delete?</th>
+								</tr>
 							</thead>
 							<tbody>
-							{eventsTable}
+								{eventsTable}
 							</tbody>
 						</Table>
 					</div>:

@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import dateFormat from 'dateformat';
 import { PageView } from '../common';
-import EventLookup from './attendance_reports/EventLookup';
-import Report from './attendance_reports/Report';
-import LookupResults from './attendance_reports/LookupResults';
+import EventLookup from '../event/EventLookup';
+import Report from '../report/Report';
+import LookupResults from '../event/LookupResults';
 import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 import { AttendanceReportsCss } from '../../style/AttendanceReports.css';
 

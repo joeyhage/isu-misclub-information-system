@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputGroup, Modal} from '../../common';
+import {InputGroup, Modal} from '../common/index';
 
 export default class EditEvent extends React.Component {
 

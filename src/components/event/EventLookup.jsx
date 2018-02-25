@@ -1,8 +1,8 @@
 import React from 'react';
-import { Column, InputGroup, ButtonGroup, Button } from '../../common';
+import { Column, InputGroup, ButtonGroup, Button } from '../common/index';
 import dateFormat from 'dateformat';
-import { isValidInput } from '../../../utils/validation';
-import { ipcMysql, ipcGeneral } from '../../../actions/ipcActions';
+import { isValidInput } from '../../utils/validation';
+import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 

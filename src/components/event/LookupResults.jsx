@@ -1,5 +1,5 @@
 import React from 'react';
-import { Column, Table } from '../../common';
+import { Column, Table } from '../common/index';
 
 export default class LookupResults extends React.Component {
 
