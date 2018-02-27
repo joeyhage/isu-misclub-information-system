@@ -248,9 +248,20 @@ const sqlActions = (mysql, logger) => ({
 		const {dateRangeStart, dateRangeEnd} = ipcArgs;
 		const eventName = ipcArgs.eventName.trim();
 		try {
-			return await mysql.queryEvents(dateRangeStart, dateRangeEnd, eventName);
+			return await mysql.findEvents(dateRangeStart, dateRangeEnd, eventName);
 		} catch (error) {
 			const errorMessage = `Error finding events between '${dateRangeStart}' and '${dateRangeEnd}' with event name '${eventName}'`;
+			logger.error(error, errorMessage, true);
+			throw new Error(errorMessage);
+		}
+	},
+	[ipcMysql.QUERY_HISTORICAL_EVENTS]: async ipcArgs => {
+		const {dateRangeStart, dateRangeEnd} = ipcArgs;
+		const eventName = ipcArgs.eventName.trim();
+		try {
+			return await mysql.queryHistoricalEvents(dateRangeStart, dateRangeEnd, eventName);
+		} catch (error) {
+			const errorMessage = `Error querying event attendance between '${dateRangeStart}' and '${dateRangeEnd}' with event name '${eventName}'`;
 			logger.error(error, errorMessage, true);
 			throw new Error(errorMessage);
 		}

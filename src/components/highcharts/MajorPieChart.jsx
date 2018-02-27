@@ -6,7 +6,7 @@ export default class MajorPieChart extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			config: this._formatMajorStats(props.stats)
+			config: this._initializeChart(props.stats)
 		};
 	}
 
@@ -16,7 +16,7 @@ export default class MajorPieChart extends React.Component {
 		);
 	}
 
-	_formatMajorStats(majorStats) {
+	_initializeChart(majorStats) {
 		if (!majorStats) {
 			return;
 		}

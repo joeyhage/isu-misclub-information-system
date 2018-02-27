@@ -19,6 +19,7 @@
 		"downshift": "^1.25.0",
 		"electron-is-dev": "^0.3.0",
 		"got-lite": "^8.0.1",
+		"highcharts-exporting": "^0.1.7",
 		"ldapjs": "^1.0.1",
 		"mysql": "^2.15.0",
 		"radium": "^0.19.6",

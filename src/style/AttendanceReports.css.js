@@ -27,9 +27,6 @@ export const AttendanceReportsCss = {
 	'#major-chart, #classification-chart': {
 		float: 'left'
 	},
-	'text.highcharts-credits': {
-		display: 'none'
-	},
 	'ul.menu-list>li a': {
 		padding: '.25em .75em'
 	}

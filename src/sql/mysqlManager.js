@@ -214,12 +214,66 @@ class mysqlManager {
 		);
 	}
 
-	queryEvents(dateRangeStart, dateRangeEnd, eventName = '') {
+	findEvents(dateRangeStart, dateRangeEnd, eventName = '') {
 		return this.sqlQueryHandler(
 			'SELECT event_id,event_name,DATE_FORMAT(event_date,\'%b %e, %Y\') as event_date ' +
 			`FROM ${is_event} ` +
 			'WHERE event_date>=? AND event_date<=? AND event_name LIKE ? ' +
 			'ORDER BY event_id DESC',
+			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
+		);
+	}
+
+	queryHistoricalEvents(dateRangeStart, dateRangeEnd, eventName = '') {
+		return this.sqlQueryHandler(
+			'SELECT a.event_id,event_name,event_date,' +
+			'IFNULL(Freshmen,0) as freshmen,IFNULL(Sophomores,0) as sophomores,IFNULL(Juniors,0) as juniors,' +
+			'IFNULL(Seniors,0) as seniors,IFNULL(Graduates,0) as graduates,IFNULL(Faculty,0) as faculty,IFNULL(Other,0) as other ' +
+			`FROM ${is_event} a ` +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Freshmen ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Freshman\' ' +
+				'GROUP BY classification, event_id' +
+			') b ON a.event_id=b.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Sophomores ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Sophomore\' ' +
+				'GROUP BY classification, event_id' +
+			') c ON a.event_id=c.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Juniors ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Junior\' ' +
+				'GROUP BY classification, event_id' +
+			') d ON a.event_id=d.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Seniors ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Senior\' ' +
+				'GROUP BY classification, event_id' +
+			') e ON a.event_id=e.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Graduates ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Graduate\' ' +
+				'GROUP BY classification, event_id' +
+			') f ON a.event_id=f.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Faculty ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Faculty\' ' +
+				'GROUP BY classification, event_id' +
+			') g ON a.event_id=g.event_id ' +
+			'LEFT JOIN (' +
+				'SELECT event_id, COUNT(*) as Other ' +
+				`FROM ${is_attendance} ` +
+				'WHERE classification=\'Other\' ' +
+				'GROUP BY classification, event_id' +
+			') h ON a.event_id=h.event_id ' +
+			'WHERE event_date>=? AND event_date<=? AND event_name LIKE ? ' +
+			'ORDER BY event_id',
 			[dateRangeStart, dateRangeEnd, `%${eventName}%`]
 		);
 	}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column } from '../common/index';
-import MajorPieChart from './MajorPieChart';
-import ClassificationPieChart from './ClassificationPieChart';
+import MajorPieChart from '../highcharts/MajorPieChart';
+import ClassificationPieChart from '../highcharts/ClassificationPieChart';
 import AttendanceList from './AttendanceList';
 import ReportHeader from './ReportHeader';
 import { ipcGeneral } from '../../actions/ipcActions';

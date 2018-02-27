@@ -26,8 +26,8 @@ class MISClubPage extends React.Component {
 			'events': <Events/>,
 			'check-in': <CheckIn/>,
 			'attendance-reports': <AttendanceReports/>,
-			'graphs-trends': <GraphsTrends/>,
 			'members': <Members/>,
+			'graphs': <GraphsTrends/>,
 			'finances': <Finances/>,
 			'admin-tools': <AdminTools/>,
 			'help': <Help/>

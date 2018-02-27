@@ -1,10 +1,8 @@
 import React from 'react';
-import { Column, InputGroup, ButtonGroup, Button } from '../common/index';
 import dateFormat from 'dateformat';
+import { Column, InputGroup, ButtonGroup, Button } from '../common/index';
 import { isValidInput } from '../../utils/validation';
-import { ipcMysql, ipcGeneral } from '../../actions/ipcActions';
-
-const { ipcRenderer } = window.require('electron');
+import { ipcGeneral } from '../../actions/ipcActions';
 
 export default class EventLookup extends React.Component {
 
@@ -29,7 +27,7 @@ export default class EventLookup extends React.Component {
 		const {dateRangeStart, dateRangeEnd, eventName, isLoading} = this.state;
 		return (
 			<Column title='Event Lookup' style={{paddingRight:'40px'}}>
-				<form onSubmit={this._handleSubmit} onReset={this._handleChange}>
+				<form id='event-lookup' onSubmit={this._handleSubmit} onReset={this._handleChange}>
 					<InputGroup id='date-range-start' value={dateRangeStart}
 								onChange={this._handleChange} type='date'
 								showErrors={this._getFormValidationState} horizontal required>
@@ -67,18 +65,14 @@ export default class EventLookup extends React.Component {
 		}
 	}
 
-	_handleSubmit(event) {
+	async _handleSubmit(event) {
 		event.preventDefault();
-		const {dateRangeStart, dateRangeEnd, eventName} = this.state;
-		if (isValidInput(dateRangeStart) && isValidInput(dateRangeEnd)) {
+		if (isValidInput(this.state.dateRangeStart) && isValidInput(this.state.dateRangeEnd)) {
 			this.setState({showFormErrors: false, isLoading: true});
-			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
-			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events, status) => {
+			const status = await this.props.onSubmit(this.state);
+			if (status !== ipcGeneral.SUCCESS) {
 				this.setState({isLoading: false});
-				if (status === ipcGeneral.SUCCESS) {
-					this.props.onResults(events);
-				}
-			});
+			}
 		} else {
 			this.setState({showFormErrors: true});
 		}

@@ -6,7 +6,7 @@ export default class ClassificationPieChart extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			config: this._formatClassificationStats(props.stats)
+			config: this._initializeChart(props.stats)
 		};
 	}
 
@@ -16,7 +16,7 @@ export default class ClassificationPieChart extends React.Component {
 		);
 	}
 
-	_formatClassificationStats(classificationStats) {
+	_initializeChart(classificationStats) {
 		if (!classificationStats) {
 			return;
 		}

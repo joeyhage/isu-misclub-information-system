@@ -30,13 +30,11 @@ class AttendanceReports extends React.Component {
 		const {eventId, eventName, eventDate, lookupResults, reportData} = this.state;
 		return (
 			<PageView rules={AttendanceReportsCss}>
-				{eventId &&
+				{eventId ?
 					<Report event={{eventId, eventName, eventDate}} reportData={reportData}
-							onReset={this._resetState}/>
-				}
-				{!eventId &&
+							onReset={this._resetState}/> :
 					[
-						<EventLookup key='event-lookup' onResults={this._setLookupResults}/>,
+						<EventLookup key='event-lookup' onSubmit={this._setLookupResults}/>,
 						<LookupResults key='lookup-results' events={lookupResults}
 									   onEventSelected={this._getAttendanceForEvent}/>
 					]
@@ -67,8 +65,16 @@ class AttendanceReports extends React.Component {
 		});
 	}
 
-	_setLookupResults(events) {
-		this.setState({lookupResults: events});
+	_setLookupResults({dateRangeStart, dateRangeEnd, eventName}) {
+		return new Promise(resolve => {
+			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
+			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events, status) => {
+				if (status === ipcGeneral.SUCCESS) {
+					this.setState({lookupResults: events});
+				}
+				resolve(status);
+			});
+		});
 	}
 
 	_getAttendanceForEvent({eventId, eventName, eventDate}) {

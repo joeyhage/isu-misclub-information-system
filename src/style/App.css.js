@@ -24,6 +24,9 @@ export const AppCss = {
 	},
 	'input:disabled': {
 		backgroundColor: '#ddd'
+	},
+	'text.highcharts-credits': {
+		display: 'none'
 	}
 };
 
