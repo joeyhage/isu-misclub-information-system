@@ -22,22 +22,23 @@ export default class LookupResults extends React.Component {
 					'Search for an event using the Lookup button on the left.'
 				}</p>
 				{Boolean(eventsTable) &&
-					[
-						<Table id='lookup-results' key='results-table'
-							   style={{marginTop:'20px', maxHeight:'40vh', overflow:'scroll'}}>
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>Date</th>
-								</tr>
-							</thead>
-							<tbody onClick={this._handleRowClick}>
-								{eventsTable.slice(currentResultsPage * 10, currentResultsPage * 10 + 10)}
-							</tbody>
-						</Table>,
+					<div>
+						<div style={{minHeight:'451px',marginTop:'20px'}}>
+							<Table id='lookup-results'>
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Date</th>
+									</tr>
+								</thead>
+								<tbody onClick={this._handleRowClick}>
+									{eventsTable.slice(currentResultsPage * 10, currentResultsPage * 10 + 10)}
+								</tbody>
+							</Table>
+						</div>
 						<Pagination currentPage={currentResultsPage} pageCount={Math.ceil(eventsTable.length / 10)}
-									key='pagination' onPageChange={this._onPageChange}/>
-					]
+									onPageChange={this._onPageChange}/>
+					</div>
 				}
 			</Column>
 		);

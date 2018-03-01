@@ -6,6 +6,8 @@ export class Pagination extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			disablePrevious: this._shouldDisablePrevious(props),
+			disableNext: this._shouldDisableNext(props),
 			showLeftEllipses: this._shouldShowLeftEllipses(props),
 			showRightEllipses: this._shouldShowRightEllipses(props),
 			pageList: this._determinePageList(props)
@@ -14,44 +16,50 @@ export class Pagination extends React.Component {
 	}
 
 	render() {
-		const {pageCount} = this.props;
-		const {showLeftEllipses, showRightEllipses, pageList} = this.state;
+		const {currentPage, pageCount} = this.props;
+		const {disablePrevious, disableNext, showLeftEllipses, showRightEllipses, pageList} = this.state;
 		return (
-			<div className='pagination is-centered' role='navigation' aria-label='pagination'>
+			<div className='pagination is-rounded' role='navigation'>
+				<button className='button pagination-previous' onClick={() => this._onClick(currentPage - 1)} disabled={disablePrevious}>
+					Previous
+				</button>
+				<button className='button pagination-next' onClick={() => this._onClick(currentPage + 1)} disabled={disableNext}>
+					Next page
+				</button>
 				<ul className='pagination-list'>
-					{showLeftEllipses &&
-						[
-							<li key={1}>
-								<a className='pagination-link' onClick={() => this._onClick(0)}>
-									1
-								</a>
-							</li>,
-							<li key={2}>
-								<span className='pagination-ellipsis'>&hellip;</span>
-							</li>
-						]
-					}
+					<li style={{minWidth:'2.75em', minHeight:'2.75em'}}>
+						<a className='pagination-link' onClick={() => this._onClick(0)}
+						   style={{display: showLeftEllipses ? 'inline-flex' : 'none'}}>
+							1
+						</a>
+					</li>
+					<li style={{minWidth:'2.42em', minHeight:'2.75em'}}>
+						<span className='pagination-ellipsis' style={{display: showLeftEllipses ? 'inline-flex' : 'none'}}>
+							&hellip;
+						</span>
+					</li>
 					{pageList}
-					{showRightEllipses &&
-						[
-							<li key={1}>
-								<span className='pagination-ellipsis'>&hellip;</span>
-							</li>,
-							<li key={2}>
-								<a className='pagination-link' onClick={() => this._onClick(pageCount - 1)}>
-									{pageCount}
-								</a>
-							</li>
-						]
-					}
+					<li style={{minWidth:'2.42em', minHeight:'2.75em'}}>
+						<span className='pagination-ellipsis' style={{display: showRightEllipses ? 'inline-flex' : 'none'}}>
+							&hellip;
+						</span>
+					</li>
+					<li style={{minWidth:'2.75em', minHeight:'2.75em'}}>
+						<a className='pagination-link' onClick={() => this._onClick(pageCount - 1)}
+						   style={{display: showRightEllipses ? 'inline-flex' : 'none'}}>
+							{pageCount}
+						</a>
+					</li>
 				</ul>
 			</div>
 		);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.currentPage !== this.props.currentPage) {
+		if (nextProps.currentPage !== this.props.currentPage || nextProps.pageCount !== this.props.pageCount) {
 			this.setState({
+				disablePrevious: this._shouldDisablePrevious(nextProps),
+				disableNext: this._shouldDisableNext(nextProps),
 				showLeftEllipses: this._shouldShowLeftEllipses(nextProps),
 				showRightEllipses: this._shouldShowRightEllipses(nextProps),
 				pageList: this._determinePageList(nextProps)
@@ -97,6 +105,14 @@ export class Pagination extends React.Component {
 				  onClick={onClick}
 			/>
 		];
+	}
+
+	_shouldDisablePrevious({currentPage}) {
+		return currentPage === 0;
+	}
+
+	_shouldDisableNext({currentPage, pageCount}) {
+		return currentPage === pageCount - 1;
 	}
 
 	_shouldShowLeftEllipses({currentPage, pageCount}) {
