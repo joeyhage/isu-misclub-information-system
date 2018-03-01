@@ -1,14 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Radium, { Style } from 'radium';
+import ReactHighcharts from 'react-highcharts';
+import highchartsExporting from 'highcharts-exporting';
 import MISClubPage from './components/page/MISClubPage';
 import Login from './components/page/Login';
 import { ipcGeneral } from './actions/ipcActions';
 import { AppCss } from './style/App.css.js';
 import './style/bulma.min.css';
 import './style/font-awesome.min.css';
+import downloadButton from './components/highcharts/downloadButton';
 
 const { ipcRenderer } = window.require('electron');
+
+(highchartsExporting)(ReactHighcharts.Highcharts);
 
 class App extends React.Component {
 
@@ -26,6 +31,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		this._updateWindow();
+		this._setCustomDownloadButton();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -56,6 +62,10 @@ class App extends React.Component {
 
 	_setMISClubPageWindow() {
 		ipcRenderer.send(ipcGeneral.SET_WINDOW, ipcGeneral.MIS_CLUB_PAGE_WINDOW);
+	}
+
+	_setCustomDownloadButton() {
+		ReactHighcharts.Highcharts.SVGRenderer.prototype.symbols.download = downloadButton;
 	}
 }
 

@@ -52,7 +52,19 @@ export default class ClassificationPieChart extends React.Component {
 					name: stat.classification,
 					y: stat.count
 				}))
-			}]
+			}],
+			exporting: {
+				buttons: {
+					contextButton: {
+						menuItems: [
+							'downloadPNG',
+							'downloadJPEG'
+						],
+						symbol: 'download'
+					}
+				},
+				filename: 'MIS_Club_Classification_Pie_Chart'
+			}
 		};
 	}
 }

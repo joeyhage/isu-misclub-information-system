@@ -1,11 +1,8 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
-import highchartsExporting from 'highcharts-exporting';
 import dateFormat from 'dateformat';
 import GraphsHeader from '../graphs/GraphsHeader';
 import { Column } from '../common';
-
-(highchartsExporting)(ReactHighcharts.Highcharts);
 
 export default class AttendanceHistoryChart extends React.Component {
 
@@ -15,7 +12,6 @@ export default class AttendanceHistoryChart extends React.Component {
 			config: this._initializeChart(props.attendanceHistory),
 			showDetails: false
 		};
-		this._setCustomDownloadButton();
 		this._toggleDetails = this._toggleDetails.bind(this);
 	}
 
@@ -145,24 +141,5 @@ export default class AttendanceHistoryChart extends React.Component {
 			{name: 'Faculty', data: []},
 			{name: 'Other', data: []},
 		]);
-	}
-
-	_setCustomDownloadButton() {
-		ReactHighcharts.Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
-			return [
-				// Arrow stem
-				'M', x + w * 0.5, y,
-				'L', x + w * 0.5, y + h * 0.7,
-				// Arrow head
-				'M', x + w * 0.3, y + h * 0.5,
-				'L', x + w * 0.5, y + h * 0.7,
-				'L', x + w * 0.7, y + h * 0.5,
-				// Box
-				'M', x, y + h * 0.9,
-				'L', x, y + h,
-				'L', x + w, y + h,
-				'L', x + w, y + h * 0.9
-			];
-		};
 	}
 }

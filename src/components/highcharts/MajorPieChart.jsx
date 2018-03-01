@@ -52,7 +52,19 @@ export default class MajorPieChart extends React.Component {
 					name: stat.major,
 					y: stat.count
 				}))
-			}]
+			}],
+			exporting: {
+				buttons: {
+					contextButton: {
+						menuItems: [
+							'downloadPNG',
+							'downloadJPEG'
+						],
+						symbol: 'download'
+					}
+				},
+				filename: 'MIS_Club_Major_Pie_Chart'
+			}
 		};
 	}
 }
