@@ -47,7 +47,7 @@ export default class GraphsTrends extends React.Component {
 				if (status === ipcGeneral.SUCCESS) {
 					this.setState({attendanceHistory});
 				}
-				resolve(status);
+				resolve();
 			});
 		});
 	}

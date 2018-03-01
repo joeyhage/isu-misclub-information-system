@@ -26,3 +26,5 @@ export { Field } from './Field';
 export { Table } from './Table';
 export { InputAutocomplete } from './InputAutocomplete';
 export { Modal } from './Modal';
+export { Pagination } from './Pagination';
+export { Page } from './Page';

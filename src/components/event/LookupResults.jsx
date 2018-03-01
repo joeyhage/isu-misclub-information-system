@@ -1,18 +1,20 @@
 import React from 'react';
-import { Column, Table } from '../common/index';
+import { Column, Table, Pagination } from '../common/index';
 
 export default class LookupResults extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			eventsTable: this._populateEventsTable(props.events)
+			eventsTable: this._populateEventsTable(props.events),
+			currentResultsPage: 0
 		};
 		this._handleRowClick = this._handleRowClick.bind(this);
+		this._onPageChange = this._onPageChange.bind(this);
 	}
 
 	render() {
-		const {eventsTable} = this.state;
+		const {eventsTable, currentResultsPage} = this.state;
 		return (
 			<Column title='Results' style={{paddingLeft:'40px'}}>
 				<p>{Boolean(eventsTable) ?
@@ -20,17 +22,22 @@ export default class LookupResults extends React.Component {
 					'Search for an event using the Lookup button on the left.'
 				}</p>
 				{Boolean(eventsTable) &&
-					<Table id='lookup-results' style={{marginTop:'20px', maxHeight:'40vh', overflow:'scroll'}}>
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Date</th>
-							</tr>
-						</thead>
-						<tbody onClick={this._handleRowClick}>
-							{eventsTable}
-						</tbody>
-					</Table>
+					[
+						<Table id='lookup-results' key='results-table'
+							   style={{marginTop:'20px', maxHeight:'40vh', overflow:'scroll'}}>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody onClick={this._handleRowClick}>
+								{eventsTable.slice(currentResultsPage * 10, currentResultsPage * 10 + 10)}
+							</tbody>
+						</Table>,
+						<Pagination currentPage={currentResultsPage} pageCount={Math.ceil(eventsTable.length / 10)}
+									key='pagination' onPageChange={this._onPageChange}/>
+					]
 				}
 			</Column>
 		);
@@ -38,7 +45,7 @@ export default class LookupResults extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.events !== this.props.events) {
-			this.setState({eventsTable: this._populateEventsTable(nextProps.events)});
+			this.setState({eventsTable: this._populateEventsTable(nextProps.events), currentResultsPage: 0});
 		}
 	}
 
@@ -68,5 +75,9 @@ export default class LookupResults extends React.Component {
 				eventDate: eventDate.innerHTML
 			});
 		}
+	}
+
+	_onPageChange(nextPage) {
+		this.setState({currentResultsPage: nextPage});
 	}
 }

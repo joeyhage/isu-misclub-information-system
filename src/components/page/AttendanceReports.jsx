@@ -72,7 +72,7 @@ class AttendanceReports extends React.Component {
 				if (status === ipcGeneral.SUCCESS) {
 					this.setState({lookupResults: events});
 				}
-				resolve(status);
+				resolve();
 			});
 		});
 	}

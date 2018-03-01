@@ -2,7 +2,6 @@ import React from 'react';
 import dateFormat from 'dateformat';
 import { Column, InputGroup, ButtonGroup, Button } from '../common/index';
 import { isValidInput } from '../../utils/validation';
-import { ipcGeneral } from '../../actions/ipcActions';
 
 export default class EventLookup extends React.Component {
 
@@ -18,6 +17,7 @@ export default class EventLookup extends React.Component {
 			isLoading: false
 		};
 		this.initialState = {...this.state};
+		this._isMounted = false;
 		this._handleChange = this._handleChange.bind(this);
 		this._handleSubmit = this._handleSubmit.bind(this);
 		this._getFormValidationState = this._getFormValidationState.bind(this);
@@ -52,6 +52,14 @@ export default class EventLookup extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		this._isMounted = true;
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false;
+	}
+
 	_handleChange({target}) {
 		const propName = {
 			'date-range-start': 'dateRangeStart',
@@ -69,8 +77,8 @@ export default class EventLookup extends React.Component {
 		event.preventDefault();
 		if (isValidInput(this.state.dateRangeStart) && isValidInput(this.state.dateRangeEnd)) {
 			this.setState({showFormErrors: false, isLoading: true});
-			const status = await this.props.onSubmit(this.state);
-			if (status !== ipcGeneral.SUCCESS) {
+			await this.props.onSubmit(this.state);
+			if (this._isMounted) {
 				this.setState({isLoading: false});
 			}
 		} else {
