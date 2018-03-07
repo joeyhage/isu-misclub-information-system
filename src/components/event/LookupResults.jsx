@@ -17,11 +17,15 @@ export default class LookupResults extends React.Component {
 		const {eventsTable, currentResultsPage} = this.state;
 		return (
 			<Column title='Results' style={{paddingLeft:'40px'}}>
-				<p>{Boolean(eventsTable) ?
+				<p>{Boolean(eventsTable && eventsTable.length) ?
 					'Click an event to view attendance' :
-					'Search for an event using the Lookup button on the left.'
+					(
+						Array.isArray(eventsTable) ?
+						'No results' :
+						'Search for an event using the Lookup button on the left'
+					)
 				}</p>
-				{Boolean(eventsTable) &&
+				{Boolean(eventsTable && eventsTable.length) &&
 					<div>
 						<div style={{minHeight:'451px',marginTop:'20px'}}>
 							<Table id='lookup-results'>
@@ -56,7 +60,7 @@ export default class LookupResults extends React.Component {
 				<td className='event-name'>{event.event_name}</td>
 				<td className='event-date'>{event.event_date}</td>
 			</tr>
-		)) : null;
+		)) : events;
 	}
 
 	_handleRowClick({target}) {

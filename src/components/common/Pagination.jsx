@@ -20,10 +20,12 @@ export class Pagination extends React.Component {
 		const {disablePrevious, disableNext, showLeftEllipses, showRightEllipses, pageList} = this.state;
 		return (
 			<div className='pagination is-rounded' role='navigation'>
-				<button className='button pagination-previous' onClick={() => this._onClick(currentPage - 1)} disabled={disablePrevious}>
+				<button className='button pagination-previous' onClick={() => this._onClick(currentPage - 1)}
+						disabled={disablePrevious}>
 					Previous
 				</button>
-				<button className='button pagination-next' onClick={() => this._onClick(currentPage + 1)} disabled={disableNext}>
+				<button className='button pagination-next' onClick={() => this._onClick(currentPage + 1)}
+						disabled={disableNext}>
 					Next page
 				</button>
 				<ul className='pagination-list'>
@@ -88,23 +90,32 @@ export class Pagination extends React.Component {
 			secondPageNumber = currentPage;
 			thirdPageNumber = currentPage + 1;
 		}
-		return [
+		const pageList = [
 			<Page key={0}
 				  page={firstPageNumber}
 				  currentPage={currentPage}
 				  onClick={onClick}
-			/>,
-			<Page key={1}
-				  page={secondPageNumber}
-				  currentPage={currentPage}
-				  onClick={onClick}
-			/>,
-			<Page key={2}
-				  page={thirdPageNumber}
-				  currentPage={currentPage}
-				  onClick={onClick}
 			/>
 		];
+		if (pageCount >= 2) {
+			pageList.push(
+				<Page key={1}
+						  page={secondPageNumber}
+						  currentPage={currentPage}
+						  onClick={onClick}
+				/>
+			);
+			if (pageCount >= 3) {
+				pageList.push(
+					<Page key={2}
+						  page={thirdPageNumber}
+						  currentPage={currentPage}
+						  onClick={onClick}
+					/>
+				);
+			}
+		}
+		return pageList;
 	}
 
 	_shouldDisablePrevious({currentPage}) {

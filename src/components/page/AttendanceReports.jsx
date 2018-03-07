@@ -18,7 +18,7 @@ class AttendanceReports extends React.Component {
 			eventId: props.eventId,
 			eventName: props.eventName,
 			eventDate: dateFormat('mediumDate'),
-			lookupResults: [],
+			lookupResults: undefined,
 			reportData: props.reportData || {}
 		};
 		this._resetState = this._resetState.bind(this);
@@ -70,7 +70,7 @@ class AttendanceReports extends React.Component {
 			ipcRenderer.send(ipcMysql.EXECUTE_SQL, ipcMysql.FIND_EVENTS, {dateRangeStart, dateRangeEnd, eventName});
 			ipcRenderer.once(ipcMysql.FIND_EVENTS, (event, events, status) => {
 				if (status === ipcGeneral.SUCCESS) {
-					this.setState({lookupResults: events});
+					this.setState({lookupResults: events || []});
 				}
 				resolve();
 			});
