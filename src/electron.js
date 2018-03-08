@@ -11,7 +11,7 @@ const electron = require('electron'),
 	{ createMenuTemplate } = require('./static/menuTemplate'),
 	{ ipcGeneral, ipcMysql } = require('./actions/ipcActions');
 
-let mainWindow, devToolsEnabled = isDev;
+let mainWindow, devToolsEnabled = isDev, isAuthorized = isDev;
 
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
@@ -100,9 +100,13 @@ app.on('ready', () => {
 			status = ipcGeneral.ERROR;
 		}
 		if (action === ipcMysql.VERIFY_CREDENTIALS && results) {
-			devToolsEnabled = results.accessLevel === 'exec-admin';
+			isAuthorized = results.accessLevel && results.userId;
 		}
 		mainWindow.webContents.send(action, results, status);
+	});
+
+	ipcMain.on(ipcGeneral.CHECK_PRIVILEGES, () => {
+		mainWindow.webContents.send(ipcGeneral.CHECK_PRIVILEGES, isAuthorized);
 	});
 
 	ipcMain.on(ipcGeneral.SET_WINDOW, (event, action) => {

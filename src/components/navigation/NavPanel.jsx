@@ -1,5 +1,6 @@
 import React from 'react';
-import Radium, {Style} from 'radium';
+import { connect } from 'react-redux';
+import Radium, { Style } from 'radium';
 import NavLink from './NavLink';
 import { NavCss } from '../../style/Nav.css.js';
 
@@ -16,7 +17,9 @@ class NavPanel extends React.Component {
 					<NavLink id='members' icon='fa fa-user-o'>Members</NavLink>
 					<NavLink id='graphs' icon='fa fa-bar-chart'>Graphs</NavLink>
 					<NavLink id='finances' icon='fa fa-money'>Finances</NavLink>
-					<NavLink id='admin-tools' icon='fa fa-cog'>Admin</NavLink>
+					{this.props.isAdmin &&
+						<NavLink id='admin-tools' icon='fa fa-cog'>Admin</NavLink>
+					}
 					<NavLink id='help' icon='fa fa-info-circle'>Help</NavLink>
 				</ul>
 			</div>
@@ -24,4 +27,8 @@ class NavPanel extends React.Component {
 	}
 }
 
-export default Radium(NavPanel);
+const mapStateToProps = state => ({
+	isAdmin: state.authorization.accessLevel === 'exec-admin'
+});
+
+export default connect(mapStateToProps)(Radium(NavPanel));

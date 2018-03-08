@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, InputGroup, Message, ButtonGroup } from '../common/index';
 import { isValidInput } from '../../utils/validation';
-import {ipcGeneral, ipcMysql} from '../../actions/ipcActions';
+import { ipcGeneral, ipcMysql } from '../../actions/ipcActions';
 
 const { ipcRenderer } = window.require('electron');
 
-export default class MemberLookup extends React.Component {
+export default class MemberSearch extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -39,7 +39,7 @@ export default class MemberLookup extends React.Component {
 						</Button>
 					</Message> :
 					<ButtonGroup isLoading={this.state.isLoading}>
-						<Button type='submit' info>Lookup</Button>
+						<Button type='submit' info>Search</Button>
 						<Button type='reset' black>Clear</Button>
 					</ButtonGroup>
 				}

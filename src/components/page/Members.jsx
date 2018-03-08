@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column, Message, PageView } from '../common';
 import UpdateMember from '../member/UpdateMember';
-import MemberLookup from '../member/MemberLookup';
+import MemberSearch from '../member/MemberSearch';
 import CreateMember from '../member/CreateMember';
 import { setMemberDefaults } from '../../utils/memberUtil';
 import { MembersCss } from '../../style/Members.css';
@@ -59,7 +59,7 @@ export default class Members extends React.Component {
 			);
 		} else {
 			return (
-				<MemberLookup setMember={this._setMember} updateMember={this._updateMember}
+				<MemberSearch setMember={this._setMember} updateMember={this._updateMember}
 							  createMember={this._createMember}/>
 			);
 		}

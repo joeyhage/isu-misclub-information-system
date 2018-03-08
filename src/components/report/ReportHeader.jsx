@@ -5,13 +5,13 @@ import { Column } from '../common/index';
 export default class ReportHeader extends React.Component {
 
 	render() {
-		const {event, attendance, onReset, exportAttendance} = this.props;
+		const {event, attendanceCount, onReset, exportAttendance} = this.props;
 		return (
 			<div className='columns'>
 				<Column is={10} style={{paddingBottom:0}}>
 					<h1 className='title is-4 is-spaced'>{event.eventName}</h1>
 					<h2 className='subtitle is-6'>Date: {event.eventDate}</h2>
-					<h2 className='subtitle is-6'>Total Attendance: {attendance.length}</h2>
+					<h2 className='subtitle is-6'>Total Attendance: {attendanceCount}</h2>
 				</Column>
 				<Column is={2} style={{padding:0}}>
 					<div className='menu' style={{borderLeft:`2px solid ${primaryRed}`}}>

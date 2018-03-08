@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import dateFormat from 'dateformat';
 import { Column, Message, PageView } from '../common';
 import UpdateMember from '../member/UpdateMember';
-import MemberLookup from '../member/MemberLookup';
+import MemberSearch from '../member/MemberSearch';
 import CreateMember from '../member/CreateMember';
 import { setMemberDefaults } from '../../utils/memberUtil';
 import { CheckInCss } from '../../style/CheckIn.css';
@@ -70,7 +70,7 @@ class CheckIn extends React.Component {
 			);
 		} else {
 			return (
-				<MemberLookup setMember={this._setMember} updateMember={this._updateMember}
+				<MemberSearch setMember={this._setMember} updateMember={this._updateMember}
 							  createMember={this._createMember}/>
 			);
 		}

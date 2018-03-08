@@ -24,7 +24,7 @@ export default class Report extends React.Component {
 		const {majorStats, classificationStats} = this.props.reportData;
 		return (
 			<Column>
-				<ReportHeader event={event} attendance={attendanceTable} onReset={this.props.onReset}
+				<ReportHeader event={event} attendanceCount={attendanceTable.length} onReset={this.props.onReset}
 							  exportAttendance={this._exportAttendance}/>
 				<hr className='divider'/>
 				{Boolean(attendanceTable && attendanceTable.length) ?
@@ -33,7 +33,7 @@ export default class Report extends React.Component {
 							<MajorPieChart stats={majorStats}/>
 							<ClassificationPieChart stats={classificationStats}/>
 						</div>
-						<AttendanceList {...{attendanceTable}}/>
+						<AttendanceList attendanceTable={attendanceTable}/>
 					</div> :
 					<p>No results</p>
 				}
